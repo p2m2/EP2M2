@@ -9,6 +9,7 @@
   import banner from './composant/banner.vue'
   import extras from './composant/extras.vue';
   import extract from './composant/extract.vue';
+import { _left, _right } from '#tailwind-config/theme/objectPosition';
 
 </script>
 
@@ -18,7 +19,7 @@
     --blueP2M2: #243271;
     --orangeP2M2: #E17F21;
   }
-  html {
+  /* html {
     box-sizing: border-box;
   }
 
@@ -37,9 +38,9 @@
   img {
     max-width: 100%;
     height: auto;
-  }
+  } */
 
-  .header {
+  /* .header {
     display: flex;
     justify-content: space-between;
   }
@@ -52,15 +53,25 @@
   nav {
     float: right;
     display: block;
-  }
-  
+  } */
+
 </style>
 
 <template>
-  <div class="header">
-    <banner></banner>
-    <extras></extras>
-  </div>
-  <extract></extract>
+  
+  <UCard> 
+    <template #header>
+      
+      <UContainer class="flex justify-between">
+        <banner/>
+        <extras/>
+      </UContainer>
+  
+    </template>
+    
+    <extract/>
+    
+    <template #footer/>
+  </UCard>
 
 </template>

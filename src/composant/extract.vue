@@ -11,6 +11,7 @@
     const labTableName = ref<string>('Nom');
     const labTableType = ref<string>('Type');
     const labTableSize = ref<string>('Taille');
+    const labDeleteRow = ref<string>('supprimer');
 
     const columns = [{
         key: 'name',
@@ -24,6 +25,8 @@
         key: 'size',
         label: labTableSize.value,
         sortable: true
+    }, {
+        key: 'delete'
     }]
 
     const files = reactive<{name: string, type: string, size: number}[]>([{
@@ -38,53 +41,45 @@
 </script>
     
 <style>
-    main {
-        padding-top: 1%;
-    }
-
-    .btGroup {
-        display: flex;
-        justify-content: space-around;
-        padding: 1rem;
-        align-items: center;
-    }
-
-    button {
+    .extractButton {
         background-color: var(--greenP2M2);
         margin: 2px;
         padding: 1rem 2rem 1rem 2rem;
         border: 2px solid var(--blueP2M2);
         color: var(--blueP2M2);
         font-weight: bold;
-        width: 30%;
+        width: 33%;
         transition: all 0.5s ease-out;
         cursor: pointer;
+        text-align: center;
     }
 
-    button:hover,
-    button:focus {
+    .extractButton:hover,
+    .extractButton:focus {
         background-color: var(--blueP2M2);
         color: var(--greenP2M2);
         border: 2px solid var(--greenP2M2);
     }
-
 </style>
 
 <template>
-    <main>
-        <div class="btGroup">
-            <UButton color="green">
-                {{labSelectFile}}
-            </UButton>
-            <UButton color="green">
-                {{labSelectDir}}
-            </UButton>
-            <UButton color="green">
-                {{labDeleteAll}}
-            </UButton>
-        </div>
-        <div>
-            <UTable :rows="files" :columns="columns" />
-        </div>
-    </main>
+    
+    <UContainer class="flex justify-around items-center">
+        <UButton class="extractButton text-center">
+            {{labSelectFile}}
+        </UButton>
+        <UButton class="extractButton">
+            {{labSelectDir}}
+        </UButton>
+        <UButton class="extractButton">
+            {{labDeleteAll}}
+        </UButton>
+    </UContainer>
+    <UContainer>
+        <UTable :rows="files" :columns="columns"> 
+            <template #delete-data="{row}">
+                <UButton icon="i-heroicons-x-mark" size="xl" color="red" variant="ghost"/>
+            </template>
+        </UTable>
+    </UContainer>
 </template>

@@ -51,7 +51,6 @@
         top: 3rem;
         border-radius: 0.5rem;
         gap: 0;
-        /* padding: 1rem 0rem; */
         opacity: 0;
         box-shadow: 0px 0px 100px rgba(20, 18, 18, 0.25);
         display: none;
@@ -103,7 +102,7 @@
 </style>
 
 <template>
-    <nav>
+    <UContainer class="float-right block">
         <menu type="toolbar">
             <li>
                 <img src="../ressource/image/home.svg" :alt="altHome" width="35">
@@ -129,5 +128,5 @@
                 </menu>
             </li>
         </menu>
-    </nav>
+    </UContainer>
 </template>

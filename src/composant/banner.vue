@@ -10,7 +10,7 @@
 </script>
 
 <template>
-    <header>
+    <UContainer class="float-left block">
         <img src="../ressource/image/banner.png" :alt="altBanner">
-    </header>
+    </UContainer>
 </template>
