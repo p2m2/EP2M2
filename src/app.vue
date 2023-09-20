@@ -6,10 +6,9 @@
  -->
 
 <script setup lang="ts">
-  import banner from './composant/banner.vue'
-  import extras from './composant/extras.vue';
-  import extract from './composant/extract.vue';
-import { _left, _right } from '#tailwind-config/theme/objectPosition';
+  import banner from './components/banner.vue'
+  import extras from './components/extras.vue';
+  import extract from './components/extract.vue';
 
 </script>
 

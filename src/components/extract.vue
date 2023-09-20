@@ -52,6 +52,7 @@
         transition: all 0.5s ease-out;
         cursor: pointer;
         text-align: center;
+        justify-content: center;
     }
 
     .extractButton:hover,
@@ -63,22 +64,22 @@
 </style>
 
 <template>
-    
     <UContainer class="flex justify-around items-center">
-        <UButton class="extractButton text-center">
+        <UButton class="extractButton" :title="labSelectFile">
             {{labSelectFile}}
         </UButton>
-        <UButton class="extractButton">
+        <UButton class="extractButton" :title="labSelectDir">
             {{labSelectDir}}
         </UButton>
-        <UButton class="extractButton">
+        <UButton class="extractButton" :title="labDeleteAll">
             {{labDeleteAll}}
         </UButton>
     </UContainer>
     <UContainer>
         <UTable :rows="files" :columns="columns"> 
             <template #delete-data="{row}">
-                <UButton icon="i-heroicons-x-mark" size="xl" color="red" variant="ghost"/>
+                <UButton :title="labDeleteRow" icon="i-heroicons-x-mark" 
+                         size="xl" color="red" variant="ghost"/>
             </template>
         </UTable>
     </UContainer>
