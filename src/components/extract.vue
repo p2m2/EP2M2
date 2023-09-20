@@ -12,6 +12,7 @@
     const labTableType = ref<string>('Type');
     const labTableSize = ref<string>('Taille');
     const labDeleteRow = ref<string>('supprimer');
+    const labExtract = ref<string>('Extraire');
 
     const columns = [{
         key: 'name',
@@ -82,5 +83,11 @@
                          size="xl" color="red" variant="ghost"/>
             </template>
         </UTable>
+    </UContainer>
+    <UContainer>
+        <UButton class="extractButton float-right block"
+                 :style="{width:['10%!important']}">
+            {{ labExtract }}
+        </UButton>
     </UContainer>
 </template>
