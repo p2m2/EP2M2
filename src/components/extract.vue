@@ -49,11 +49,18 @@
         border: 2px solid var(--blueP2M2);
         color: var(--blueP2M2);
         font-weight: bold;
-        width: 33%;
         transition: all 0.5s ease-out;
         cursor: pointer;
         text-align: center;
         justify-content: center;
+    }
+
+    .sizeBy3{
+        width: 33%;
+    }
+
+    .sizeAlone{
+        width: 10%;       
     }
 
     .extractButton:hover,
@@ -66,13 +73,13 @@
 
 <template>
     <UContainer class="flex justify-around items-center">
-        <UButton class="extractButton" :title="labSelectFile">
+        <UButton class="extractButton sizeBy3" :title="labSelectFile">
             {{labSelectFile}}
         </UButton>
-        <UButton class="extractButton" :title="labSelectDir">
+        <UButton class="extractButton sizeBy3" :title="labSelectDir">
             {{labSelectDir}}
         </UButton>
-        <UButton class="extractButton" :title="labDeleteAll">
+        <UButton class="extractButton sizeBy3" :title="labDeleteAll">
             {{labDeleteAll}}
         </UButton>
     </UContainer>
@@ -85,8 +92,7 @@
         </UTable>
     </UContainer>
     <UContainer>
-        <UButton class="extractButton float-right block"
-                 :style="{width:['10%!important']}">
+        <UButton class="extractButton float-right block sizeAlone">
             {{ labExtract }}
         </UButton>
     </UContainer>

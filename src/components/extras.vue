@@ -5,82 +5,41 @@
 <script setup lang="ts">
     import {ref, reactive} from 'vue';
 
+    // Variable to access and modify to translate
     const altHome = ref<string>('Accueil');
     const altHelp = ref<string>('Aide');
     const altTopProfOut = ref<string>('Accéder au sous-menu profile et déconnection');
-    const user = reactive<{firstName: string, secondName: string}>({
-        firstName : 'Pierre',
-        secondName : 'Dupond'
-    });
-    
-    const aProfile = reactive<{href: string, title: string}>({
-        href: '...',
-        title: 'Profile'
-    })
-    const aLogout = reactive<{href: string, title: string}>({
-        href: '...',
-        title: 'LogOut'
-    })
+    const labProfile = ref<string>('Profile');
+    const labLogout = ref<string>('LogOut');
 
-    function openLink (link: string): void {
-        window.location.assign(link);
-    } 
+    // Variable identify user
+    const user = reactive<{firstName: string, lastName: string}>({
+        firstName : 'Pierre',
+        lastName : 'Dupond'
+    });    
+
+    // Define submenu for user
+    const items = <any[]>[
+        [{
+            label: user.firstName + ' ' + user.lastName,
+            icon: 'i-heroicons-user',
+            disabled: true
+        }],
+        [{
+            label: labProfile.value,
+            icon: 'i-heroicons-adjustments-horizontal' 
+        }],
+        [{
+            label: labLogout.value,
+            icon: 'i-heroicons-arrow-right-on-rectangle'
+        }]
+    ]
+
 </script>
 
 <style>
-    menu {
-        margin: 0;
-        padding: 0;
-        display: ruby;
-    }
-
-    li {
-        list-style-type: none;
-        position: relative;
-        padding: 0.625rem 0.055rem 0 0.5rem;
-    }
-
-    li menu {
-        flex-direction: column;
-        position: absolute;
-        background-color: rgba(255, 255, 255, 0);
-        align-items: flex-start;
-        transition: all 0.5s ease;
-        width: 15rem;
-        right: -1rem;
-        top: 3rem;
-        border-radius: 0.5rem;
-        gap: 0;
-        opacity: 0;
-        box-shadow: 0px 0px 100px rgba(20, 18, 18, 0.25);
-        display: none;
-    }
-
-    menu li:hover > menu,
-    menu li menu:hover {
-        visibility: visible;
-        opacity: 1;
-        display: flex;
-    }
-
-    .topProfOut {
-        height: 3rem;
-        width: auto;
-        cursor: pointer;
-    }
-
     .bgGreen{
         background-color: var(--greenP2M2);
-    }
-
-    .subMenu {
-        background-color: initial;
-        width: 100%;
-        display: flex;
-        align-items: center;
-        gap: 0.725rem;
-        cursor: pointer;
-        padding: 0.5rem 1.5rem;
     }
 
     .profileName {
@@ -88,45 +47,22 @@
         color: var(--orangeP2M2);
         cursor: default;
     }
-
-    a {
-        color: black;
-        text-decoration: none;
-    }
-
-    li:hover > a {
-        transition: all 0.5s ease;
-        color: var(--blueP2M2);
-        font-weight: bolder;
-    }
 </style>
 
 <template>
     <UContainer class="float-right block">
-        <menu type="toolbar">
-            <li>
-                <img src="../ressource/image/home.svg" :alt="altHome" width="35">
-            </li>
-            <li>
-                <img src="../ressource/image/help.svg" :alt="altHelp" width="35">
-            </li>
-            <li class="topProfOut">
-                <img src="../ressource/image/profile.svg" :alt="altTopProfOut" width="35" class="bgGreen">
-                <menu>
-                    <li class="subMenu profileName">
-                        <img src="../ressource/image/profile.svg" :alt="altTopProfOut" width="35">
-                        <span>{{ user.firstName }} {{ user.secondName }}</span>
-                    </li>
-                    <li class="subMenu" @click="openLink(aProfile.href)">
-                        <img src="../ressource/image/setting.svg" :alt="altTopProfOut" width="35">
-                        <a v-bind="aProfile"> {{ aProfile.title }}</a>
-                    </li>
-                    <li class="subMenu" @click="openLink(aLogout.href)">
-                        <img src="../ressource/image/logout.svg" :alt="altTopProfOut" width="35">
-                        <a v-bind="aLogout"> {{ aLogout.title }}</a>
-                    </li>
-                </menu>
-            </li>
-        </menu>
+        <UButton icon="i-heroicons-home-modern" color="white" size="xl"
+                 :title="altHome"/>
+        <UButton icon="i-heroicons-light-bulb" color="white" size="xl"
+                 :title="altHelp"/>
+
+        <UDropdown :items="items" :popper="{ placement: 'bottom-start' }"
+                   :ui="{item: {disabled: 'profileName'}}"
+                   :title="altTopProfOut">
+            <UButton trailing-icon="i-heroicons-chevron-down-20-solid"
+                     leading-icon="i-heroicons-user-20-solid"  size="xl"
+                     color="white" class="bgGreen"/>
+        </UDropdown>
+
     </UContainer>
 </template>
