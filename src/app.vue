@@ -70,7 +70,7 @@
     
     <extract/>
     
-    <template #footer/>
+    <!-- <template #footer/> -->
   </UCard>
 
 </template>
