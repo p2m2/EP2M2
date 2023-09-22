@@ -4,7 +4,7 @@
  -->
 
 <script setup lang="ts">
-    import {ref, reactive, onMounted} from 'vue';
+    import {ref, reactive} from 'vue';
     const labSelectFile = ref<string>('Télécharger le(s) fichier(s)');
     const labSelectDir = ref<string>('Télécharger un dossier');
     const labDeleteAll = ref<string>('Tout supprimer');
@@ -14,6 +14,8 @@
     const labTableSize = ref<string>('Taille');
     const labDeleteRow = ref<string>('supprimer');
     const labExtract = ref<string>('Extraire');
+    const labNoFiles = ref<string>('Pas de fichier');
+    const labLoading = ref<string>('Chargement ...')
 
     const loading = ref<boolean>(false)
 
@@ -53,7 +55,7 @@
      * Get all files from input and show them in table
      * @param evt the event
      */
-    function getFiles(evt:Event | null):void{
+    async function getFiles(evt:Event | null):Promise<void>{
         if (!(evt)){
             return;
         }
@@ -66,7 +68,8 @@
         const fileList = (evt?.currentTarget as  HTMLInputElement).files;
         if (fileList) for (const myFile of fileList){
             // TODO manage case unknow type
-            files.push({theFile:myFile,internalType:getType(myFile) });        
+            const internalType = await getType(myFile);
+            files.push({theFile:myFile,internalType: internalType});        
         }
 
         loading.value = false        
@@ -76,10 +79,34 @@
      * we determinate type of file with P2M2Tool API
      * @param myFile file selected in input
      */
-    function getType(myFile: File):string{
+     async function getType(myFile: File):Promise<string>{
+        const reader = <FileReader> new FileReader();
+        let noReaded = <boolean> true;
+        let fileType = '';
+
+        reader.addEventListener('load', async evt => {
+            fetch('http://localhost:8080/p2m2tools/api/format/sniffer',{
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: evt.target?.result
+            })
+                .then((response) => {
+                    return response.json() as Promise<{format:string}>
+                })
+                .then((json) => {
+                    fileType = json.format;
+                    noReaded= false
+                })
+                .catch(console.error);
+        })
+        reader.readAsText(myFile);
+
         // TODO call API P2M2
+
         // TODO manage case unknow type
-        return 'plouf';
+        return fileType;
     }
     
 </script>
@@ -131,9 +158,9 @@
     <UContainer>
         <UTable :rows="files" :columns="columns" id="filesTable"
                 :empty-state="{ icon: 'i-heroicons-document-text',
-                                label: 'No files.' }" :loading="loading"
+                                label: labNoFiles }" :loading="loading"
                 :loading-state="{ icon: 'i-heroicons-arrow-path-20-solid',
-                                  label: 'Loading...' }"> 
+                                  label: labLoading }"> 
             <!-- TODO manage case unknow type -->
             <template #delete-data="{row}">
                 <UButton :title="labDeleteRow" icon="i-heroicons-x-mark" 
