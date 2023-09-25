@@ -17,7 +17,8 @@
     const labNoFiles = ref<string>('Pas de fichier');
     const labLoading = ref<string>('Chargement ...')
 
-    const loading = ref<boolean>(false)
+    const loading = ref<number>(0);
+
 
     const columns = [{
         key: 'theFile.name',
@@ -62,27 +63,23 @@
         // To don't have two event change
         evt.stopImmediatePropagation();
 
-        loading.value = true
-
         // Add list file in table
         const fileList = (evt?.currentTarget as  HTMLInputElement).files;
         if (fileList) for (const myFile of fileList){
             // TODO manage case unknow type
-            const internalType = await getType(myFile);
-            files.push({theFile:myFile,internalType: internalType});        
-        }
-
-        loading.value = false        
+            const internalType = await getType(myFile);        
+        }    
     }
     
     /**
      * we determinate type of file with P2M2Tool API
      * @param myFile file selected in input
      */
-     async function getType(myFile: File):Promise<string>{
+     async function getType(myFile: File):Promise<void>{
         const reader = <FileReader> new FileReader();
         let noReaded = <boolean> true;
-        let fileType = '';
+        let fileType = <string> "Unknwon Type";
+        loading.value ++;
 
         reader.addEventListener('load', async evt => {
             fetch('http://localhost:8080/p2m2tools/api/format/sniffer',{
@@ -99,14 +96,13 @@
                     fileType = json.format;
                     noReaded= false
                 })
-                .catch(console.error);
+                .catch(console.error)
+                .finally(()=>{
+                    files.push({theFile:myFile,internalType: fileType});
+                    loading.value --;
+                })
         })
         reader.readAsText(myFile);
-
-        // TODO call API P2M2
-
-        // TODO manage case unknow type
-        return fileType;
     }
     
 </script>
@@ -158,7 +154,7 @@
     <UContainer>
         <UTable :rows="files" :columns="columns" id="filesTable"
                 :empty-state="{ icon: 'i-heroicons-document-text',
-                                label: labNoFiles }" :loading="loading"
+                                label: labNoFiles }" :loading="loading>0"
                 :loading-state="{ icon: 'i-heroicons-arrow-path-20-solid',
                                   label: labLoading }"> 
             <!-- TODO manage case unknow type -->
@@ -167,6 +163,7 @@
                          size="xl" color="red" variant="ghost"/>
             </template>
         </UTable>
+
     </UContainer>
     <UContainer>
         <UButton class="extractButton float-right block sizeAlone">
