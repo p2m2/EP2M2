@@ -3,7 +3,7 @@
     information.
  -->
 
-<script setup lang="ts">
+<script setup lang="ts" >
     import {ref, reactive} from 'vue';
     const labSelectFile = ref<string>('Télécharger le(s) fichier(s)');
     const labSelectDir = ref<string>('Télécharger un dossier');
@@ -18,6 +18,8 @@
     const labLoading = ref<string>('Chargement ...')
 
     const loading = ref<number>(0);
+
+    const test = true;
 
 
     const columns = [{
@@ -104,6 +106,10 @@
         })
         reader.readAsText(myFile);
     }
+
+    defineExpose({
+        labSelectFile
+    })
     
 </script>
     
