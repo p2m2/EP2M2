@@ -11,6 +11,6 @@
 
 <template>
     <UContainer class="float-left block">
-        <img src="../static/banner.png" :alt="altBanner">
+        <img src="/banner.png" :alt="altBanner">
     </UContainer>
 </template>
