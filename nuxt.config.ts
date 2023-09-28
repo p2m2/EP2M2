@@ -6,6 +6,5 @@ export default defineNuxtConfig({
   ],
   colorMode: {
     preference: 'light'
-  },
-  rootDir: "./src/"
+  }
 })
