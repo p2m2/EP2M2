@@ -3,13 +3,13 @@ name: Tests Unit
 on:
   push:
     branches: '*'
-
+    
 jobs:
   test:
     runs-on: ubuntu-latest
     services:
       service-p2m2tool-api:
-        image: inraep2mé/service-p2m2tools-api
+        image: inraep2m2/service-p2m2tools-api
         ports:
           - 8080:8080
     
