@@ -3,6 +3,9 @@ name: Tests Unit
 on:
   push:
     branches: '*'
+
+permissions: 
+  pull-requests: write
     
 jobs:
   test:

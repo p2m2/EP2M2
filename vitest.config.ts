@@ -9,7 +9,11 @@ export default defineConfig({
         globals: true,
         environment: "jsdom",
         coverage:{
-            reporter: ["json-summary", "json"]
+            reporter: ["json-summary", "json"],
+            lines: 80,
+            branches: 80,
+            functions: 80,
+            statements: 80
         }
     },
 
