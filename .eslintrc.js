@@ -5,7 +5,8 @@ module.exports = {
         "node": true
     },
     "extends": [
-        "standard-with-typescript",
+        "eslint:recommended",
+        "plugin:@typescript-eslint/recommended",
         "plugin:vue/vue3-essential"
     ],
     "overrides": [
@@ -23,11 +24,29 @@ module.exports = {
     ],
     "parserOptions": {
         "ecmaVersion": "latest",
+        "parser": "@typescript-eslint/parser",
         "sourceType": "module"
     },
     "plugins": [
+        "@typescript-eslint",
         "vue"
     ],
     "rules": {
+        "indent": [
+            "error",
+            4
+        ],
+        "linebreak-style": [
+            "error",
+            "unix"
+        ],
+        "quotes": [
+            "error",
+            "double"
+        ],
+        "semi": [
+            "error",
+            "always"
+        ]
     }
-}
+};

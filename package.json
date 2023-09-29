@@ -7,13 +7,17 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
-    "test": "vitest"
+    "test": "vitest",
+    "coverage": "vitest run --coverage",
+    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore"
   },
   "devDependencies": {
     "@nuxt/devtools": "latest",
     "@nuxt/ui": "npm:@nuxt/ui-edge@latest",
     "@typescript-eslint/eslint-plugin": "^6.7.3",
+    "@typescript-eslint/parser": "^6.7.3",
     "@vitejs/plugin-vue": "^4.3.4",
+    "@vitest/coverage-v8": "^0.34.5",
     "@vue/test-utils": "^2.4.1",
     "cypress": "^13.2.0",
     "eslint": "^8.50.0",
