@@ -3,37 +3,37 @@
  -->
 
 <script setup lang="ts">
-    import {ref, reactive} from 'vue';
+import {ref, reactive} from "vue";
 
-    // Variable to access and modify to translate
-    const altHome = ref<string>('Accueil');
-    const altHelp = ref<string>('Aide');
-    const altTopProfOut = ref<string>('Accéder au sous-menu profile et déconnection');
-    const labProfile = ref<string>('Profile');
-    const labLogout = ref<string>('LogOut');
+// Variable to access and modify to translate
+const altHome = ref<string>("Accueil");
+const altHelp = ref<string>("Aide");
+const altTopProfOut = ref<string>("Accéder au sous-menu profile et déconnection");
+const labProfile = ref<string>("Profile");
+const labLogout = ref<string>("LogOut");
 
-    // Variable identify user
-    const user = reactive<{firstName: string, lastName: string}>({
-        firstName : 'Pierre',
-        lastName : 'Dupond'
-    });    
+// Variable identify user
+const user = reactive<{firstName: string, lastName: string}>({
+    firstName : "Pierre",
+    lastName : "Dupond"
+});    
 
-    // Define submenu for user
-    const items = <any[]>[
-        [{
-            label: user.firstName + ' ' + user.lastName,
-            icon: 'i-heroicons-user',
-            disabled: true
-        }],
-        [{
-            label: labProfile.value,
-            icon: 'i-heroicons-adjustments-horizontal' 
-        }],
-        [{
-            label: labLogout.value,
-            icon: 'i-heroicons-arrow-right-on-rectangle'
-        }]
-    ]
+// Define submenu for user
+const items = <object[]>[
+    [{
+        label: user.firstName + " " + user.lastName,
+        icon: "i-heroicons-user",
+        disabled: true
+    }],
+    [{
+        label: labProfile.value,
+        icon: "i-heroicons-adjustments-horizontal" 
+    }],
+    [{
+        label: labLogout.value,
+        icon: "i-heroicons-arrow-right-on-rectangle"
+    }]
+];
 
 </script>
 

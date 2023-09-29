@@ -1,10 +1,8 @@
-<!-- 
-    This module provide banner of site
- -->
+ <!-- This module provide banner of site -->
 <script setup lang="ts">
-    import {ref} from 'vue'
+import {ref} from "vue";
 
-    const altBanner = ref<string>('icône EPM2M2');
+const altBanner = ref<string>("icône EPM2M2");
     
 
 </script>

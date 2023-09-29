@@ -6,9 +6,9 @@
  -->
 
 <script setup lang="ts">
-  import banner from './components/banner.vue'
-  import extras from './components/extras.vue';
-  import extract from './components/extract.vue';
+import banner from "./components/BannerMain.vue";
+import extras from "./components/ExtrasNav.vue";
+import extract from "./components/ExtractInfo.vue";
 
 </script>
 
