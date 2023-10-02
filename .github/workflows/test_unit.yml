@@ -39,10 +39,12 @@ jobs:
         if: always()
         with:
           files: |
-            test/reporter/**/*.xml
-            test/reporter/**/*.json
+            test/**/*.xml
+            test/**/*.json
       - name: Complet report tests
         uses: dorny/test-reporter@v1
         if: always()
         with:
           reporter: "java-junit"
+          name: Test Unit
+          path: test/**/*.xml

@@ -22,8 +22,8 @@ export default defineConfig({
         },
         reporters: ["junit", "json"],
         outputFile: {
-            junit: "./test/reporter/result.xml",
-            json: "./test/reporter/result.json"
+            junit: "./test/results/results.xml",
+            json: "./test/results/results.json"
         }
     },
 
