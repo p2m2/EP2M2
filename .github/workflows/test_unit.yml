@@ -6,6 +6,7 @@ on:
 
 permissions: 
   pull-requests: write
+  checks: write
     
 jobs:
   test:
@@ -33,3 +34,15 @@ jobs:
         uses: davelosert/vitest-coverage-report-action@v2
         with:
           file-coverage-mode: all
+      - name: Summary Tests
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always()
+        with:
+          files: |
+            test/reporter/**/*.xml
+            test/reporter/**/*.json
+      - name: Complet report tests
+        uses: dorny/test-reporter@v1
+        if: always()
+        with:
+          reporter: "java-junit"

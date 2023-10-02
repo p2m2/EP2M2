@@ -2,9 +2,14 @@ import {defineConfig} from "vite";
 import vue from "@vitejs/plugin-vue";
 import { fileURLToPath, URL } from "node:url";
 
-
 export default defineConfig({
-    plugins: [vue()],
+    plugins: [vue({
+        template:{
+            compilerOptions:{
+                isCustomElement: (tag) => tag.startsWith("U"),
+            }
+        }
+    })],
     test: {
         globals: true,
         environment: "jsdom",
@@ -14,6 +19,11 @@ export default defineConfig({
             branches: 80,
             functions: 80,
             statements: 80
+        },
+        reporters: ["junit", "json"],
+        outputFile: {
+            junit: "./test/reporter/result.xml",
+            json: "./test/reporter/result.json"
         }
     },
 
