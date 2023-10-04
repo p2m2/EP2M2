@@ -35,7 +35,7 @@ const columns = [{
     key: "delete"
 }];
 
-const files = reactive<{theFile:File, internalType:string}[] | null[]>([]);
+const files = reactive<{theFile:File, internalType:string}[]>([]);
 
 // ---- Manage select several files
 
@@ -102,7 +102,7 @@ async function getType(myFile: File):Promise<void>{
 }
 
 defineExpose({
-    labSelectFile
+    labSelectFile,
 });
     
 </script>
