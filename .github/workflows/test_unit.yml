@@ -41,7 +41,6 @@ jobs:
         with:
           files: |
             test/**/*.xml
-            test/**/*.json
       - name: Complet report tests
         uses: dorny/test-reporter@v1
         if: always()
