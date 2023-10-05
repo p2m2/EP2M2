@@ -1,16 +1,26 @@
 import {defineConfig} from "vite";
 import vue from "@vitejs/plugin-vue";
 import { fileURLToPath, URL } from "node:url";
+import Components from "unplugin-vue-components/vite";
+
 
 export default defineConfig({
-    // plugins: [vue({
-    //     template:{
-    //         compilerOptions:{
-    //             isCustomElement: (tag) => tag.startsWith("U"),
-    //         }
-    //     }
-    // })],
-    plugins:[vue()],
+    plugins:[
+        Components({ 
+            dirs: ["./components/**", "./components/"], 
+            directoryAsNamespace: true,
+            // Use Component of Nuxt/UI without prefix
+            resolvers:[
+                (componentNames) => {
+                    // TODO: Get prefix in configuration of Nuxt/ui
+                    if(componentNames.startsWith("U")){
+                        return {name: componentNames.slice(1), from: "@nuxt/ui"};
+                    }                                        
+                }
+            ]
+        }),
+        vue(),
+    ],
     test: {
         globals: true,
         environment: "jsdom",
