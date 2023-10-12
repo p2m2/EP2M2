@@ -25,7 +25,7 @@ jobs:
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.PUBLIC_SSH }}
+          key: ${{ secrets.PRIVATE_SSH }}
           source: ./.output/*
           target: ~/.output 
       - name: Copy docker files on server
@@ -33,7 +33,7 @@ jobs:
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.PUBLIC_SSH }}
+          key: ${{ secrets.PRIVATE_SSH }}
           source: "Dockerfile, compose.yaml"
           target: ~
       - name: RUN on server
@@ -41,7 +41,7 @@ jobs:
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.PUBLIC_SSH }}
+          key: ${{ secrets.PRIVATE_SSH }}
           script: |
             echo ${{ secrets.PASS }}| sudo -S docker compose -f "compose.yaml" up -d --build
             rm -rf ~/.output
