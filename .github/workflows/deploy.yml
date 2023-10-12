@@ -25,7 +25,7 @@ jobs:
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.PUBLIC_SSH}}
+          key: ${{ secrets.PUBLIC_SSH }}
           source: ./.output/*
           target: ~/.output 
       - name: Copy docker files on server
