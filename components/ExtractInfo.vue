@@ -20,22 +20,22 @@ const labLoading = ref<string>("Chargement ...");
 const loading = ref<number>(0);
 
 const columns = [{
-    key: "theFile.name",
+    key: "name",
     label: labTableName.value,
     sortable: true
 }, {
-    key: "internalType",
+    key: "type",
     label: labTableType.value,
     sortable: true
 }, {
-    key: "theFile.size",
+    key: "size",
     label: labTableSize.value,
     sortable: true
 }, {
     key: "delete"
 }];
 
-const files = reactive<{theFile:File, internalType:string}[]>([]);
+const files = reactive<{name:string, type:string, size:number}[]>([]);
 
 // ---- Manage select several files
 
@@ -62,45 +62,28 @@ async function getFiles(evt:Event | null):Promise<void>{
     // To don't have two event change
     evt.stopImmediatePropagation();
 
+    const formData = new FormData();
+
     // Add list file in table
     const fileList = (evt?.currentTarget as  HTMLInputElement).files;
     if (fileList) for (const myFile of fileList){
-        await getType(myFile);        
+        formData.append('file', myFile);
     }    
+    loading.value ++;
+    $fetch("api/infoFile",{method:"post", body:formData})
+        .then((resp) => {
+            console.log(resp);      
+            for(const oneFile of resp as []) {
+                files.push(oneFile as {name:string, type:string, size:number});
+            }     
+        })
+        .catch(() => {
+            console.log("fail");
+            
+        })
+        .finally(() => loading.value -- )
 }
     
-/**
-     * we determinate type of file with P2M2Tool API
-     * @param myFile file selected in input
-     */
-async function getType(myFile: File):Promise<void>{
-    const reader = <FileReader> new FileReader();
-    let fileType = <string> "Unknwon Type";
-    loading.value ++;
-
-    reader.addEventListener("load", async evt => {
-        fetch("http://localhost:8080/p2m2tools/api/format/sniffer",{
-            method: "POST",
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded"
-            },
-            body: evt.target?.result
-        })
-            .then((response) => {
-                return response.json() as Promise<{format:string}>;
-            })
-            .then((json) => {
-                fileType = json.format;
-            })
-            .catch(console.error)
-            .finally(()=>{
-                files.push({theFile:myFile,internalType: fileType});
-                loading.value --;
-            });
-    });
-    reader.readAsText(myFile);
-}
-
 defineExpose({
     labSelectFile,
 });

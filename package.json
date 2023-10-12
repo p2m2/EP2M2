@@ -13,6 +13,7 @@
   },
   "devDependencies": {
     "@nuxt/devtools": "latest",
+    "@nuxt/eslint-config": "^0.2.0",
     "@nuxt/ui": "npm:@nuxt/ui-edge@latest",
     "@typescript-eslint/eslint-plugin": "^6.7.3",
     "@typescript-eslint/parser": "^6.7.3",

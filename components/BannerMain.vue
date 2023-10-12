@@ -8,7 +8,10 @@ const altBanner = ref<string>("icône EPM2M2");
 </script>
 
 <template>
-    <UContainer class="float-left block">
-        <img src="/banner.png" :alt="altBanner">
-    </UContainer>
+  <UContainer class="float-left block">
+    <img
+      src="/banner.png"
+      :alt="altBanner"
+    >
+  </UContainer>
 </template>

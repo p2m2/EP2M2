@@ -1,0 +1,20 @@
+services:
+  web:
+    build: .
+    ports:
+      - "80:3000"
+    volumes:
+      - shareFile:/shareFile
+      
+  api:
+    image: inraep2m2/service-p2m2tools-api:latest
+    container_name: p2m2ToolsApi
+    volumes:
+      - shareFile:/shareFile
+
+volumes:
+  shareFile:
+
+
+  
+
