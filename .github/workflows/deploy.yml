@@ -9,8 +9,6 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-      - name: Check secrets
-        run: echo ${{ secrets.ECHO }}
       - name: Get repo
         uses: actions/checkout@v3
       - name: Use Node.js
