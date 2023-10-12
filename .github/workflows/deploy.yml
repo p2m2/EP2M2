@@ -1,0 +1,49 @@
+name: deploy
+
+on:
+  push:
+    branches: '*'
+  
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Get repo
+        uses: actions/checkout@v3
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: latest
+          cache: 'npm'
+      - name: Installation project s packages
+        run: npm i
+      - name: build project
+        run: npm run build
+      - name: Copy file on server
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.PUBLIC_SSH}}
+          source: ./.output/*
+          target: ~/.output 
+      - name: Copy docker files on server
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.PUBLIC_SSH }}
+          source: "Dockerfile, compose.yaml"
+          target: ~
+      - name: RUN on server
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.PUBLIC_SSH }}
+          script: |
+            echo ${{ secrets.PASS }}| sudo -S docker compose -f "compose.yaml" up -d --build
+            rm -rf ~/.output
+            rm Dockerfile
+            rm compose.yaml
