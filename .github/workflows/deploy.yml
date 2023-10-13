@@ -26,7 +26,7 @@ jobs:
             echo {{ secrets.PRIVATE }} > ~/.ssh/id_rsa
             echo {{ secrets.PUBLIC }} > ~/.ssh/id_rsa.pub
       - name: Copy file on server
-        run: scp -r ./.output ~
+        run: scp -r ./.output ${{ secrets.USERNAME }}@${{ secrets.HOST }}:~
       - name: Copy docker files on server
         run: |
              scp Dockerfile compose.yaml ${{ secrets.USERNAME }}@${{ secrets.HOST }}:~
