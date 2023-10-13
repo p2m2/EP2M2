@@ -26,13 +26,13 @@ jobs:
             echo {{ secrets.PRIVATE }} > ~/.ssh/id_rsa
             echo {{ secrets.PUBLIC }} > ~/.ssh/id_rsa.pub
       - name: Copy file on server
-        run: scp -o StrictHostKeyChecking=no -r ./.output ${{ secrets.USERNAME }}@${{ secrets.HOST }}:~
+        run: scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa -r ./.output ${{ secrets.USERNAME }}@${{ secrets.HOST }}:~
       - name: Copy docker files on server
         run: |
-             scp -o StrictHostKeyChecking=no Dockerfile compose.yaml ${{ secrets.USERNAME }}@${{ secrets.HOST }}:~
+             scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa Dockerfile compose.yaml ${{ secrets.USERNAME }}@${{ secrets.HOST }}:~
       - name: RUN on server
         run: |
-            ssh -o StrictHostKeyChecking=no ${{ secrets.USERNAME }}@${{ secrets.HOST }} "echo ${{ secrets.PASS }}| sudo -S docker compose -f \"compose.yaml\" up -d --build"
-            ssh -o StrictHostKeyChecking=no ${{ secrets.USERNAME }}@${{ secrets.HOST }} "rm -rf ~/.output"
-            ssh -o StrictHostKeyChecking=no ${{ secrets.USERNAME }}@${{ secrets.HOST }} "rm Dockerfile"
-            ssh -o StrictHostKeyChecking=no ${{ secrets.USERNAME }}@${{ secrets.HOST }} "rm compose.yaml"
+            ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.USERNAME }}@${{ secrets.HOST }} "echo ${{ secrets.PASS }}| sudo -S docker compose -f \"compose.yaml\" up -d --build"
+            ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.USERNAME }}@${{ secrets.HOST }} "rm -rf ~/.output"
+            ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.USERNAME }}@${{ secrets.HOST }} "rm Dockerfile"
+            ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.USERNAME }}@${{ secrets.HOST }} "rm compose.yaml"
