@@ -20,10 +20,9 @@ jobs:
         run: npm i
       - name: build project
         run: npm run build
-      - name: Install Openssh
-        run : apt install openssh-client
       - name: Add ssh keys
         run: |
+            mkdir ~/.ssh
             echo {{ secrets.PRIVATE }} > ~/.ssh/id_rsa
             echo {{ secrets.PUBLIC }} > ~/.ssh/id_rsa.pub
       - name: Copy file on server
