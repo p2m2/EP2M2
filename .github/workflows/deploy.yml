@@ -20,30 +20,18 @@ jobs:
         run: npm i
       - name: build project
         run: npm run build
+      - name: Add ssh keys
+        run: |
+            echo {{ secrets.PRIVATE }} > ~/.ssh/id_rsa
+            echo {{ secrets.PUBLIC }} > ~/.ssh/id_rsa.pub
       - name: Copy file on server
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          password: ${{ secrets.PASS }}
-          source: ./.output/*
-          target: ~/.output 
+        run: scp -r ./.output ~
       - name: Copy docker files on server
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          password: ${{ secrets.PASS }}
-          source: "Dockerfile, compose.yaml"
-          target: ~
+        run: |
+             scp Dockerfile compose.yaml ${{ secrets.USERNAME }}@${{ secrets.HOST }}:~
       - name: RUN on server
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          password: ${{ secrets.PASS }}
-          script: |
-            echo ${{ secrets.PASS }}| sudo -S docker compose -f "compose.yaml" up -d --build
-            rm -rf ~/.output
-            rm Dockerfile
-            rm compose.yaml
+        run: |
+            ssh ${{ secrets.USERNAME }}@${{ secrets.HOST }} "echo ${{ secrets.PASS }}| sudo -S docker compose -f \"compose.yaml\" up -d --build"
+            ssh ${{ secrets.USERNAME }}@${{ secrets.HOST }} "rm -rf ~/.output"
+            ssh ${{ secrets.USERNAME }}@${{ secrets.HOST }} "rm Dockerfile"
+            ssh ${{ secrets.USERNAME }}@${{ secrets.HOST }} "rm compose.yaml"
