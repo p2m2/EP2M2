@@ -5,6 +5,8 @@
 
 <script setup lang="ts" >
 import {ref, reactive} from "vue";
+import {tFile} from "../types/file"
+
 const labSelectFile = ref<string>("Télécharger le(s) fichier(s)");
 const labSelectDir = ref<string>("Télécharger un dossier");
 const labDeleteAll = ref<string>("Tout supprimer");
@@ -35,7 +37,7 @@ const columns = [{
     key: "delete"
 }];
 
-const files = reactive<{name:string, type:string, size:number}[]>([]);
+const files = reactive<tFile[]>([]);
 
 // ---- Manage select several files
 
@@ -74,7 +76,7 @@ async function getFiles(evt:Event | null):Promise<void>{
         .then((resp) => {
             console.log(resp);      
             for(const oneFile of resp as []) {
-                files.push(oneFile as {name:string, type:string, size:number});
+                files.push(oneFile as tFile);
             }     
         })
         .catch(() => {
@@ -82,6 +84,41 @@ async function getFiles(evt:Event | null):Promise<void>{
             
         })
         .finally(() => loading.value -- )
+}
+
+function deleteAll(){
+    console.log("plou");
+    
+    files.splice(0, files.length)
+
+    console.log("next");
+    
+}
+
+async function extract() {
+    const response = await $fetch("/api/extract",{method:"post", body:{files:files, loc: window.location}});
+    console.log(response);
+    
+    if (response === "" || !response){
+        return 0
+    }
+
+    const data = new Blob ([response], { type: 'text/plain' });
+
+    // console.log(data.value);
+
+    const eleLink = document.createElement('a');
+    eleLink.download = "test.csv";
+    eleLink.style.display = 'none';
+
+    eleLink.href = URL.createObjectURL(data);
+
+    document.body.appendChild(eleLink);
+    eleLink.click();
+
+    URL.revokeObjectURL(eleLink.href); // 释放URL 对象
+    document.body.removeChild(eleLink);
+
 }
     
 defineExpose({
@@ -130,7 +167,8 @@ defineExpose({
         <UButton class="extractButton sizeBy3" :title="labSelectDir">
             {{labSelectDir}}
         </UButton>
-        <UButton class="extractButton sizeBy3" :title="labDeleteAll">
+        <UButton class="extractButton sizeBy3" :title="labDeleteAll"
+                 @click="deleteAll()">
             {{labDeleteAll}}
         </UButton>
     </UContainer>
@@ -143,13 +181,14 @@ defineExpose({
             <!-- TODO manage case unknow type -->
             <template #delete-data>
                 <UButton :title="labDeleteRow" icon="i-heroicons-x-mark" 
-                         size="xl" color="red" variant="ghost"/>
+                         size="xl" color="red" variant="ghost" />
             </template>
         </UTable>
 
     </UContainer>
     <UContainer>
-        <UButton class="extractButton float-right block sizeAlone">
+        <UButton class="extractButton float-right block sizeAlone"
+                 @click="extract()">
             {{ labExtract }}
         </UButton>
     </UContainer>

@@ -12,6 +12,21 @@ import extract from "./components/ExtractInfo.vue";
 
 </script>
 
+<template>
+  <UCard> 
+    <template #header>
+      <UContainer class="flex justify-between">
+        <banner />
+        <extras />
+      </UContainer>
+    </template>
+    
+    <extract />
+    
+    <!-- <template #footer/> -->
+  </UCard>
+</template>
+
 <style>
   :root{
     --greenP2M2: #B3D870;
@@ -55,22 +70,3 @@ import extract from "./components/ExtractInfo.vue";
   } */
 
 </style>
-
-<template>
-  
-  <UCard> 
-    <template #header>
-      
-      <UContainer class="flex justify-between">
-        <banner/>
-        <extras/>
-      </UContainer>
-  
-    </template>
-    
-    <extract/>
-    
-    <!-- <template #footer/> -->
-  </UCard>
-
-</template>

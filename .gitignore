@@ -25,3 +25,4 @@ logs
 
 # sample file
 sample/*
+.vscode/settings.json

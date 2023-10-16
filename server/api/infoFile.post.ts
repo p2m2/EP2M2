@@ -1,16 +1,18 @@
 // import fs from "fs";
 import { writeFileSync, readFileSync } from "fs";
 
-export default defineEventHandler(async(event):Promise<number|{name:string, type:string, size:number}[]| unknown[]>=> {
-    const infoFiles: {name:string, type:string, size:number}[] | unknown[] = [];
+export default defineEventHandler(async(event):Promise<{id:string, name:string, type:string, size:number}[]| unknown[]>=> {
+    const infoFiles: {id:string, name:string, type:string, size:number}[] | unknown[] = [];
     const files = await readMultipartFormData(event);
     
     if(!files){
-        return 5;
+        return [];
     }
     
+    // TODO: transform this part in asynchrone
     for(const myFile of files){
-        const filePath = `/shareFile/${myFile.filename}`;
+        const id = crypto.randomUUID();
+        const filePath = `/shareFile/${id}`;
         writeFileSync(filePath, myFile.data);
         const form = new FormData();
         form.append("file", new File([myFile.data as BlobPart], filePath));
@@ -28,6 +30,7 @@ export default defineEventHandler(async(event):Promise<number|{name:string, type
         console.log(myFile);
         console.log(myFile.data.length);
         infoFiles.push({
+            id: id,
             name: myFile.filename as string,
             type: jsonResp.format,
             size: myFile.data.length
