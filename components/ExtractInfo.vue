@@ -96,19 +96,20 @@ function deleteAll(){
 }
 
 async function extract() {
-    const response = await $fetch("/api/extract",{method:"post", body:{files:files, loc: window.location}});
+    const response = await $fetch("/api/extract",{method:"post", body:files});
     console.log(response);
     
     if (response === "" || !response){
         return 0
     }
 
-    const data = new Blob ([response], { type: 'text/plain' });
+    const data = new Blob ([response], { type: 'application/zip' });
 
     // console.log(data.value);
 
     const eleLink = document.createElement('a');
-    eleLink.download = "test.csv";
+    eleLink.download = `Extration_${new Date(Date.now()).toISOString()
+                                    .replaceAll(/\W/g, "")}.tar`;
     eleLink.style.display = 'none';
 
     eleLink.href = URL.createObjectURL(data);
@@ -116,7 +117,7 @@ async function extract() {
     document.body.appendChild(eleLink);
     eleLink.click();
 
-    URL.revokeObjectURL(eleLink.href); // 释放URL 对象
+    URL.revokeObjectURL(eleLink.href);
     document.body.removeChild(eleLink);
 
 }

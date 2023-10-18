@@ -1,7 +1,11 @@
 
-import { writeFileSync, readFileSync, createReadStream} from "fs";
+import { writeFileSync, readFileSync, createReadStream, existsSync,
+         mkdirSync} from "fs";
+import {open} from "fs/promises"
 import {tFile} from "~/types/file";
-import { sendStream } from 'h3'
+import { sendStream } from 'h3';
+import {join} from "path";
+import {execSync} from "child_process"
 
 function json2csv(jsonFile: JSON):string{
     // thx : https://stackoverflow.com/a/31536517
@@ -21,32 +25,61 @@ function json2csv(jsonFile: JSON):string{
         ...items.map((row:{[key: string]:any}) => header.map(fieldName => String(row[fieldName]?row[fieldName]:"")).join(","))
     ].join("\r\n");
 
-    console.log(csv);
     return csv;
     
 }
 
 export default defineEventHandler(async (event) => {
-    const listFiles = await readBody(event) as {files:tFile[], loc: string};
-
-    if (!listFiles){
+    const listFiles = await readBody(event) as tFile[];
+    const shareDir = process.env.EP2M2_DIR_SHARE;
+    const resultsDir = process.env.EP2M2_DIR_RESULT;
+      
+    if (!listFiles || !shareDir || !resultsDir){
         return "";
     }
     
-    for (const infoFile of listFiles.files){
-        const myFile = readFileSync(`/shareFile/${infoFile.id}`)
+    // Create directory to save result  
+    const resultFolder = join(resultsDir, crypto.randomUUID());
+   
+    if (!existsSync(resultFolder)){
+        mkdirSync(resultFolder,{recursive:true});
+       
+    }
+    
+    for (const infoFile of listFiles){
+        // Ask extraction 
         const response = await fetch("http://p2m2ToolsApi:8080/p2m2tools/api/format/parse",{
             method: "POST",
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded"
             },
-            body: myFile
+            body: readFileSync(join(shareDir, infoFile.id))
         });
 
+        // Save extraction
         const jsonContent = await response.json();
         
-        writeFileSync(`./public/${infoFile.id}.csv`, json2csv(jsonContent));
+        const resultFile = infoFile.name.substring(0,
+                                                   infoFile.name.indexOf("."));
 
-        return sendStream(event, createReadStream(`./public/${infoFile.id}.csv`));
+
+
+        writeFileSync(join(resultFolder, `${resultFile}.csv`), 
+                      json2csv(jsonContent));
     }
+
+    // create archive with all resutls
+    const resultFile = join(resultsDir, new Date(Date.now()).toISOString())
+                            .replaceAll(/[^a-zA-Z0-9_\/\\]/g, "") + ".tar";
+    console.log(resultFile);
+    
+    // TODO Add error manage
+    execSync(`find ${resultFolder} -maxdepth 1 -printf "%P\n" \
+              |tar cf ${resultFile} -C ${resultFolder} -T -`);
+   
+    console.log("next");
+    
+    const zipFile = await open(resultFile);
+    console.log("suite")
+    return sendStream(event, zipFile.createReadStream());
 });
