@@ -5,6 +5,9 @@ services:
       - "80:3000"
     volumes:
       - shareFile:/shareFile
+    env_file:
+      - ./secrets/pg.env
+
       
   api:
     image: inraep2m2/service-p2m2tools-api:latest
@@ -12,8 +15,17 @@ services:
     volumes:
       - shareFile:/shareFile
 
+  db:
+    image: postgres
+    container_name: db
+    volumes:
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    env_file:
+      - ./secrets/pg.env
+
 volumes:
   shareFile:
+
 
 
   

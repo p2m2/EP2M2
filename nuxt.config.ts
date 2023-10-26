@@ -1,5 +1,5 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
-import {} from 'nuxt'
+import {} from "nuxt";
 
 export default defineNuxtConfig({
     devtools: { enabled: true },

@@ -26,3 +26,4 @@ logs
 # sample file
 sample/*
 .vscode/settings.json
+secrets/pg.env

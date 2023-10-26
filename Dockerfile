@@ -5,4 +5,5 @@ EXPOSE 3000
 RUN mkdir /results
 ENV EP2M2_DIR_SHARE=/shareFile
 ENV EP2M2_DIR_RESULT=/results
-CMD [ "node", "./server/index.mjs" ]
+ENV PGHOST=db
+CMD ["node", "./server/index.mjs"]

@@ -62,8 +62,6 @@ export default defineEventHandler(async (event) => {
         const resultFile = infoFile.name.substring(0,
                                                    infoFile.name.indexOf("."));
 
-
-
         writeFileSync(join(resultFolder, `${resultFile}.csv`), 
                       json2csv(jsonContent));
     }
@@ -71,15 +69,12 @@ export default defineEventHandler(async (event) => {
     // create archive with all resutls
     const resultFile = join(resultsDir, new Date(Date.now()).toISOString())
                             .replaceAll(/[^a-zA-Z0-9_\/\\]/g, "") + ".tar";
-    console.log(resultFile);
-    
+   
     // TODO Add error manage
     execSync(`find ${resultFolder} -maxdepth 1 -printf "%P\n" \
               |tar cf ${resultFile} -C ${resultFolder} -T -`);
    
-    console.log("next");
-    
     const zipFile = await open(resultFile);
-    console.log("suite")
+
     return sendStream(event, zipFile.createReadStream());
 });

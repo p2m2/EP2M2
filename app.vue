@@ -9,11 +9,41 @@
 import banner from "./components/BannerMain.vue";
 import extras from "./components/ExtrasNav.vue";
 import extract from "./components/ExtractInfo.vue";
+import login from "./components/LoginForm.vue";
+import { useCookie } from "nuxt/app";
 
 </script>
 
+<script lang="ts">
+export default{
+    data(){
+        return {checkSession: false};
+    },
+    created:async function() {
+        const token = await useCookie("token");
+ 
+        console.log("hein");
+        console.log(token.value);
+      
+      
+        if (!token.value){
+            this.checkSession = false;
+            return null;
+        }
+
+
+        this.checkSession = await $fetch("/api/checkToken", {
+            method: "POST",
+            body: token.value
+        });
+      
+      
+    }
+};
+</script>
+
 <template>
-  <UCard> 
+  <UCard v-if="checkSession"> 
     <template #header>
       <UContainer class="flex justify-between">
         <banner />
@@ -24,6 +54,14 @@ import extract from "./components/ExtractInfo.vue";
     <extract />
     
     <!-- <template #footer/> -->
+  </UCard>
+  <UCard v-else>
+    <template #header>
+      <UContainer class="flex justify-between">
+        <banner />
+      </UContainer>
+      <login />
+    </template>
   </UCard>
 </template>
 
