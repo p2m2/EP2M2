@@ -20,7 +20,7 @@ export default{
         return {checkSession: false};
     },
     created:async function() {
-        const token = await useCookie("token");
+        const token = useCookie("token");
  
         console.log("hein");
         console.log(token.value);
@@ -34,9 +34,11 @@ export default{
 
         this.checkSession = await $fetch("/api/checkToken", {
             method: "POST",
-            body: token.value
+            headers:{
+                "Content-Type":"text/plain"
+            },
+            body: token.value.toString()
         });
-      
       
     }
 };

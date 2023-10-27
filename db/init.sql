@@ -53,3 +53,7 @@ CREATE TABLE users
 
   PRIMARY KEY (id)
 );
+
+
+INSERT INTO users (name, email, hash)
+VALUES ('root_ep2m2', 'admin@ep2m2.bzh', '$2b$20$lXPvW4QgYyULMiNNT5RNGumgAWp01cBOYh9lPRdv48lH4EW1Cezsy');
