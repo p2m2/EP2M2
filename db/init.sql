@@ -56,4 +56,4 @@ CREATE TABLE users
 
 
 INSERT INTO users (name, email, hash)
-VALUES ('root_ep2m2', 'admin@ep2m2.bzh', '$2b$20$lXPvW4QgYyULMiNNT5RNGumgAWp01cBOYh9lPRdv48lH4EW1Cezsy');
+VALUES ('root_ep2m2', 'admin@ep2m2.bzh', '$2b$10$M1yCnD1pGQ6LXDh0IeR94uRcFOlikhs2uFKvqdWaJ3wbmnFPERquy');
