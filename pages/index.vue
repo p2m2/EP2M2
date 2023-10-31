@@ -6,10 +6,10 @@
  -->
 
 <script setup lang="ts">
-import banner from "./components/BannerMain.vue";
-import extras from "./components/ExtrasNav.vue";
-import extract from "./components/ExtractInfo.vue";
-import login from "./components/LoginForm.vue";
+import banner from "~/components/BannerMain.vue";
+import extras from "~/components/ExtrasNav.vue";
+import extract from "~/components/ExtractInfo.vue";
+import login from "~/components/LoginForm.vue";
 import { useCookie } from "nuxt/app";
 
 </script>

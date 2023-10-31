@@ -4,7 +4,7 @@ import { ref } from "vue";
 import { string, object, email, minLength, Input } from "valibot";
 import type { FormSubmitEvent } from "@nuxt/ui/dist/runtime/types";
 // import createSession from "~/composables/createSession";
-import { reloadNuxtApp, useCookie } from "nuxt/app";
+import {useCookie } from "nuxt/app";
 
 console.log("a");
 
@@ -55,10 +55,7 @@ async function submit (event: FormSubmitEvent<Schema>) {
       });
 
     }
-    
-    reloadNuxtApp();
-    console.log("aller");
-    
+    window.location.reload();   
 }
 
 console.log("e");
