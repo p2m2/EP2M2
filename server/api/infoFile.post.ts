@@ -1,5 +1,6 @@
 // import fs from "fs";
 import { writeFileSync, readFileSync } from "fs";
+import path from "path";
 
 export default defineEventHandler(async(event):Promise<{id:string, name:string, type:string, size:number}[]| unknown[]>=> {
     const infoFiles: {id:string, name:string, type:string, size:number}[] | unknown[] = [];
@@ -26,12 +27,10 @@ export default defineEventHandler(async(event):Promise<{id:string, name:string, 
         });
         
         const jsonResp = await response.json();
-
-        console.log(myFile);
-        console.log(myFile.data.length);
+        
         infoFiles.push({
             id: id,
-            name: myFile.filename as string,
+            name: path.basename(myFile.filename as string),
             type: jsonResp.format,
             size: myFile.data.length
         });

@@ -73,8 +73,7 @@ async function getFiles(evt:Event | null):Promise<void>{
     }    
     loading.value ++;
     $fetch("api/infoFile",{method:"post", body:formData})
-        .then((resp) => {
-            console.log(resp);      
+        .then((resp) => {  
             for(const oneFile of resp as []) {
                 files.push(oneFile as tFile);
             }     
@@ -170,7 +169,10 @@ defineExpose({
                  @click="simulateClick('inFilesSelect')">
             {{labSelectFile}}
         </UButton>
-        <UButton class="extractButton sizeBy3" :title="labSelectDir">
+        <input type="file" id="inDirSelect" multiple webkitdirectory 
+               style="display: none;"/>
+        <UButton class="extractButton sizeBy3" :title="labSelectDir"
+                 @click="simulateClick('inDirSelect')">
             {{labSelectDir}}
         </UButton>
         <UButton class="extractButton sizeBy3" :title="labDeleteAll"
