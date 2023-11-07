@@ -87,12 +87,17 @@ async function getFiles(evt:Event | null):Promise<void>{
 }
 
 function deleteAll(){
-    console.log("plou");
-    
     files.splice(0, files.length)
+}
 
-    console.log("next");
-    
+function deleteRow(id:string){
+    // get index of row
+    const index = files.findIndex((file) => file.id == id);
+
+    // Delete the row 
+    if (index != undefined){
+        files.splice(index,1);
+    }
 }
 
 async function extract() {
@@ -180,14 +185,15 @@ defineExpose({
                 :loading-state="{ icon: 'i-heroicons-arrow-path-20-solid',
                                   label: labLoading }"> 
             <!-- TODO manage case unknow type -->
-            <template #delete-data>
+            <template #delete-data="{row}">
                 <UButton :title="labDeleteRow" icon="i-heroicons-x-mark" 
-                         size="xl" color="red" variant="ghost" />
+                         size="xl" color="red" variant="ghost"
+                         @click="deleteRow(row.id)" />
             </template>
         </UTable>
 
     </UContainer>
-    <UContainer>
+    <UContainer v-if="files.length">
         <UButton class="extractButton float-right block sizeAlone"
                  @click="extract()">
             {{ labExtract }}
