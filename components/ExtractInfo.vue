@@ -4,7 +4,7 @@
  -->
 
 <script setup lang="ts" >
-import {ref, reactive} from "vue";
+import {ref, reactive, computed} from "vue";
 import {tFile} from "../types/file"
 
 const labSelectFile = ref<string>("Télécharger le(s) fichier(s)");
@@ -38,6 +38,10 @@ const columns = [{
 }];
 
 const files = reactive<tFile[]>([]);
+
+const showFiles = computed(() => files.filter((x) => x.type!="unknown"));
+
+const unkeepFiles =  computed(() => files.filter((x) => x.type=="unknown"));
 
 // ---- Manage select several files
 
@@ -100,7 +104,8 @@ function deleteRow(id:string){
 }
 
 async function extract() {
-    const response = await $fetch("/api/extract",{method:"post", body:files});
+    const response = await $fetch("/api/extract",{method:"post",
+                                                  body:showFiles.value});
     console.log(response);
     
     if (response === "" || !response){
@@ -181,21 +186,28 @@ defineExpose({
         </UButton>
     </UContainer>
     <UContainer>
-        <UTable :rows="files" :columns="columns" id="filesTable"
+        <UTable :rows="showFiles" :columns="columns" id="filesTable"
                 :empty-state="{ icon: 'i-heroicons-document-text',
                                 label: labNoFiles }" :loading="loading>0"
                 :loading-state="{ icon: 'i-heroicons-arrow-path-20-solid',
                                   label: labLoading }"> 
-            <!-- TODO manage case unknow type -->
+
             <template #delete-data="{row}">
                 <UButton :title="labDeleteRow" icon="i-heroicons-x-mark" 
                          size="xl" color="red" variant="ghost"
                          @click="deleteRow(row.id)" />
             </template>
         </UTable>
-
     </UContainer>
-    <UContainer v-if="files.length">
+    <UContainer v-if="unkeepFiles.length">
+        Ces fichiers n'ont pas été pris en compte car leur type n'est pas reconnu
+        <ul>
+            <li v-for="ukF in unkeepFiles">
+                "{{ ukF.name }}"
+            </li>
+        </ul>
+    </UContainer>
+    <UContainer v-if="showFiles.length">
         <UButton class="extractButton float-right block sizeAlone"
                  @click="extract()">
             {{ labExtract }}
