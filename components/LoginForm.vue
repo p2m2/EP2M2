@@ -47,7 +47,10 @@ async function submit (event: FormSubmitEvent<Schema>) {
       const expire = new Date(today.getFullYear(), today.getMonth(),
             today.getDate()+7);
       const token = useCookie("token", {expires:expire, sameSite: true});
-      token.value = crypto.randomUUID();
+      // We need to be HTTPS to use this line 
+      // token.value = crypto.randomUUID();
+      // TODO Be in HTTPS
+      token.value = crypto.getRandomValues(new Uint32Array(4)).join("-");
       
       await $fetch("/api/AddToken", {
         method:"POST",
