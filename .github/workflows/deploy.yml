@@ -1,0 +1,50 @@
+name: deploy
+
+on:
+  push:
+    branches: 'main'
+  
+jobs:
+  deplou:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Get repo 
+        uses: actions/checkout@v3
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: latest
+          cache: 'npm'
+      - name: Installation project s packages
+        run: npm i
+      - name: build project
+        run: npm run build
+      - name: Add ssh keys
+        run: |
+            mkdir ~/.ssh
+            echo {{ secrets.PRIVATE }} > ~/.ssh/id_rsa
+            echo {{ secrets.PUBLIC }} > ~/.ssh/id_rsa.pub
+      - name: Copy file on server
+        run: scp -v -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa -r ./.output ${{ secrets.USERNAME }}@${{ secrets.HOST }}:~
+      - name: Copy docker files on server
+        run: |
+             scp -v -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa Dockerfile compose.yaml ${{ secrets.USERNAME }}@${{ secrets.HOST }}:~
+      - name: Create env file
+        run: |
+             ssh -v -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.USERNAME }}@${{ secrets.HOST }} "mkdir secrets"
+             ssh -v -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.USERNAME }}@${{ secrets.HOST }} "echo PGPASSWORD=${{ secrets.PASS }} > ./secrets/pg.env"
+             ssh -v -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.USERNAME }}@${{ secrets.HOST }} "echo PGUSER=epm2m2 >> ./secrets/pg.env"
+             ssh -v -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.USERNAME }}@${{ secrets.HOST }} "echo PGPORT=5432 >> ./secrets/pg.env"
+             ssh -v -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.USERNAME }}@${{ secrets.HOST }} "echo PGDATABASE=ep2m2db >> ./secrets/pg.env"
+             ssh -v -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.USERNAME }}@${{ secrets.HOST }} "echo POSTGRES_PASSWORD=${{ secrets.PASS }} >> ./secrets/pg.env"
+             ssh -v -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.USERNAME }}@${{ secrets.HOST }} "echo POSTGRES_USER=epm2m2 >> ./secrets/pg.env"
+      - name: RUN on server
+        run: |
+            ssh -v -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.USERNAME }}@${{ secrets.HOST }} "docker compose -f \"compose.yaml\" up -d --build"
+      - name: Delete files
+        run: |        
+            ssh -v -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.USERNAME }}@${{ secrets.HOST }} "rm -rf ~/.output"
+            ssh -v -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.USERNAME }}@${{ secrets.HOST }} "rm Dockerfile"
+            ssh -v -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.USERNAME }}@${{ secrets.HOST }} "rm compose.yaml"
+            ssh -v -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.USERNAME }}@${{ secrets.HOST }} "rm -rf ./secrets"

@@ -1,0 +1,50 @@
+name: Tests Unit
+
+on:
+  push:
+    branches: '*'
+
+permissions: 
+  contents: read
+  pull-requests: write
+  checks: write
+    
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      service-p2m2tool-api:
+        image: inraep2m2/service-p2m2tools-api
+        ports:
+          - 8080:8080
+    
+    steps:
+      - name: Get repo
+        uses: actions/checkout@v3
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: latest
+          cache: 'npm'
+      - name: Installation project s packages
+        run: npm ci
+      - name: Test & coverage
+        run: npm run coverage
+      - name: Report coverage
+        if: always()
+        uses: davelosert/vitest-coverage-report-action@v2
+        with:
+          file-coverage-mode: all
+      - name: Summary Tests
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always()
+        with:
+          files: |
+            test/**/*.xml
+      - name: Complet report tests
+        uses: dorny/test-reporter@v1
+        if: always()
+        with:
+          reporter: "java-junit"
+          name: Test Unit
+          path: test/**/*.xml
