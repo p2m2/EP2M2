@@ -112,13 +112,13 @@ async function extract() {
         return 0
     }
 
-    const data = new Blob ([response], { type: 'application/zip' });
+    const data = new Blob ([response], { type: 'text/csv' });
 
     // console.log(data.value);
 
     const eleLink = document.createElement('a');
     eleLink.download = `Extration_${new Date(Date.now()).toISOString()
-                                    .replaceAll(/\W/g, "")}.tar`;
+                                    .replaceAll(/\W/g, "")}.csv`;
     eleLink.style.display = 'none';
 
     eleLink.href = URL.createObjectURL(data);
