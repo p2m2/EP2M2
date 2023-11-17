@@ -45,24 +45,50 @@ export default{
 </script>
 
 <template>
-  <UCard v-if="checkSession"> 
-    <template #header>
+  <UCard> 
+    <template
+      v-if="checkSession" 
+      #header
+    >
       <UContainer class="flex justify-between">
         <banner />
         <extras />
       </UContainer>
     </template>
-    
-    <extract />
-    
-    <!-- <template #footer/> -->
-  </UCard>
-  <UCard v-else>
-    <template #header>
+
+    <template
+      v-else
+      #header
+    >
       <UContainer class="flex justify-between">
         <banner />
       </UContainer>
       <login />
+    </template>
+    
+    <extract v-if="checkSession" />
+
+    <UButton
+      v-else
+      to="https://github.com/p2m2/EP2M2/issues/new"
+      target="_blank"
+      icon="i-heroicons-bug-ant-solid"
+      color="purple"
+    >
+      Un problème dit le
+    </UButton>
+    <template 
+      v-if="checkSession"
+      #footer
+    >
+      <UButton
+        to="https://github.com/p2m2/EP2M2/issues/new"
+        target="_blank"
+        icon="i-heroicons-bug-ant-solid"
+        color="purple"
+      >
+        Un problème dit le
+      </UButton>
     </template>
   </UCard>
 </template>
