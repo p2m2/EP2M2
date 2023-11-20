@@ -3,8 +3,11 @@
  -->
 
 <script setup lang="ts">
-import {ref, reactive} from "vue";
-
+import { I } from "vitest/dist/types-198fd1d9";
+import {ref, reactive, computed} from "vue";
+import { useI18n, useSwitchLocalePath } from '#imports'
+const { t, locale, locales } = useI18n()
+const switchLocalePath = useSwitchLocalePath()
 // Variable to access and modify to translate
 const altHome = ref<string>("Accueil");
 const altHelp = ref<string>("Aide");
@@ -35,6 +38,16 @@ const items = <object[]>[
     }]
 ];
 
+const avaiblesLang = computed(() => {
+    return locales.value.filter((i) => i.code !== locale.value).
+        map((i18n)=> [{
+            label:i18n.name,
+            to: switchLocalePath(i18n.code)
+        }])
+})    
+    
+console.log(avaiblesLang.value);
+
 </script>
 
 <style>
@@ -51,6 +64,11 @@ const items = <object[]>[
 
 <template>
     <UContainer class="float-right block">
+        <UDropdown :items="avaiblesLang" mode="hover" 
+                   :popper="{ placement: 'bottom-start' }">
+            <UButton icon="i-heroicons-language" color="white" size="xl"
+                     :title="t('button.lang.alt')"/>
+        </UDropdown>
         <UButton icon="i-heroicons-home-modern" color="white" size="xl"
                  :title="altHome"/>
         <UButton icon="i-heroicons-light-bulb" color="white" size="xl"
