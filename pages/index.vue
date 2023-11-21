@@ -10,6 +10,7 @@ import banner from "~/components/BannerMain.vue";
 import extras from "~/components/ExtrasNav.vue";
 import extract from "~/components/ExtractInfo.vue";
 import login from "~/components/LoginForm.vue";
+import bug from "~/components/BugButton.vue";
 import { useCookie } from "nuxt/app";
 
 </script>
@@ -68,27 +69,12 @@ export default{
     
     <extract v-if="checkSession" />
 
-    <UButton
-      v-else
-      to="https://github.com/p2m2/EP2M2/issues/new"
-      target="_blank"
-      icon="i-heroicons-bug-ant-solid"
-      color="purple"
-    >
-      Un problème dit le
-    </UButton>
+    <bug v-else />
     <template 
       v-if="checkSession"
       #footer
     >
-      <UButton
-        to="https://github.com/p2m2/EP2M2/issues/new"
-        target="_blank"
-        icon="i-heroicons-bug-ant-solid"
-        color="purple"
-      >
-        Un problème dit le
-      </UButton>
+      <bug />
     </template>
   </UCard>
 </template>

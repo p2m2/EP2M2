@@ -1,13 +1,12 @@
 <script setup lang="ts">
-
+import lang from "~/components/LangButton.vue";
 import { ref } from "vue";
-import { string, object, email, minLength, Input } from "valibot";
+import { string, object, email, minLength, type Input } from "valibot";
 import type { FormSubmitEvent } from "@nuxt/ui/dist/runtime/types";
 // import createSession from "~/composables/createSession";
 import {useCookie } from "nuxt/app";
-
-console.log("a");
-
+import { useI18n } from "#imports";
+const { t } = useI18n();
 
 const schema = object({
     email: string([email("Invalid email")]),
@@ -67,22 +66,28 @@ console.log("e");
 </script>
 
 <template>
+  <!-- [&>div]:justify-end Add to child div justify-end class -->
+  <UContainer 
+    class="flex justify-end w-1/2" 
+  >
+    <lang />
+  </UContainer>
   <UContainer class="flex justify-around items-center">
     <UForm 
-      class="form"
+      class="form leading-loose"
       :schema="schema"
       :state="state"
       @submit="submit"
     >
       <UFormGroup 
-        label="Email"
+        :label="t('label.email')"
         name="email" 
       >
         <UInput v-model="state.email" />
       </UFormGroup>
 
       <UFormGroup
-        label="Password"
+        :label="t('label.password')"
         name="password"
       >
         <UInput
@@ -92,7 +97,7 @@ console.log("e");
       </UFormGroup>
 
       <UButton type="submit">
-        Submit
+        {{ $t('button.submit') }}
       </UButton>
     </UForm>
   </UContainer>
