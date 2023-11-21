@@ -21,17 +21,12 @@ export default{
         return {checkSession: false};
     },
     created:async function() {
-        const token = useCookie("token");
+        const token = useCookie("token",{sameSite:"strict"});
  
-        console.log("hein");
-        console.log(token.value);
-      
-      
         if (!token.value){
             this.checkSession = false;
             return null;
         }
-
 
         this.checkSession = await $fetch("/api/checkToken", {
             method: "POST",

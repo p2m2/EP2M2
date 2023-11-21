@@ -13,20 +13,12 @@ const schema = object({
     password: string([minLength(8, "Must be at least 8 characters")])
 });
 
-console.log("b");
-
-
 type Schema = Input<typeof schema>
-
-console.log("c");
 
 const state = ref({
     email: undefined,
     password: undefined
 });
-
-console.log("d");
-
 
 async function submit (event: FormSubmitEvent<Schema>) {
     // Do something with event.data
@@ -38,8 +30,6 @@ async function submit (event: FormSubmitEvent<Schema>) {
         method:"POST",
         body:{email:event.data.email, password:event.data.password}
     });
-
-    console.log(result);
 
     if(result>0){
       const today = new Date(Date.now());
@@ -59,9 +49,6 @@ async function submit (event: FormSubmitEvent<Schema>) {
     }
     window.location.reload();   
 }
-
-console.log("e");
-
 
 </script>
 

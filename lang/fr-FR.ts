@@ -14,7 +14,7 @@ export default {
         password: "Mot de passe"
     },
     message:{
-        addIssue: "Un problème dit le"
+        addIssue: "Un problème dit le",
     }
 
 };
