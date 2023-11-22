@@ -6,6 +6,8 @@
 <script setup lang="ts" >
 import {ref, reactive, computed} from "vue";
 import {tFile} from "../types/file"
+import { useI18n } from "#imports";
+const { t } = useI18n();
 
 const labSelectFile = ref<string>("Télécharger le(s) fichier(s)");
 const labSelectDir = ref<string>("Télécharger un dossier");
@@ -89,9 +91,6 @@ async function getFiles(evt:Event | null):Promise<void>{
         .finally(() => loading.value -- )
 }
 
-function deleteAll(){
-    files.splice(0, files.length)
-}
 
 function deleteRow(id:string){
     // get index of row
@@ -169,37 +168,46 @@ defineExpose({
 
 <template>
     <UContainer class="flex justify-around items-center">
-        <input type="file" id="inFilesSelect" multiple style="display: none;"/>
+        <!-- <input type="file" id="inFilesSelect" multiple style="display: none;"/>
         <UButton class="extractButton sizeBy3" :title="labSelectFile"
                  @click="simulateClick('inFilesSelect')">
             {{labSelectFile}}
-        </UButton>
+        </UButton> -->
+        <UTooltip 
+          :text="t('label.addProject')"
+          :popper="{ placement: 'right' }"
+        >
         <input type="file" id="inDirSelect" multiple webkitdirectory 
                style="display: none;"/>
-        <UButton class="extractButton sizeBy3" :title="labSelectDir"
-                 @click="simulateClick('inDirSelect')">
-            {{labSelectDir}}
-        </UButton>
-        <UButton class="extractButton sizeBy3" :title="labDeleteAll"
-                 @click="deleteAll()">
-            {{labDeleteAll}}
-        </UButton>
+        <UButton 
+           class="extractButton sizeBy3"
+           @click="simulateClick('inDirSelect')"
+           icon="i-heroicons-folder-plus"
+        />
+
+        </UTooltip>
     </UContainer>
     <UContainer>
-        <UTable :rows="showFiles" :columns="columns" id="filesTable"
-                :empty-state="{ icon: 'i-heroicons-document-text',
-                                label: labNoFiles }" :loading="loading>0"
-                :loading-state="{ icon: 'i-heroicons-arrow-path-20-solid',
-                                  label: labLoading }"> 
+        <UTable 
+           :rows="showFiles"
+           :columns="columns" id="filesTable"
+           :empty-state="{ icon: 'i-heroicons-folder',
+                           label: t('label.noProject') }" 
+           :loading="loading>0"
+           :loading-state="{ icon: 'i-heroicons-arrow-path-20-solid',
+                             label: labLoading }"> 
 
             <template #delete-data="{row}">
-                <UButton :title="labDeleteRow" icon="i-heroicons-x-mark" 
-                         size="xl" color="red" variant="ghost"
-                         @click="deleteRow(row.id)" />
+                <UButton 
+                    :title="labDeleteRow"
+                    icon="i-heroicons-x-mark"
+                    size="xl"
+                    color="red" variant="ghost"
+                    @click="deleteRow(row.id)" />
             </template>
         </UTable>
     </UContainer>
-    <UContainer v-if="unkeepFiles.length">
+    <!-- <UContainer v-if="unkeepFiles.length">
         Ces fichiers n'ont pas été pris en compte car leur type n'est pas reconnu
         <ul>
             <li v-for="ukF in unkeepFiles">
@@ -212,5 +220,5 @@ defineExpose({
                  @click="extract()">
             {{ labExtract }}
         </UButton>
-    </UContainer>
+    </UContainer> -->
 </template>

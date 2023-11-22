@@ -11,9 +11,17 @@ export default {
         profile: "Profile",
         logout: "Logout",
         email: "Email",
-        password: "Password"
+        password: "Password",
+        addProject: "Add new project",
+        noProject: "No projet"
     },
     message:{
         addIssue: "There is a bug"
+    },
+    image:{
+        banner:{
+            src:"/logoP2M2_en.png",
+            alt:"P2M2 icon"
+        }
     }
 };

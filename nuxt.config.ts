@@ -27,5 +27,11 @@ export default defineNuxtConfig({
         lazy: true,
         langDir: "lang"
     },
-    pages:true
+    pages:true,
+    // thx: https://stackoverflow.com/a/77140279
+    app: {
+        head: {
+            link: [{ rel: "icon", type: "image/ico", href: "/p2m2.ico" }]
+        }
+    }
 });

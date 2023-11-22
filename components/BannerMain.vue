@@ -1,17 +1,16 @@
  <!-- This module provide banner of site -->
 <script setup lang="ts">
-import {ref} from "vue";
-
-const altBanner = ref<string>("icône EPM2M2");
-    
+import { useI18n } from "#imports";
+const { t } = useI18n();
+  
 
 </script>
 
 <template>
   <UContainer class="float-left block">
     <img
-      src="/banner.png"
-      :alt="altBanner"
+      :src="t('image.banner.src')"
+      :alt="t('image.banner.alt')"
     >
   </UContainer>
 </template>
