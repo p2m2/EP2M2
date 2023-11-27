@@ -307,7 +307,13 @@ function openProject(id: string) {
                 </template>
             </UTabs>
             <template #footer v-if="currentProject.name != ''">
-                coucou
+                <UButton v-if="currentProject.id != ''" 
+                    :title="t('button.update')"
+                    icon="i-heroicons-arrow-path"
+                    :label="t('button.update')"/>
+                <UButton v-else :title="t('button.create')"
+                    icon="i-heroicons-check-badge"
+                    :label="t('button.create')"/>
             </template>
         </UCard>
     </UModal>

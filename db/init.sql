@@ -59,14 +59,28 @@ CREATE TABLE users
 
 CREATE TABLE project
 (
-  id SERIAL,
-  name VARCHAR(80),
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(80) UNIQUE,
   date_create TIMESTAMPTZ NOT NULL,
-  team team,
-
-  PRIMARY KEY (id)
+  team team
 );
 
+CREATE EXTENSION lo;
+
+CREATE TABLE file
+(
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(255),
+  date_create TIMESTAMPTZ NOT NULL,
+  kind VARCHAR(15),
+  -- size INTERGER,
+  content lo NOT NULL,
+  export JSONB,
+  id_project SERIAL REFERENCES project (id)
+);
+
+CREATE TRIGGER t_content BEFORE UPDATE OR DELETE ON file
+    FOR EACH ROW EXECUTE FUNCTION lo_manage(content);
 
 INSERT INTO users (name, email, hash, team)
-VALUES ('root_ep2m2', 'admin@ep2m2.bzh', '$2b$10$M1yCnD1pGQ6LXDh0IeR94uRcFOlikhs2uFKvqdWaJ3wbmnFPERquy', 'other'),
+VALUES ('root_ep2m2', 'admin@ep2m2.bzh', '$2b$10$M1yCnD1pGQ6LXDh0IeR94uRcFOlikhs2uFKvqdWaJ3wbmnFPERquy', 'other');

@@ -1,5 +1,6 @@
 export default {
     button: {
+        create: "Créer",
         deleteProject: "Supprimer",
         exportProject: "Export",
         help: "Aide",
@@ -7,6 +8,7 @@ export default {
         lang: "Changer de langue",
         submit: "Valider",
         topProfOut: "Accéder au sous-menu profile et déconnection",
+        update: "Mise à jour",
         viewProject: "Détails",
     },
     image: {

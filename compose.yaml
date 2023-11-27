@@ -16,7 +16,7 @@ services:
       - shareFile:/shareFile
 
   db:
-    image: postgres
+    image: postgres:latest
     container_name: db
     volumes:
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
