@@ -41,6 +41,8 @@ CREATE TABLE sessions
   PRIMARY KEY (id)
 );
 
+CREATE TYPE team AS ENUM ('IFPC', 'P2M2', 'other');
+
 CREATE TABLE users
 (
   id SERIAL,
@@ -50,10 +52,21 @@ CREATE TABLE users
   "emailVerified" TIMESTAMPTZ,
   hash VARCHAR(255),
   image TEXT,
+  team team,
+
+  PRIMARY KEY (id)
+);
+
+CREATE TABLE project
+(
+  id SERIAL,
+  name VARCHAR(80),
+  date_create TIMESTAMPTZ NOT NULL,
+  team team,
 
   PRIMARY KEY (id)
 );
 
 
-INSERT INTO users (name, email, hash)
-VALUES ('root_ep2m2', 'admin@ep2m2.bzh', '$2b$10$M1yCnD1pGQ6LXDh0IeR94uRcFOlikhs2uFKvqdWaJ3wbmnFPERquy');
+INSERT INTO users (name, email, hash, team)
+VALUES ('root_ep2m2', 'admin@ep2m2.bzh', '$2b$10$M1yCnD1pGQ6LXDh0IeR94uRcFOlikhs2uFKvqdWaJ3wbmnFPERquy', 'other'),

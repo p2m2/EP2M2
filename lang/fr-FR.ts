@@ -1,29 +1,42 @@
 export default {
-    welcome: "Bonjour",
-    button:{
-        lang: "Changer de langue",
-        home: "Accueil",
+    button: {
+        deleteProject: "Supprimer",
+        exportProject: "Export",
         help: "Aide",
+        home: "Accueil",
+        lang: "Changer de langue",
+        submit: "Valider",
         topProfOut: "Accéder au sous-menu profile et déconnection",
-        submit: "Valider"
+        viewProject: "Détails",
     },
-    label:{
-        profile: "Profile",
-        logout: "Déconnexion",
-        email: "E-mail",
-        password: "Mot de passe",
+    image: {
+        banner: {
+            alt: "icône P2M2",
+            src: "/logoP2M2_fr.png",
+        }
+    },
+    label: {
         addProject: "Ajouter un projet",
-        noProject: "Aucun projet"
+        createDate: "Date de création",
+        email: "E-mail",
+        files: "Fichiers",
+        logout: "Déconnexion",
+        nbFile: "Nb de fichiers",
+        noFile: "Pas de fichier",
+        noProject: "Aucun projet",
+        password: "Mot de passe",
+        profile: "Profile",
+        project: "Projet",
+        tabFileName: "Nom",
+        tabSize: "Taille (kO)",
+        tabType: "Type",
+        templateOperation: "Template d'opération",
     },
-    message:{
+    message: {
         addIssue: "Un problème dit le",
     },
-    image:{
-        banner:{
-            src:"/logoP2M2_fr.png",
-            alt:"icône P2M2"
-        }
+    title: {
+        projectName: "Nom du projet"
     }
 
 };
-  

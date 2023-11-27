@@ -4,57 +4,102 @@
  -->
 
 <script setup lang="ts" >
-import {ref, reactive, computed} from "vue";
-import {tFile} from "../types/file"
+import { ref, reactive, computed } from "vue";
+import type { tFile, tProject } from "../types/file";
 import { useI18n } from "#imports";
 const { t } = useI18n();
 
 const labSelectFile = ref<string>("Télécharger le(s) fichier(s)");
-const labSelectDir = ref<string>("Télécharger un dossier");
-const labDeleteAll = ref<string>("Tout supprimer");
 
-const labTableName = ref<string>("Nom");
-const labTableType = ref<string>("Type");
-const labTableSize = ref<string>("Taille");
+
 const labDeleteRow = ref<string>("supprimer");
-const labExtract = ref<string>("Extraire");
-const labNoFiles = ref<string>("Pas de fichier");
+
 const labLoading = ref<string>("Chargement ...");
 
+const isOpen = ref<boolean>(false);
 const loading = ref<number>(0);
 
-const columns = [{
+const tabFilesStruct = [{
     key: "name",
-    label: labTableName.value,
+    label: t("label.tabFileName"),
     sortable: true
 }, {
     key: "type",
-    label: labTableType.value,
+    label: t("label.tabType"),
     sortable: true
 }, {
     key: "size",
-    label: labTableSize.value,
+    label: t("label.tabSize"),
     sortable: true
 }, {
     key: "delete"
 }];
 
+const tabProjectStruct = [
+    {
+        key: "name",
+        label: t("label.project"),
+        sortable: true
+    },
+    {
+        key: "createDate",
+        label: t("label.createDate"),
+        sortable: true
+    },
+    {
+        key: "nbFile",
+        label: t("label.nbFile"),
+        sortable: true
+    },
+    {
+        key: "action"
+    }
+]
 const files = reactive<tFile[]>([]);
+const currentProject = reactive<tProject>({
+    id: "",
+    name: "",
+    createDate: "",
+    nbFile: NaN,
+    Files: null
+});
 
-const showFiles = computed(() => files.filter((x) => x.type!="unknown"));
+const showProject = reactive<tProject[]>([
+    {
+        id: "000",
+        name: "One",
+        createDate: "15/02/2022",
+        nbFile: 1,
+        Files: [{
+            id: "000",
+            name: "coucou",
+            type: "maison",
+            size: 148
+        }]
+    }
+])
+const containProject = [{
+    label: "label.files",
+    icon: "i-heroicons-document-duplicate"
+}, {
+    label: "label.templateOperation",
+    icon: "i-heroicons-variable"
+}
+]
+const showFiles = computed(() => files.filter((x) => x.type != "unknown"));
 
-const unkeepFiles =  computed(() => files.filter((x) => x.type=="unknown"));
+const unkeepFiles = computed(() => files.filter((x) => x.type == "unknown"));
 
 // ---- Manage select several files
 
 // Simulate click on input with button
-function simulateClick(id:string):void{
+function simulateClick(id: string): void {
     const inputElementFiles = <HTMLInputElement>document.getElementById(id);
-        
+
     // Listen event when user choose files
     inputElementFiles.addEventListener("change",
         evt => getFiles(evt));
-                                
+
     // Click on input
     inputElementFiles.click();
 }
@@ -63,8 +108,8 @@ function simulateClick(id:string):void{
      * Get all files from input and show them in table
      * @param evt the event
      */
-async function getFiles(evt:Event | null):Promise<void>{
-    if (!(evt)){
+async function getFiles(evt: Event | null): Promise<void> {
+    if (!(evt)) {
         return;
     }
     // To don't have two event change
@@ -73,51 +118,53 @@ async function getFiles(evt:Event | null):Promise<void>{
     const formData = new FormData();
 
     // Add list file in table
-    const fileList = (evt?.currentTarget as  HTMLInputElement).files;
-    if (fileList) for (const myFile of fileList){
+    const fileList = (evt?.currentTarget as HTMLInputElement).files;
+    if (fileList) for (const myFile of fileList) {
         formData.append('file', myFile);
-    }    
-    loading.value ++;
-    $fetch("api/infoFile",{method:"post", body:formData})
-        .then((resp) => {  
-            for(const oneFile of resp as []) {
+    }
+    loading.value++;
+    $fetch("api/infoFile", { method: "post", body: formData })
+        .then((resp) => {
+            for (const oneFile of resp as []) {
                 files.push(oneFile as tFile);
-            }     
+            }
         })
         .catch(() => {
             console.log("fail");
-            
+
         })
-        .finally(() => loading.value -- )
+        .finally(() => loading.value--)
 }
 
 
-function deleteRow(id:string){
+function deleteRow(id: string) {
     // get index of row
     const index = files.findIndex((file) => file.id == id);
 
     // Delete the row 
-    if (index != undefined){
-        files.splice(index,1);
+    if (index != undefined) {
+        files.splice(index, 1);
     }
 }
 
 async function extract() {
-    const response = await $fetch("/api/extract",{method:"post",
-                                                  body:showFiles.value});
+    const response = await $fetch("/api/extract", {
+        method: "post",
+        body: showFiles.value
+    });
     console.log(response);
-    
-    if (response === "" || !response){
+
+    if (response === "" || !response) {
         return 0
     }
 
-    const data = new Blob ([response], { type: 'text/csv' });
+    const data = new Blob([response], { type: 'text/csv' });
 
     // console.log(data.value);
 
     const eleLink = document.createElement('a');
     eleLink.download = `Extration_${new Date(Date.now()).toISOString()
-                                    .replaceAll(/\W/g, "")}.csv`;
+        .replaceAll(/\W/g, "")}.csv`;
     eleLink.style.display = 'none';
 
     eleLink.href = URL.createObjectURL(data);
@@ -129,96 +176,139 @@ async function extract() {
     document.body.removeChild(eleLink);
 
 }
-    
+
 defineExpose({
     labSelectFile,
 });
-    
+
+function openProject(id: string) {
+
+    if (id === "") {
+        currentProject.id = "";
+        currentProject.name = "";
+        currentProject.createDate = "";
+        currentProject.nbFile = NaN;
+        currentProject.Files = null;
+    }
+    else {
+        const tempProject = showProject.filter(p => p.id == id)
+
+        currentProject.id = id;
+        currentProject.name = tempProject[0].name;
+        currentProject.createDate = tempProject[0].createDate;
+        currentProject.nbFile = tempProject[0].nbFile;
+        currentProject.Files = tempProject[0].Files;
+    }
+
+    isOpen.value = true;
+}
+
 </script>
     
 <style>
-    .extractButton {
-        background-color: var(--greenP2M2);
-        margin: 2px;
-        padding: 1rem 2rem 1rem 2rem;
-        border: 2px solid var(--blueP2M2);
-        color: var(--blueP2M2);
-        font-weight: bold;
-        transition: all 0.5s ease-out;
-        cursor: pointer;
-        text-align: center;
-        justify-content: center;
-    }
+.extractButton {
+    background-color: var(--greenP2M2);
+    margin: 2px;
+    padding: 1rem 2rem 1rem 2rem;
+    border: 2px solid var(--blueP2M2);
+    color: var(--blueP2M2);
+    font-weight: bold;
+    transition: all 0.5s ease-out;
+    cursor: pointer;
+    text-align: center;
+    justify-content: center;
+}
 
-    .sizeBy3{
-        width: 33%;
-    }
+.sizeBy3 {
+    width: 33%;
+}
 
-    .sizeAlone{
-        width: 10%;       
-    }
+.sizeAlone {
+    width: 10%;
+}
 
-    .extractButton:hover,
-    .extractButton:focus {
-        background-color: var(--blueP2M2);
-        color: var(--greenP2M2);
-        border: 2px solid var(--greenP2M2);
-    }
+.extractButton:hover,
+.extractButton:focus {
+    background-color: var(--blueP2M2);
+    color: var(--greenP2M2);
+    border: 2px solid var(--greenP2M2);
+}
 </style>
 
 <template>
-    <UContainer class="flex justify-around items-center">
+    <UContainer class="flex justify-start items-left">
         <!-- <input type="file" id="inFilesSelect" multiple style="display: none;"/>
         <UButton class="extractButton sizeBy3" :title="labSelectFile"
                  @click="simulateClick('inFilesSelect')">
             {{labSelectFile}}
         </UButton> -->
-        <UTooltip 
-          :text="t('label.addProject')"
-          :popper="{ placement: 'right' }"
-        >
-        <input type="file" id="inDirSelect" multiple webkitdirectory 
-               style="display: none;"/>
-        <UButton 
-           class="extractButton sizeBy3"
-           @click="simulateClick('inDirSelect')"
-           icon="i-heroicons-folder-plus"
-        />
+        <UTooltip :text="t('label.addProject')" :popper="{ placement: 'right' }">
+            <UButton class="extractButton w-1/3" @click="openProject('')" icon="i-heroicons-folder-plus" />
 
         </UTooltip>
     </UContainer>
     <UContainer>
-        <UTable 
-           :rows="showFiles"
-           :columns="columns" id="filesTable"
-           :empty-state="{ icon: 'i-heroicons-folder',
-                           label: t('label.noProject') }" 
-           :loading="loading>0"
-           :loading-state="{ icon: 'i-heroicons-arrow-path-20-solid',
-                             label: labLoading }"> 
+        <UTable :rows="showProject" :columns="tabProjectStruct" id="filesTable" :empty-state="{
+            icon: 'i-heroicons-folder',
+            label: t('label.noProject')
+        }" :loading="loading > 0" :loading-state="{
+    icon: 'i-heroicons-arrow-path-20-solid',
+    label: labLoading
+}">
 
-            <template #delete-data="{row}">
-                <UButton 
-                    :title="labDeleteRow"
-                    icon="i-heroicons-x-mark"
-                    size="xl"
-                    color="red" variant="ghost"
+            <template #action-data="{ row }">
+                <UButton :title="t('button.exportProject')" icon="i-heroicons-arrow-down-on-square" size="xl" color="green"
+                    variant="ghost" @click="deleteRow(row.id)" />
+                <UButton :title="t('button.viewProject')" icon="i-heroicons-pencil" size="xl" color="blue" variant="ghost"
+                    @click="openProject(row.id)" />
+                <UButton :title="t('button.deleteProject')" icon="i-heroicons-x-mark" size="xl" color="red" variant="ghost"
                     @click="deleteRow(row.id)" />
             </template>
         </UTable>
     </UContainer>
-    <!-- <UContainer v-if="unkeepFiles.length">
-        Ces fichiers n'ont pas été pris en compte car leur type n'est pas reconnu
-        <ul>
-            <li v-for="ukF in unkeepFiles">
-                "{{ ukF.name }}"
-            </li>
-        </ul>
-    </UContainer>
-    <UContainer v-if="showFiles.length">
-        <UButton class="extractButton float-right block sizeAlone"
-                 @click="extract()">
-            {{ labExtract }}
-        </UButton>
-    </UContainer> -->
+
+    <UModal v-model="isOpen" prevent-close>
+        <UCard>
+            <template #header>
+                <div class="flex items-center justify-between">
+                    <h3 class="text-base font-semibold leading-6 text-gray-900 dark:text-white">
+                        {{ t("title.projectName") }}
+                    </h3>
+                    <UButton color="gray" variant="ghost" icon="i-heroicons-x-mark-20-solid" class="-my-1"
+                        @click="isOpen = false" />
+                </div>
+                <UInput v-model="currentProject.name" />
+            </template>
+            <UTabs :items="containProject">
+                <template #default="{ item }">
+                    <span class="truncate">
+                        {{ t(item.label) }}
+                    </span>
+
+                </template>
+                <template #item="{ item }">
+                    <UTable v-if="item.label === 'label.files'" :rows="showFiles" :columns="tabFilesStruct" id="filesTable"
+                        :empty-state="{
+                            icon: 'i-heroicons-document',
+                            label: t('label.noFile')
+                        }" :loading="loading > 0" :loading-state="{
+    icon: 'i-heroicons-arrow-path-20-solid',
+    label: labLoading
+}">
+
+                        <template #delete-data="{ row }">
+                            <UButton :title="labDeleteRow" icon="i-heroicons-x-mark" size="xl" color="red" variant="ghost"
+                                @click="deleteRow(row.id)" />
+                        </template>
+                    </UTable>
+                    <div v-else>
+                        <p>couxcou</p>
+                    </div>
+                </template>
+            </UTabs>
+            <template #footer v-if="currentProject.name != ''">
+                coucou
+            </template>
+        </UCard>
+    </UModal>
 </template>
