@@ -49,35 +49,53 @@ const tabProjectStruct = [
     {
         key: "nbFile",
         label: t("label.nbFile"),
-        sortable: true
+        sortable: false
     },
     {
         key: "action"
     }
-]
+];
+
+const sortProject = ref({
+    column: "",
+    direction: ""
+})
+
 const files = reactive<tFile[]>([]);
 const currentProject = reactive<tProject>({
     id: "",
     name: "",
     createDate: "",
     nbFile: NaN,
-    Files: null
+    files: null
 });
 
-const showProject = reactive<tProject[]>([
-    {
-        id: "000",
-        name: "One",
-        createDate: "15/02/2022",
-        nbFile: 1,
-        Files: [{
-            id: "000",
-            name: "coucou",
-            type: "maison",
-            size: 148
-        }]
-    }
-])
+function getProjects(team:string="",
+                     orderby:string="",
+                     sort:string="",
+                     page:number=1){
+    let result:tProject[]|undefined= undefined;
+    $fetch("api/getProjects",{
+        method:"POST",
+        body:{
+            team:team,
+            orderby:orderby,
+            sort:sort,
+            page:page
+        }
+    })
+    .then((res) =>result = res as tProject[])
+    .catch();
+
+    return result;
+}
+
+const showProject = computed(() =>
+    getProjects("other",
+                sortProject.value.column,
+                sortProject.value.direction,
+                1)
+);
 const containProject = [{
     label: "label.files",
     icon: "i-heroicons-document-duplicate"
@@ -188,7 +206,7 @@ function openProject(id: string) {
         currentProject.name = "";
         currentProject.createDate = "";
         currentProject.nbFile = NaN;
-        currentProject.Files = null;
+        currentProject.files = null;
     }
     else {
         const tempProject = showProject.filter(p => p.id == id)
@@ -197,7 +215,7 @@ function openProject(id: string) {
         currentProject.name = tempProject[0].name;
         currentProject.createDate = tempProject[0].createDate;
         currentProject.nbFile = tempProject[0].nbFile;
-        currentProject.Files = tempProject[0].Files;
+        currentProject.files = tempProject[0].files;
     }
 
     isOpen.value = true;
@@ -248,13 +266,21 @@ function openProject(id: string) {
         </UTooltip>
     </UContainer>
     <UContainer>
-        <UTable :rows="showProject" :columns="tabProjectStruct" id="filesTable" :empty-state="{
+        <UTable 
+        v-model:sort="sortProject"
+        :rows="showProject" 
+        :columns="tabProjectStruct" 
+        id="filesTable" 
+        :empty-state="{
             icon: 'i-heroicons-folder',
             label: t('label.noProject')
-        }" :loading="loading > 0" :loading-state="{
-    icon: 'i-heroicons-arrow-path-20-solid',
-    label: labLoading
-}">
+        }" 
+        :loading="loading > 0" 
+        :loading-state="{
+            icon: 'i-heroicons-arrow-path-20-solid',
+            label: labLoading
+            }"
+        >
 
             <template #action-data="{ row }">
                 <UButton :title="t('button.exportProject')" icon="i-heroicons-arrow-down-on-square" size="xl" color="green"
