@@ -72,8 +72,8 @@ CREATE TABLE file
   id SERIAL PRIMARY KEY,
   name VARCHAR(255),
   date_create TIMESTAMPTZ NOT NULL,
-  kind VARCHAR(15),
-  -- size INTERGER,
+  f_type VARCHAR(15),
+  f_size INT,
   content lo NOT NULL,
   export JSONB,
   id_project SERIAL REFERENCES project (id)

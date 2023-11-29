@@ -70,32 +70,30 @@ const currentProject = reactive<tProject>({
     files: null
 });
 
-function getProjects(team:string="",
-                     orderby:string="",
-                     sort:string="",
-                     page:number=1){
-    let result:tProject[]|undefined= undefined;
-    $fetch("api/getProjects",{
-        method:"POST",
-        body:{
-            team:team,
-            orderby:orderby,
-            sort:sort,
-            page:page
-        }
-    })
-    .then((res) =>result = res as tProject[])
-    .catch();
+async function getProjects(team: string = "",
+    orderby: string = "",
+    sort: string = "",
+    page: number = 1):Promise<{projects:tProject[], count:number}> {
 
-    return result;
+    return await $fetch("api/getProjects", {
+        method: "POST",
+        body: {
+            team: team,
+            orderby: orderby,
+            sort: sort,
+            page: page
+        }
+    });
 }
 
-const showProject = computed(() =>
-    getProjects("other",
-                sortProject.value.column,
-                sortProject.value.direction,
-                1)
-);
+const projects = reactive<{projects:tProject[], count: number}>(
+    await getProjects("other",
+    sortProject.value.column,
+    sortProject.value.direction,
+    1));
+
+const showProject = computed(() => projects.projects);
+
 const containProject = [{
     label: "label.files",
     icon: "i-heroicons-document-duplicate"
@@ -209,7 +207,7 @@ function openProject(id: string) {
         currentProject.files = null;
     }
     else {
-        const tempProject = showProject.filter(p => p.id == id)
+        const tempProject = showProject.value.filter(p => p.id == id)
 
         currentProject.id = id;
         currentProject.name = tempProject[0].name;
@@ -219,6 +217,10 @@ function openProject(id: string) {
     }
 
     isOpen.value = true;
+}
+
+function localDate (rowDate:string):string{
+    return (new Date(rowDate)).toLocaleString();
 }
 
 </script>
@@ -267,21 +269,22 @@ function openProject(id: string) {
     </UContainer>
     <UContainer>
         <UTable 
-        v-model:sort="sortProject"
-        :rows="showProject" 
-        :columns="tabProjectStruct" 
-        id="filesTable" 
-        :empty-state="{
-            icon: 'i-heroicons-folder',
-            label: t('label.noProject')
-        }" 
-        :loading="loading > 0" 
-        :loading-state="{
-            icon: 'i-heroicons-arrow-path-20-solid',
-            label: labLoading
+          v-model:sort="sortProject" 
+          :rows="showProject" 
+          :columns="tabProjectStruct" id="filesTable"
+          :empty-state="{
+                icon: 'i-heroicons-folder',
+                label: t('label.noProject')
+            }" 
+          :loading="loading > 0" 
+          :loading-state="{
+                icon: 'i-heroicons-arrow-path-20-solid',
+                label: labLoading
             }"
         >
-
+            <template #createDate-data="{row}">
+                {{ localDate(row.createDate) }}
+            </template>
             <template #action-data="{ row }">
                 <UButton :title="t('button.exportProject')" icon="i-heroicons-arrow-down-on-square" size="xl" color="green"
                     variant="ghost" @click="deleteRow(row.id)" />
@@ -310,17 +313,22 @@ function openProject(id: string) {
                     <span class="truncate">
                         {{ t(item.label) }}
                     </span>
-
                 </template>
                 <template #item="{ item }">
-                    <UTable v-if="item.label === 'label.files'" :rows="showFiles" :columns="tabFilesStruct" id="filesTable"
+                    <UTable v-if="item.label === 'label.files'" 
+                        :rows="showFiles" 
+                        :columns="tabFilesStruct" 
+                        id="filesTable"
                         :empty-state="{
                             icon: 'i-heroicons-document',
                             label: t('label.noFile')
-                        }" :loading="loading > 0" :loading-state="{
-    icon: 'i-heroicons-arrow-path-20-solid',
-    label: labLoading
-}">
+                        }" 
+                        :loading="loading > 0" 
+                        :loading-state="{
+                            icon: 'i-heroicons-arrow-path-20-solid',
+                            label: labLoading
+                        }"
+                    >
 
                         <template #delete-data="{ row }">
                             <UButton :title="labDeleteRow" icon="i-heroicons-x-mark" size="xl" color="red" variant="ghost"
@@ -333,13 +341,9 @@ function openProject(id: string) {
                 </template>
             </UTabs>
             <template #footer v-if="currentProject.name != ''">
-                <UButton v-if="currentProject.id != ''" 
-                    :title="t('button.update')"
-                    icon="i-heroicons-arrow-path"
-                    :label="t('button.update')"/>
-                <UButton v-else :title="t('button.create')"
-                    icon="i-heroicons-check-badge"
-                    :label="t('button.create')"/>
+                <UButton v-if="currentProject.id != ''" :title="t('button.update')" icon="i-heroicons-arrow-path"
+                    :label="t('button.update')" />
+                <UButton v-else :title="t('button.create')" icon="i-heroicons-check-badge" :label="t('button.create')" />
             </template>
         </UCard>
     </UModal>
