@@ -6,10 +6,11 @@
 <script setup lang="ts" >
 import { ref, reactive, computed } from "vue";
 import type { tFile, tProject } from "../types/file";
-import { useI18n } from "#imports";
+import { useI18n, useToast } from "#imports";
 const { t } = useI18n();
-import { string, minLength, toTrimmed, parseAsync, object, parse } from 'valibot'
+import { string, minLength, toTrimmed, object, parse } from 'valibot'
 import type {FormSubmitEvent } from "@nuxt/ui/dist/runtime/types";
+const toast = useToast()
 
 const labSelectFile = ref<string>("Télécharger le(s) fichier(s)");
 
@@ -90,6 +91,8 @@ const currentProject = reactive<tProject>({
     nbFile: 0,
     files: []
 });
+// Where new files of project save
+let currentFolder:string = "";
 
 /**
  * Get all list of projects of one page and number of page
@@ -172,7 +175,7 @@ function simulateClick(id: string): void {
      * @param evt the event
      */
 async function getFiles(evt: Event | null): Promise<void> {
-    console.log(4);
+
     if (!(evt)) {
         return;
     }
@@ -190,13 +193,21 @@ async function getFiles(evt: Event | null): Promise<void> {
     loading.value++;
     $fetch("api/infoFile", { method: "post", body: formData })
         .then((resp) => {
-            for (const oneFile of resp as []) {
+            currentFolder = (resp as {folder:string}).folder;
+            for (const oneFile of (resp as {infoFiles:[]}).infoFiles) {
                 if((oneFile as tFile).type == "unknown")
                 {
                     unkeepFiles.push(oneFile);
-                    break;
                 }
-                currentProject.files.push(oneFile);
+                else{
+                    currentProject.files.push(oneFile);
+                }
+            }
+            if (unkeepFiles.length>0){
+                toast.add({
+                    title:"filchiers non gardé",
+                    description:unkeepFiles.map(x => x.name + "\n\r").join("")
+                });
             }
         })
         .catch(() => {
@@ -257,7 +268,7 @@ defineExpose({
 });
 
 function openProject(id: string) {
-
+    currentFolder = ""
     if (id === "") {
         emptyProject(currentProject);
     }

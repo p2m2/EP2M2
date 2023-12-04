@@ -42,6 +42,7 @@ export default{
 
 <template>
   <UCard> 
+    <UNotifications />
     <template
       v-if="checkSession" 
       #header

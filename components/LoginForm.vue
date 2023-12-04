@@ -21,11 +21,7 @@ const state = ref({
 });
 
 async function submit (event: FormSubmitEvent<Schema>) {
-    // Do something with event.data
-    console.log("coucou");
-    
-    console.log(event.data);
-    
+   
     const result = <number> await $fetch("/api/checkLogin", {
         method:"POST",
         body:{email:event.data.email, password:event.data.password}
