@@ -18,6 +18,7 @@ export default {
         }
     },
     label: {
+        addFile: "Ajouter un fichier",
         addProject: "Ajouter un projet",
         createDate: "Date de création",
         email: "E-mail",
@@ -36,6 +37,7 @@ export default {
     },
     message: {
         addIssue: "Un problème dit le",
+        badProjectName: "Le nom de project doit contenir au moins 3 caractère (hors les espaces)",
     },
     title: {
         projectName: "Nom du projet"

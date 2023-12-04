@@ -12,7 +12,7 @@ declare global {
         name:string,
         createDate:string,
         nbFile:number,
-        files:tFile[]|null,
+        files:tFile[]|[],
         // TODO: add operation post export
     }
 }

@@ -75,7 +75,6 @@ CREATE TABLE file
   f_type VARCHAR(15),
   f_size INT,
   content lo NOT NULL,
-  export JSONB,
   id_project SERIAL REFERENCES project (id)
 );
 

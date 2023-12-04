@@ -18,6 +18,7 @@ export default {
         }
     },
     label:{
+        addFile: "Add file",
         addProject: "Add new project",
         createDate: "Creation's date",
         email: "Email",
@@ -35,7 +36,8 @@ export default {
         templateOperation: "Operation template",
     },
     message:{
-        addIssue: "There is a bug"
+        addIssue: "There is a bug",
+        badProjectName: "Project's name have to contain 3 character (without count space)",
     },
     title:{
         projectName: "Projet name"

@@ -2,7 +2,7 @@ import pg from "pg";
 import type { tProject } from "~/types/file";
 
 export default defineEventHandler(async (event): Promise<{
-    projects: tProject[],
+    projects: tProject[]|[],
     count: number
 }> => {
     const askProject = await readBody(event);
@@ -35,7 +35,8 @@ export default defineEventHandler(async (event): Promise<{
     
     // No Projet
     if (resultCount.rowCount == 1 && resultCount.rows[0].nb_project == 0) {
-        throw new Error("No project");
+        console.log("No project");
+        return {projects:[], count:0};
     }
 
     // Nomber project by page
@@ -56,13 +57,10 @@ export default defineEventHandler(async (event): Promise<{
                             WHERE team = '${team[0].enumlabel}'
                             ORDER BY ${orderBy} ${sort}
                             LIMIT ${limit} OFFSET ${offset}`;
-
-    console.log(getProjectsSQL);
-    
+   
     const resultProject = await client.query(getProjectsSQL);
 
     await client.end();
-    console.log(resultProject);
     
     // Create list of project
     const listProjects: tProject[] = [];

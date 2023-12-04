@@ -8,6 +8,8 @@ import { ref, reactive, computed } from "vue";
 import type { tFile, tProject } from "../types/file";
 import { useI18n } from "#imports";
 const { t } = useI18n();
+import { string, minLength, toTrimmed, parseAsync, object, parse } from 'valibot'
+import type {FormSubmitEvent } from "@nuxt/ui/dist/runtime/types";
 
 const labSelectFile = ref<string>("Télécharger le(s) fichier(s)");
 
@@ -19,6 +21,9 @@ const labLoading = ref<string>("Chargement ...");
 const isOpen = ref<boolean>(false);
 const loading = ref<number>(0);
 
+
+// Define struct of table of file
+// 3 columns (name, type, size in KB, delete actions)
 const tabFilesStruct = [{
     key: "name",
     label: t("label.tabFileName"),
@@ -35,6 +40,9 @@ const tabFilesStruct = [{
     key: "delete"
 }];
 
+// Define of struct of table of project
+// 4 columns (name, Creation Date, number file in project, actions)
+// In actions we have 3 buttons (export, consult/modify, delete)
 const tabProjectStruct = [
     {
         key: "name",
@@ -56,20 +64,40 @@ const tabProjectStruct = [
     }
 ];
 
+// Variable to know by which column the project's table sorted
 const sortProject = ref({
     column: "",
     direction: ""
 })
 
-const files = reactive<tFile[]>([]);
+/**
+ * Empty variable (type tProject) passing in parameter
+ * @param project 
+ */
+function emptyProject(project:tProject){
+    project.id = "";
+    project.name = "";
+    project.createDate = "";
+    project.nbFile = 0;
+    project.files = [];
+}
+
+// The project consulted
 const currentProject = reactive<tProject>({
     id: "",
     name: "",
     createDate: "",
-    nbFile: NaN,
-    files: null
+    nbFile: 0,
+    files: []
 });
 
+/**
+ * Get all list of projects of one page and number of page
+ * @param team user's team
+ * @param orderby sorted colunm
+ * @param sort how the column is sorted
+ * @param page number page
+ */
 async function getProjects(team: string = "",
     orderby: string = "",
     sort: string = "",
@@ -86,14 +114,34 @@ async function getProjects(team: string = "",
     });
 }
 
+// Part define variable to show projects's list in table
 const projects = reactive<{projects:tProject[], count: number}>(
     await getProjects("other",
     sortProject.value.column,
     sortProject.value.direction,
     1));
-
 const showProject = computed(() => projects.projects);
 
+// Condition part to valid Project name in input 
+// and show button to create/modify project
+const schema = object({
+  name: string([
+    toTrimmed(),
+    minLength(3, t("message.badProjectName"))
+    ]),
+})
+
+const validProjectName = computed<boolean>(() => {
+    try {
+        parse(schema,{name:currentProject.name});
+    } catch (error) {
+        return false;
+    }
+
+    return true;
+});
+
+// Define struct of tab of one project
 const containProject = [{
     label: "label.files",
     icon: "i-heroicons-document-duplicate"
@@ -102,9 +150,7 @@ const containProject = [{
     icon: "i-heroicons-variable"
 }
 ]
-const showFiles = computed(() => files.filter((x) => x.type != "unknown"));
-
-const unkeepFiles = computed(() => files.filter((x) => x.type == "unknown"));
+const unkeepFiles = [];
 
 // ---- Manage select several files
 
@@ -118,6 +164,7 @@ function simulateClick(id: string): void {
 
     // Click on input
     inputElementFiles.click();
+
 }
 
 /**
@@ -125,9 +172,11 @@ function simulateClick(id: string): void {
      * @param evt the event
      */
 async function getFiles(evt: Event | null): Promise<void> {
+    console.log(4);
     if (!(evt)) {
         return;
     }
+
     // To don't have two event change
     evt.stopImmediatePropagation();
 
@@ -142,7 +191,12 @@ async function getFiles(evt: Event | null): Promise<void> {
     $fetch("api/infoFile", { method: "post", body: formData })
         .then((resp) => {
             for (const oneFile of resp as []) {
-                files.push(oneFile as tFile);
+                if((oneFile as tFile).type == "unknown")
+                {
+                    unkeepFiles.push(oneFile);
+                    break;
+                }
+                currentProject.files.push(oneFile);
             }
         })
         .catch(() => {
@@ -155,12 +209,17 @@ async function getFiles(evt: Event | null): Promise<void> {
 
 function deleteRow(id: string) {
     // get index of row
-    const index = files.findIndex((file) => file.id == id);
+    const index = currentProject.files.findIndex((file) => file.id == id);
 
     // Delete the row 
     if (index != undefined) {
-        files.splice(index, 1);
+        currentProject.files.splice(index, 1);
     }
+}
+
+async function onSubmit (event: FormSubmitEvent<any>) {
+  // Do something with data
+  console.log(event.data)
 }
 
 async function extract() {
@@ -200,11 +259,7 @@ defineExpose({
 function openProject(id: string) {
 
     if (id === "") {
-        currentProject.id = "";
-        currentProject.name = "";
-        currentProject.createDate = "";
-        currentProject.nbFile = NaN;
-        currentProject.files = null;
+        emptyProject(currentProject);
     }
     else {
         const tempProject = showProject.value.filter(p => p.id == id)
@@ -221,6 +276,10 @@ function openProject(id: string) {
 
 function localDate (rowDate:string):string{
     return (new Date(rowDate)).toLocaleString();
+}
+
+async function createProject() {
+    
 }
 
 </script>
@@ -257,19 +316,20 @@ function localDate (rowDate:string):string{
 
 <template>
     <UContainer class="flex justify-start items-left">
-        <!-- <input type="file" id="inFilesSelect" multiple style="display: none;"/>
-        <UButton class="extractButton sizeBy3" :title="labSelectFile"
-                 @click="simulateClick('inFilesSelect')">
-            {{labSelectFile}}
-        </UButton> -->
-        <UTooltip :text="t('label.addProject')" :popper="{ placement: 'right' }">
-            <UButton class="extractButton w-1/3" @click="openProject('')" icon="i-heroicons-folder-plus" />
-
+        <UTooltip 
+            :text="t('label.addProject')" 
+            :popper="{ placement: 'right' }"
+        >
+            <UButton
+                class="extractButton w-1/3" 
+                @click="openProject('')" 
+                icon="i-heroicons-folder-plus"
+            />
         </UTooltip>
     </UContainer>
     <UContainer>
         <UTable 
-          v-model:sort="sortProject" 
+          v-model:sort="sortProject"
           :rows="showProject" 
           :columns="tabProjectStruct" id="filesTable"
           :empty-state="{
@@ -286,65 +346,122 @@ function localDate (rowDate:string):string{
                 {{ localDate(row.createDate) }}
             </template>
             <template #action-data="{ row }">
-                <UButton :title="t('button.exportProject')" icon="i-heroicons-arrow-down-on-square" size="xl" color="green"
-                    variant="ghost" @click="deleteRow(row.id)" />
-                <UButton :title="t('button.viewProject')" icon="i-heroicons-pencil" size="xl" color="blue" variant="ghost"
-                    @click="openProject(row.id)" />
-                <UButton :title="t('button.deleteProject')" icon="i-heroicons-x-mark" size="xl" color="red" variant="ghost"
-                    @click="deleteRow(row.id)" />
+                <UButton 
+                    :title="t('button.exportProject')" 
+                    icon="i-heroicons-arrow-down-on-square"
+                    size="xl" color="green"
+                    variant="link" 
+                    @click="deleteRow(row.id)"
+                    :disabled="row.nbFile>0"
+                />
+                <UButton 
+                    :title="t('button.viewProject')"
+                    icon="i-heroicons-pencil" 
+                    size="xl" color="blue" variant="link"
+                    @click="openProject(row.id)"
+                />
+                <UButton 
+                    :title="t('button.deleteProject')"
+                    icon="i-heroicons-x-mark"
+                    size="xl" color="red" variant="link"
+                    @click="deleteRow(row.id)"
+                />
             </template>
         </UTable>
     </UContainer>
 
     <UModal v-model="isOpen" prevent-close>
-        <UCard>
-            <template #header>
-                <div class="flex items-center justify-between">
-                    <h3 class="text-base font-semibold leading-6 text-gray-900 dark:text-white">
-                        {{ t("title.projectName") }}
-                    </h3>
-                    <UButton color="gray" variant="ghost" icon="i-heroicons-x-mark-20-solid" class="-my-1"
-                        @click="isOpen = false" />
-                </div>
-                <UInput v-model="currentProject.name" />
-            </template>
-            <UTabs :items="containProject">
-                <template #default="{ item }">
-                    <span class="truncate">
-                        {{ t(item.label) }}
-                    </span>
-                </template>
-                <template #item="{ item }">
-                    <UTable v-if="item.label === 'label.files'" 
-                        :rows="showFiles" 
-                        :columns="tabFilesStruct" 
-                        id="filesTable"
-                        :empty-state="{
-                            icon: 'i-heroicons-document',
-                            label: t('label.noFile')
-                        }" 
-                        :loading="loading > 0" 
-                        :loading-state="{
-                            icon: 'i-heroicons-arrow-path-20-solid',
-                            label: labLoading
-                        }"
-                    >
-
-                        <template #delete-data="{ row }">
-                            <UButton :title="labDeleteRow" icon="i-heroicons-x-mark" size="xl" color="red" variant="ghost"
-                                @click="deleteRow(row.id)" />
-                        </template>
-                    </UTable>
-                    <div v-else>
-                        <p>couxcou</p>
+        <UForm 
+            :schema="schema"
+            :state="currentProject"
+            class="space-y-4"
+            @submit="onSubmit"
+        >
+            <UCard>
+                <template #header>
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-base font-semibold
+                                leading-6 text-gray-900 
+                                dark:text-white"
+                        >
+                            {{ t("title.projectName") }}
+                        </h3>
+                        <UButton
+                            color="gray" variant="link"
+                            icon="i-heroicons-x-mark-20-solid" class="-my-1"
+                            @click="isOpen = false"
+                        />
                     </div>
+                    <UFormGroup name="name">
+                        <UInput v-model="currentProject.name" 
+                            autofocus requires
+                        /> 
+                    </UFormGroup>
                 </template>
-            </UTabs>
-            <template #footer v-if="currentProject.name != ''">
-                <UButton v-if="currentProject.id != ''" :title="t('button.update')" icon="i-heroicons-arrow-path"
-                    :label="t('button.update')" />
-                <UButton v-else :title="t('button.create')" icon="i-heroicons-check-badge" :label="t('button.create')" />
-            </template>
-        </UCard>
+                <UTabs :items="containProject">
+                    <template #default="{ item }">
+                        <span class="truncate">
+                            {{ t(item.label) }}
+                        </span>
+                    </template>
+                    <template #item="{ item }">
+                        <UTooltip v-if="item.label === 'label.files'"
+                            :text="t('label.addFile')"
+                            :popper="{ placement: 'right' }">
+                            <input 
+                                type="file" 
+                                id="inFilesSelect"
+                                multiple style="display: none;"
+                            />
+                            <UButton 
+                                color="white" variant="outline"
+                                :title="t('label.addFile')"
+                                @click="simulateClick('inFilesSelect')"
+                                icon="i-heroicons-document-plus"
+                            />
+
+                        </UTooltip>
+
+                        <UTable v-if="item.label === 'label.files'" 
+                            :rows="currentProject.files" 
+                            :columns="tabFilesStruct" 
+                            id="filesTable"
+                            :empty-state="{
+                                icon: 'i-heroicons-document',
+                                label: t('label.noFile')
+                            }" 
+                            :loading="loading > 0" 
+                            :loading-state="{
+                                icon: 'i-heroicons-arrow-path-20-solid',
+                                label: labLoading
+                            }"
+                        >
+                            <template #delete-data="{ row }">
+                                <UButton :title="labDeleteRow" icon="i-heroicons-x-mark" size="xl" color="red" variant="link"
+                                    @click="deleteRow(row.id)" />
+                            </template>
+                        </UTable>
+                        <div v-else>
+                            <p>couxcou</p>
+                        </div>
+                    </template>
+                </UTabs>
+                <template #footer
+                    v-if="validProjectName"
+                >
+                    <UButton v-if="currentProject.id != ''" 
+                        :title="t('button.update')"
+                        icon="i-heroicons-arrow-path"
+                        :label="t('button.update')"
+                    />
+                    <UButton v-else 
+                        :title="t('button.create')" 
+                        icon="i-heroicons-check-badge" 
+                        :label="t('button.create')" 
+                        @click="createProject()"
+                    />
+                </template>
+            </UCard>
+        </UForm>
     </UModal>
 </template>
