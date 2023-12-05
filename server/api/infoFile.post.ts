@@ -5,7 +5,7 @@ import path from "path";
 
 
 function getInfoFiles(
-    myFile:MultiPartData,
+    myFile:{filename:string, data: Buffer, type:string},
     dirPath:string,
     infoFiles: {id:string, name:string, type:string, size:number}[] | 
     unknown[] = []) {
@@ -52,24 +52,26 @@ function getInfoFiles(
 }
 
 export default defineEventHandler(async(event):
-    Promise<{
-        infoFiles:{id:string, name:string, type:string, size:number}[]| unknown[], 
-        folder:string}>=> {
-    const files = await readMultipartFormData(event);
+    Promise<{id:string, name:string, type:string, size:number}[]| unknown[]>=> {
+    const formData = await readMultipartFormData(event);
+    const files = formData?.filter(x => x.name=="file");
+    const folder = formData?.filter(x => x.name=="folder")[0].data.toString();
+    console.log(files);
     
-    if(!files){
-        return {infoFiles:[], folder:""};
+    if(!files && !folder){
+        return [];
     }
-    const dirPath = path.join("/shareFile", crypto.randomUUID());
+    const dirPath = path.join("/shareFile", folder as string);
     // thx : https://stackoverflow.com/a/26815894
     if(!existsSync(dirPath)){
         mkdirSync(dirPath,{recursive:true});
     }
     const infoFiles: {id:string, name:string, type:string, size:number}[] | unknown[] = [];
 
-    await Promise.all(files.map(x => getInfoFiles(x, dirPath, infoFiles)));
+    await Promise.all((files as []).map(x => getInfoFiles(
+        x, dirPath, infoFiles)));
     
-    return {infoFiles:infoFiles, folder:dirPath};
+    return infoFiles;
 
 
 });

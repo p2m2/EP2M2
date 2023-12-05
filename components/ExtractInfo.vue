@@ -80,7 +80,7 @@ function emptyProject(project:tProject){
     project.name = "";
     project.createDate = "";
     project.nbFile = 0;
-    project.files = [];
+    project.files = [] as tFile[];
 }
 
 // The project consulted
@@ -89,7 +89,7 @@ const currentProject = reactive<tProject>({
     name: "",
     createDate: "",
     nbFile: 0,
-    files: []
+    files: [] as tFile[]
 });
 // Where new files of project save
 let currentFolder:string = "";
@@ -153,7 +153,7 @@ const containProject = [{
     icon: "i-heroicons-variable"
 }
 ]
-const unkeepFiles = [];
+const unkeepFiles = [] as tFile[];
 
 // ---- Manage select several files
 
@@ -190,31 +190,31 @@ async function getFiles(evt: Event | null): Promise<void> {
     if (fileList) for (const myFile of fileList) {
         formData.append('file', myFile);
     }
+    formData.append('folder', currentFolder);
     loading.value++;
-    $fetch("api/infoFile", { method: "post", body: formData })
-        .then((resp) => {
-            currentFolder = (resp as {folder:string}).folder;
-            for (const oneFile of (resp as {infoFiles:[]}).infoFiles) {
-                if((oneFile as tFile).type == "unknown")
-                {
-                    unkeepFiles.push(oneFile);
-                }
-                else{
-                    currentProject.files.push(oneFile);
-                }
+    $fetch("api/infoFile", { 
+        method: "post", 
+        body: formData
+    })
+    .then((resp) => {
+        for (const oneFile of resp as tFile[]) {
+            if((oneFile as tFile).type == "unknown"){
+                unkeepFiles.push(oneFile);
+            }else{
+                currentProject.files.push(oneFile);
             }
-            if (unkeepFiles.length>0){
-                toast.add({
-                    title:"filchiers non gardé",
-                    description:unkeepFiles.map(x => x.name + "\n\r").join("")
-                });
-            }
-        })
-        .catch(() => {
-            console.log("fail");
-
-        })
-        .finally(() => loading.value--)
+        }
+        if (unkeepFiles.length>0){
+            toast.add({
+                title:"filchiers non gardé",
+                description:unkeepFiles.map(x => x.name + "\n\r").join("")
+            });
+        }
+    })
+    .catch(() => {
+        console.log("fail");
+    })
+    .finally(() => loading.value--)
 }
 
 
@@ -268,7 +268,7 @@ defineExpose({
 });
 
 function openProject(id: string) {
-    currentFolder = ""
+    currentFolder = crypto.getRandomValues(new Uint32Array(4)).join("-");
     if (id === "") {
         emptyProject(currentProject);
     }
