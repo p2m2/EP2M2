@@ -290,7 +290,17 @@ function localDate (rowDate:string):string{
 }
 
 async function createProject() {
-    
+    const body = new FormData();
+    body.append("folder", currentFolder);
+    body.append("project", JSON.stringify(currentProject));
+    // todo get team name
+    body.append("team", "other");
+    // todo undisplay modal and waiting popup
+    $fetch("api/createProject",{
+        method:"POST",
+        body: body
+    })
+    //manage result or fail
 }
 
 </script>

@@ -74,7 +74,7 @@ CREATE TABLE file
   date_create TIMESTAMPTZ NOT NULL,
   f_type VARCHAR(15),
   f_size INT,
-  content lo NOT NULL,
+  content oid NOT NULL,
   id_project SERIAL REFERENCES project (id)
 );
 

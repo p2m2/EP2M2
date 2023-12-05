@@ -2,7 +2,7 @@ import pg from "pg";
 import type { tProject } from "~/types/file";
 
 export default defineEventHandler(async (event): Promise<{
-    projects: tProject[]|[],
+    projects: tProject[] | [],
     count: number
 }> => {
     const askProject = await readBody(event);
@@ -32,11 +32,11 @@ export default defineEventHandler(async (event): Promise<{
                               FROM project
                               WHERE team = '${team[0].enumlabel}'`;
     const resultCount = await client.query(countProjectsSql);
-    
+
     // No Projet
     if (resultCount.rowCount == 1 && resultCount.rows[0].nb_project == 0) {
         console.log("No project");
-        return {projects:[], count:0};
+        return { projects: [], count: 0 };
     }
 
     // Nomber project by page
@@ -57,32 +57,33 @@ export default defineEventHandler(async (event): Promise<{
                             WHERE team = '${team[0].enumlabel}'
                             ORDER BY ${orderBy} ${sort}
                             LIMIT ${limit} OFFSET ${offset}`;
-   
+
     const resultProject = await client.query(getProjectsSQL);
 
     await client.end();
-    
+
     // Create list of project
     const listProjects: tProject[] = [];
     let currentId: string = "";
     for (const row of resultProject.rows) {
         console.log(row);
-        
+
         // Add new project
         if (currentId != row.p_id) {
             listProjects.push({
                 id: row.p_id,
                 name: row.p_name,
                 createDate: row.date_create,
-                nbFile: 0,
+                nbFile: resultProject.rows.filter((x: { p_id:string,
+                    f_id:string }) => (x.p_id == row.p_id) && x.f_id).length,
                 files: []
             });
             currentId = row.p_id;
         }
 
         // Add files of project
-        if (row.f_id == row.p_id) {
-            listProjects.at(-1)?.files?.push({
+        if (row.f_id && listProjects.at(-1)) {
+            listProjects.at(-1)?.files.push({
                 id: row.f_id,
                 name: row.f_name,
                 type: row.f_type,
@@ -91,8 +92,9 @@ export default defineEventHandler(async (event): Promise<{
         }
 
     }
+
     return {
         projects: listProjects,
-        count: Math.ceil(resultCount.rows[0].nb_project/limit)
+        count: Math.ceil(resultCount.rows[0].nb_project / limit)
     };
 });

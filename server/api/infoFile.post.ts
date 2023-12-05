@@ -56,7 +56,6 @@ export default defineEventHandler(async(event):
     const formData = await readMultipartFormData(event);
     const files = formData?.filter(x => x.name=="file");
     const folder = formData?.filter(x => x.name=="folder")[0].data.toString();
-    console.log(files);
     
     if(!files && !folder){
         return [];
