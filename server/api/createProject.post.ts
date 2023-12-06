@@ -1,6 +1,6 @@
 import pg from "pg";
 import type { MultiPartData } from "h3";
-import { readFile } from "fs/promises";
+import { readFile, rm } from "fs/promises";
 import { join } from "path";
 
 function addFile(file: tFile, folder: string, client: any, id_project: string) {
@@ -20,26 +20,26 @@ function addFile(file: tFile, folder: string, client: any, id_project: string) {
                                          '${file.type}', '${file.size}',
                                          '${oid}', '${id_project}')`);
         })
-        .catch((err) => console.error("Add file fail : ", file.name, err)
-        );
+        .catch((err) => {
+            console.error("Add file fail : ", file.name, err);
+            throw new Error("Add file fail");
+        });
 }
 
 function getFromMultipartFormData(item: MultiPartData[], field: string) {
     return item.filter(x => x.name == field)[0].data.toString();
 }
 
-export default defineEventHandler(async (event) => {
-    readMultipartFormData(event)
-        .then(async (body) => {
-            if (!body && body.length != 3) {
-                return 1;
+export default defineEventHandler((event) => {
+    return readMultipartFormData(event)
+        .then((body) => {
+            if (body == undefined || body.length != 3) {
+                throw new Error("bad request");
             }
             const folder = getFromMultipartFormData(body, "folder");
             const team = getFromMultipartFormData(body, "team");
             const project = JSON.parse(getFromMultipartFormData(body,
                 "project"));
-
-            console.log(project);
 
             const addProjectSql = `INSERT INTO 
                                     project (name, date_create, team)
@@ -49,7 +49,7 @@ export default defineEventHandler(async (event) => {
 
 
             const client = new pg.Client();
-            client.connect()
+            return client.connect()
                 .then(() => {
                     return client.query(addProjectSql);
                 })
@@ -58,14 +58,25 @@ export default defineEventHandler(async (event) => {
                                          FROM project
                                          WHERE name = '${project.name}'`);
                 })
-                .then((respQuery) => {
+                .then((respQuery:{rows:{id:string}[]}) => {
                     if (respQuery.rows.length === 0) {
                         throw new Error("project not create");
                     }
-                    return Promise.all(project.files.map((x:tFile) => addFile(x,
+                    return Promise.all(project.files.map((x: tFile) => addFile(x,
                         folder, client, respQuery.rows[0].id)));
 
                 })
-                .finally(() => client.end());
-        });
+                .then(() => rm(join("/shareFile", folder),
+                    { recursive: true, force: true }))
+                .then(() => 0)
+                .catch((err: Error) => {
+                    console.error(err);
+                    throw err;
+                });
+        })
+        .then(() => 0)
+        .catch((err:Error) => {
+            console.error(err);
+            return 1;
+        } );
 });

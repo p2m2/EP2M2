@@ -38,6 +38,9 @@ export default {
     message:{
         addIssue: "There is a bug",
         badProjectName: "Project's name have to contain 3 character (without count space)",
+        created: "created",
+        createdFail: "Project's creation failed",
+        waitCreateProject: "Hold on please, we're creating your project"
     },
     title:{
         projectName: "Projet name"
