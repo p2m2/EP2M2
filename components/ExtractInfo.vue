@@ -91,22 +91,33 @@ const currentProject = reactive<tProject>({
     nbFile: 0,
     files: [] as tFile[]
 });
+// old version of consulted project
+const oldProject = reactive<tProject>({
+    id: "",
+    name: "",
+    createDate: "",
+    nbFile: 0,
+    files: [] as tFile[]
+});
 // Where new files of project save
 let currentFolder: string = "";
 
+// Check if consulted project was modified
+const modifiedProject = computed<boolean>(() =>
+    // thx: https://stackoverflow.com/a/1144249
+    JSON.stringify(currentProject) != JSON.stringify(oldProject));
+
 /**
  * Get all list of projects of one page and number of page
- * @param team user's team
- * @param orderby sorted colunm
- * @param sort how the column is sorted
  * @param page number page
  */
-async function getProjects(page: number = 1): Promise<{ 
-    projects: tProject[], count: number }> {
+async function getProjects(page: number = 1): Promise<{
+    projects: tProject[], count: number
+}> {
     return await $fetch("api/getProjects", {
         method: "POST",
         body: {
-            team:  useCookie("team",{sameSite:"strict"}).value,
+            team: useCookie("team", { sameSite: "strict" }).value,
             orderby: sortProject.value.column,
             sort: sortProject.value.direction,
             page: page
@@ -121,10 +132,10 @@ const showProject = computed(() => projects.projects);
 
 async function actualize() {
     await getProjects()
-    .then((resp) => {
-        projects.projects = resp.projects;
-        projects.count = resp.count;
-    });
+        .then((resp) => {
+            projects.projects = resp.projects;
+            projects.count = resp.count;
+        });
 }
 
 // Condition part to valid Project name in input 
@@ -235,7 +246,7 @@ async function onSubmit(event: FormSubmitEvent<any>) {
     // console.log(event.data)
 }
 
-async function extract(idProject:string) {
+async function extract(idProject: string) {
     const response = await $fetch("/api/extract", {
         method: "post",
         body: idProject
@@ -273,6 +284,7 @@ function openProject(id: string) {
     currentFolder = crypto.getRandomValues(new Uint32Array(4)).join("-");
     if (id === "") {
         emptyProject(currentProject);
+        emptyProject(oldProject);
     }
     else {
         const tempProject = showProject.value.filter(p => p.id == id)
@@ -282,6 +294,11 @@ function openProject(id: string) {
         currentProject.createDate = tempProject[0].createDate;
         currentProject.nbFile = tempProject[0].nbFile;
         currentProject.files = tempProject[0].files;
+        oldProject.id = id;
+        oldProject.name = tempProject[0].name;
+        oldProject.createDate = tempProject[0].createDate;
+        oldProject.nbFile = tempProject[0].nbFile;
+        oldProject.files = tempProject[0].files;
     }
 
     isOpen.value = true;
@@ -308,7 +325,7 @@ async function processOk(msg: string) {
     await actualize();
 }
 
-function processFail(msg:string){
+function processFail(msg: string) {
     lockProject.value = false;
     toast.add({ title: msg });
 }
@@ -324,8 +341,8 @@ function createProject() {
         method: "POST",
         body: body
     })
-    .then(() => processOk(currentProject.name + " " + t("message.created")))
-    .catch(() => processFail(t("message.createdFail")));
+        .then(() => processOk(currentProject.name + " " + t("message.created")))
+        .catch(() => processFail(t("message.createdFail")));
 }
 
 </script>
@@ -441,10 +458,17 @@ function createProject() {
                     </template>
                 </UTabs>
                 <template #footer v-if="validProjectName">
-                    <UButton v-if="currentProject.id != ''" :title="t('button.update')" icon="i-heroicons-arrow-path"
-                        :label="t('button.update')" />
-                    <UButton v-else :title="t('button.create')" icon="i-heroicons-check-badge" :label="t('button.create')"
-                        @click="createProject()" />
+                    <UButton v-if="currentProject.id != '' && modifiedProject"
+                        :title="t('button.update')"
+                        icon="i-heroicons-arrow-path"
+                        :label="t('button.update')"
+                    />
+                    <UButton v-if="currentProject.id == ''"
+                        :title="t('button.create')"
+                        icon="i-heroicons-check-badge"
+                        :label="t('button.create')"
+                        @click="createProject()"
+                    />
                 </template>
             </UCard>
         </UForm>
