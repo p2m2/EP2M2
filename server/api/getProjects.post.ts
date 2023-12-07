@@ -1,5 +1,5 @@
 import pg from "pg";
-import type { tProject } from "~/types/file";
+import type { tProject } from "~/plugins/file";
 
 export default defineEventHandler(async (event): Promise<{
     projects: tProject[] | [],

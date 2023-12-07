@@ -5,8 +5,8 @@
 
 <script setup lang="ts" >
 import { ref, reactive, computed } from "vue";
-import type { tFile, tProject } from "../types/file";
-import { useI18n, useToast } from "#imports";
+import type { tFile, tProject } from "../plugins/file";
+// import { useI18n, useToast } from "#imports";
 const { t } = useI18n();
 import { string, minLength, toTrimmed, object, parse } from 'valibot'
 import type { FormSubmitEvent } from "@nuxt/ui/dist/runtime/types";
@@ -66,9 +66,9 @@ const tabProjectStruct = [
 ];
 
 // Variable to know by which column the project's table sorted
-const sortProject = ref({
+const sortProject = ref<{ column: string; direction: "asc" | "desc"; }>({
     column: "",
-    direction: ""
+    direction: "asc"
 })
 
 /**
@@ -241,15 +241,15 @@ function deleteRow(id: string) {
 
 async function onSubmit(event: FormSubmitEvent<any>) {
     // Do something with data
-    console.log(event.data)
+    // console.log(event.data)
 }
 
-async function extract() {
+async function extract(idProject:string) {
     const response = await $fetch("/api/extract", {
         method: "post",
-        body: showFiles.value
+        body: idProject
     });
-    console.log(response);
+    // console.log(response);
 
     if (response === "" || !response) {
         return 0
@@ -388,7 +388,7 @@ function createProject() {
             </template>
             <template #action-data="{ row }">
                 <UButton :title="t('button.exportProject')" icon="i-heroicons-arrow-down-on-square" size="xl" color="green"
-                    variant="link" @click="deleteRow(row.id)" :disabled="row.nbFile > 0" />
+                    variant="link" @click="extract(row.id)" :disabled="row.nbFile == 0" />
                 <UButton :title="t('button.viewProject')" icon="i-heroicons-pencil" size="xl" color="blue" variant="link"
                     @click="openProject(row.id)" />
                 <UButton :title="t('button.deleteProject')" icon="i-heroicons-x-mark" size="xl" color="red" variant="link"

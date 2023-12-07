@@ -1,6 +1,6 @@
  <!-- This module provide banner of site -->
 <script setup lang="ts">
-import { useI18n } from "#imports";
+// import { useI18n } from "#imports";
 const { t } = useI18n();
   
 

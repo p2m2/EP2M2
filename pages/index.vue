@@ -4,8 +4,7 @@
   metabolomic engines.
 
  -->
-
-<script setup lang="ts">
+<script lang="ts">
 import banner from "~/components/BannerMain.vue";
 import extras from "~/components/ExtrasNav.vue";
 import extract from "~/components/ExtractInfo.vue";
@@ -13,10 +12,14 @@ import login from "~/components/LoginForm.vue";
 import bug from "~/components/BugButton.vue";
 import { useCookie } from "nuxt/app";
 
-</script>
-
-<script lang="ts">
 export default{
+    components:{
+        login,
+        banner,
+        extras,
+        extract,
+        bug
+    },
     data(){
         return {checkSession: false};
     },
@@ -35,8 +38,7 @@ export default{
             },
             body: token.value.toString()
         });
-      
-    }
+    },
 };
 </script>
 

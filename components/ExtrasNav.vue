@@ -5,7 +5,7 @@
 <script setup lang="ts">
 import lang from "~/components/LangButton.vue";
 import {reactive} from "vue";
-import { useI18n } from "#imports";
+// import { useI18n } from "#imports";
 const { t } = useI18n();
 
 // Variable identify user

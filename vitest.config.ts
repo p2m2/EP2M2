@@ -1,10 +1,15 @@
-import {defineConfig} from "vite";
+import {defineConfig, mergeConfig} from "vite";
 import vue from "@vitejs/plugin-vue";
 import { fileURLToPath, URL } from "node:url";
 import Components from "unplugin-vue-components/vite";
+import nuxtConfig from "./nuxt.config";
+import * as path from "path";
 
+const r = (p: string) => path.resolve(__dirname, p);
 
-export default defineConfig({
+export default mergeConfig([nuxtConfig],defineConfig({
+    // root:".",
+    // base:".",
     plugins:[
         Components({ 
             dirs: ["./components/**", "./components/"], 
@@ -40,7 +45,10 @@ export default defineConfig({
 
     resolve: {
         alias: {
-            "@": fileURLToPath(new URL(".", import.meta.url)),
+            // "@": fileURLToPath(new URL(".", import.meta.url)),
+            "~": r("."),
+            // "#imports":fileURLToPath(new URL("./.nuxt/imports.d.ts", import.meta.url)) 
         },
     },
-});
+    
+}));

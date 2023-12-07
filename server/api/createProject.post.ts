@@ -5,15 +5,16 @@ import { join } from "path";
 
 function addFile(file: tFile, folder: string, client: any, id_project: string) {
 
-    return readFile(join("/shareFile", folder, file.id))
+    return readFile(join("/shareFile", folder, file.id),{encoding:"hex"})
         .then(buffer => {
-            return client.query(`SELECT lo_from_bytea(0, '${buffer.toString("hex")}') as oid`);
+            // thx: https://stackoverflow.com/a/14408194
+            return client.query(`SELECT lo_from_bytea(0, '${"\\x" + buffer}') as oid`);
         })
-        .then((respQuery) => {
+        .then(async(respQuery) => {
             if (respQuery.rows.length === 0) {
                 throw new Error("OID not create");
             }
-            const oid = respQuery.rows[0].oid;
+            const oid = respQuery.rows[0].oid;              
             return client.query(`INSERT INTO file(name, date_create, f_type,
                                                   f_size, content,id_project)
                                  VALUES ('${file.name}', NOW(),

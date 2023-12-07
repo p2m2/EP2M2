@@ -5,7 +5,7 @@ import { string, object, email, minLength, type Input } from "valibot";
 import type { FormSubmitEvent } from "@nuxt/ui/dist/runtime/types";
 // import createSession from "~/composables/createSession";
 import {useCookie } from "nuxt/app";
-import { useI18n } from "#imports";
+// import { useI18n } from "#imports";
 const { t } = useI18n();
 
 const schema = object({

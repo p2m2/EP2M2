@@ -1,5 +1,5 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
-import {} from "nuxt";
+import { defineNuxtConfig } from "nuxt/config";
 
 export default defineNuxtConfig({
     devtools: { enabled: true },
@@ -7,6 +7,9 @@ export default defineNuxtConfig({
         "@nuxt/ui",
         "@nuxtjs/i18n"
     ],
+    typescript: {
+        typeCheck: false
+    },
     colorMode: {
         preference: "light"
     },

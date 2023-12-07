@@ -1,91 +1,60 @@
+import pg from "pg";
 
-import { writeFileSync, readFileSync, existsSync, mkdirSync} from "fs";
-import {open} from "fs/promises";
-import {tFile} from "~/types/file";
-import { sendStream } from "h3";
-import {join} from "path";
-
-
-function addJson(jsonFile: JSON, whereAdd: unknown[]):unknown[]{
-    // thx : https://stackoverflow.com/a/31536517
-    // specify how you want to handle null values here
-    const replacer = (_key:string, value:unknown) =>
-        value === null ? "" : value; 
-    const itemsJson = JSON.parse(JSON.stringify(jsonFile), replacer);
-    let items = [];
-    if (Array.isArray(itemsJson)){
-        items = itemsJson;
-    }
-    else{
-        items = [itemsJson];
-    }
-
-    return [...whereAdd, ...items];
+function exportFile(addressFile: {
+    content: string,
+    f_size: number,
+    f_type: string
+}, client: unknown): Promise<JSON> {
+    return client.query(`SELECT lo_get(${addressFile.content}, 0, 
+                                       ${addressFile.f_size}) as file`)
+        .then((respQuery: { rows: { file: string }[] }) => {
+            return fetch("http://p2m2ToolsApi:8080/p2m2tools/api/format/parse/",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded"
+                    },
+                    body: respQuery.rows[0].file
+                });
+        })
+        .catch((err: string) => {
+            throw new Error("oid" + addressFile.content + err);
+        });
 }
-
-function toCsv(items: unknown[]):string{
-    // thx : https://stackoverflow.com/a/31536517
-    const header = [...new Set(items.map((x) => Object.keys(x)).flat())];
-    console.log(header);
-    
-    const sep = ";";
-
-    const csv = [
-        header.join(sep), // header row first
-        ...items.map((row:{[key: string]:any}) => 
-            header.map(fieldName => 
-                String(row[fieldName]?row[fieldName]:"")).join(sep))
-    ].join("\r\n");
-
-    return csv; 
-}
-
 
 export default defineEventHandler(async (event) => {
-    const listFiles = await readBody(event) as tFile[];
-    const shareDir = process.env.EP2M2_DIR_SHARE;
-    const resultsDir = process.env.EP2M2_DIR_RESULT;
-      
-    if (!listFiles || !shareDir || !resultsDir){
-        return "";
-    }
-    
-    // Create directory to save result  
-    const resultFolder = join(resultsDir, crypto.randomUUID());
-   
-    if (!existsSync(resultFolder)){
-        mkdirSync(resultFolder,{recursive:true});
-       
-    }
-    
-    let extract: unknown[] = [];
-
-    for (const infoFile of listFiles){
-        // Ask extraction 
-        const response = await fetch("http://p2m2ToolsApi:8080/p2m2tools/api/format/parse",{
-            method: "POST",
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded"
-            },
-            body: readFileSync(join(shareDir, infoFile.id))
+    const client = new pg.Client();
+    return client.connect()
+        .then(() => readBody(event))
+        .then((idProject: string) => {
+            return client.query(`SELECT content, f_size, f_type
+                                 FROM file
+                                 WHERE id_project = '${idProject}'`);
+        })
+        .then((respQuery: {
+            rows: {
+                content: string,
+                f_size: number,
+                f_type: string
+            }[]
+        }) => {
+            if (respQuery.rows.length === 0) {
+                throw new Error("No files");
+            }
+            return Promise.all(respQuery.rows.map(x => exportFile(x, client)));
+        })
+        .then((resp: any[]) => Promise.all(resp.map((x: { json: () => any; }) => x.json())))
+        .then((resps: any) => {
+            let temp = [resps[0].header];
+            for(const resp of resps){
+                temp = [...temp, ...resp.samples];
+            }
+            console.log(temp);
+            
+            return temp.map(x => x.join(";")).join("\r\n");
+        })
+        .then((csv:string) => {
+            const csvBlob = new Blob([csv]);
+            return sendStream(event, csvBlob.stream());
         });
-
-        // Save extraction
-        const jsonContent = await response.json();
-        console.log(jsonContent);
-        
-        extract = addJson(jsonContent, extract);
-        console.log(extract);        
-    }
-    
-    // create csv with all resutls
-    const resultFile = join(resultsDir, new Date(Date.now()).toISOString())
-        .replaceAll(/[^a-zA-Z0-9_\/\\]/g, "") + "result.csv";
-    
-    writeFileSync(resultFile, toCsv(extract));
-   
-  
-    const csvFile = await open(resultFile);
-
-    return sendStream(event, csvFile.createReadStream());
 });

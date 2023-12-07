@@ -30,7 +30,8 @@ module.exports = {
     },
     "plugins": [
         "@typescript-eslint",
-        "vue"
+        "vue",
+        "vitest"
     ],
     "rules": {
         "indent": [

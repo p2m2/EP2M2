@@ -5,7 +5,7 @@
 
 <script setup lang="ts">
 import {computed} from "vue";
-import { useI18n, useSwitchLocalePath } from "#imports";
+// import { useI18n, useSwitchLocalePath } from "#imports";
 const { t, locale, locales } = useI18n();
 const switchLocalePath = useSwitchLocalePath();
 
