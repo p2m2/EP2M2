@@ -22,12 +22,12 @@ const state = ref({
 
 async function submit (event: FormSubmitEvent<Schema>) {
    
-    const result = <number> await $fetch("/api/checkLogin", {
+    const result = <number|string> await $fetch("/api/checkLogin", {
         method:"POST",
         body:{email:event.data.email, password:event.data.password}
     });
 
-    if(result>0){
+    if(typeof result == "string"){
       const today = new Date(Date.now());
       const expire = new Date(today.getFullYear(), today.getMonth(),
             today.getDate()+7);
@@ -41,6 +41,9 @@ async function submit (event: FormSubmitEvent<Schema>) {
         method:"POST",
         body:{id:result, expire:expire, token:token.value}
       });
+
+      const team = useCookie("team", {expires:expire, sameSite: true});
+      team.value = result;
 
     }
     window.location.reload();   

@@ -25,8 +25,9 @@ export default{
     },
     created:async function() {
         const token = useCookie("token",{sameSite:"strict"});
+        const team = useCookie("team",{sameSite:"strict"});
  
-        if (!token.value){
+        if (!token.value || !team.value){
             this.checkSession = false;
             return null;
         }

@@ -101,17 +101,14 @@ let currentFolder: string = "";
  * @param sort how the column is sorted
  * @param page number page
  */
-async function getProjects(team: string = "",
-    orderby: string = "",
-    sort: string = "",
-    page: number = 1): Promise<{ projects: tProject[], count: number }> {
-
+async function getProjects(page: number = 1): Promise<{ 
+    projects: tProject[], count: number }> {
     return await $fetch("api/getProjects", {
         method: "POST",
         body: {
-            team: team,
-            orderby: orderby,
-            sort: sort,
+            team:  useCookie("team",{sameSite:"strict"}).value,
+            orderby: sortProject.value.column,
+            sort: sortProject.value.direction,
             page: page
         }
     });
@@ -119,17 +116,11 @@ async function getProjects(team: string = "",
 
 // Part define variable to show projects's list in table
 const projects = reactive<{ projects: tProject[], count: number }>(
-    await getProjects("other",
-        sortProject.value.column,
-        sortProject.value.direction,
-        1));
+    await getProjects());
 const showProject = computed(() => projects.projects);
 
 async function actualize() {
-    await getProjects("other",
-        sortProject.value.column,
-        sortProject.value.direction,
-        1)
+    await getProjects()
     .then((resp) => {
         projects.projects = resp.projects;
         projects.count = resp.count;
