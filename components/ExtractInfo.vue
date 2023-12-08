@@ -166,7 +166,7 @@ const containProject = [{
     icon: "i-heroicons-variable"
 }
 ]
-const unkeepFiles = [] as tFile[];
+
 
 // ---- Manage select several files
 
@@ -210,6 +210,8 @@ async function getFiles(evt: Event | null): Promise<void> {
         body: formData
     })
         .then((resp) => {
+            const unkeepFiles = [] as tFile[];
+            
             for (const oneFile of resp as tFile[]) {
                 if ((oneFile as tFile).type == "unknown") {
                     unkeepFiles.push(oneFile);
