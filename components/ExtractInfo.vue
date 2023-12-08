@@ -107,6 +107,15 @@ const modifiedProject = computed<boolean>(() =>
     // thx: https://stackoverflow.com/a/1144249
     JSON.stringify(currentProject) != JSON.stringify(oldProject));
 
+// record modification of project
+const recordModif = {
+    name:computed<string>(() =>
+        (modifiedProject && oldProject.name != currentProject.name)?
+            currentProject.name : ""
+    ),
+    add:[""], del: [""]
+};
+
 /**
  * Get all list of projects of one page and number of page
  * @param page number page
@@ -185,6 +194,7 @@ function simulateClick(id: string): void {
 
 /**
      * Get all files from input and show them in table
+     * Copy file temporaly on server
      * @param evt the event
      */
 async function getFiles(evt: Event | null): Promise<void> {
@@ -198,7 +208,7 @@ async function getFiles(evt: Event | null): Promise<void> {
 
     const formData = new FormData();
 
-    // Add list file in table
+    // Get file from client
     const fileList = (evt?.currentTarget as HTMLInputElement).files;
     if (fileList) for (const myFile of fileList) {
         formData.append('file', myFile);
@@ -217,8 +227,13 @@ async function getFiles(evt: Event | null): Promise<void> {
                     unkeepFiles.push(oneFile);
                 } else {
                     currentProject.files.push(oneFile);
+                    // save modification when update project
+                    if(currentProject.id != ""){
+                        recordModif.add.push(oneFile.id);
+                    } 
                 }
             }
+            // Show unkept files
             if (unkeepFiles.length > 0) {
                 toast.add({
                     title: "filchiers non gardé",
@@ -240,6 +255,13 @@ function deleteRow(id: string) {
     // Delete the row 
     if (index != undefined) {
         currentProject.files.splice(index, 1);
+        // update modification
+        if(currentProject.id != ""){
+            // delete new file
+            recordModif.add = recordModif.add.filter(x => x != id);
+            // delete file yet save in project
+            /^[0-9]+$/.test(id)?recordModif.del.push(id):"";
+        }
     }
 }
 
@@ -295,14 +317,13 @@ function openProject(id: string) {
         currentProject.name = tempProject[0].name;
         currentProject.createDate = tempProject[0].createDate;
         currentProject.nbFile = tempProject[0].nbFile;
-        currentProject.files = tempProject[0].files;
+        Object.assign(currentProject.files, tempProject[0].files);
         oldProject.id = id;
         oldProject.name = tempProject[0].name;
         oldProject.createDate = tempProject[0].createDate;
         oldProject.nbFile = tempProject[0].nbFile;
-        oldProject.files = tempProject[0].files;
+        Object.assign(oldProject.files, tempProject[0].files);
     }
-
     isOpen.value = true;
 }
 
@@ -345,6 +366,25 @@ function createProject() {
     })
         .then(() => processOk(currentProject.name + " " + t("message.created")))
         .catch(() => processFail(t("message.createdFail")));
+}
+
+async function updateProject(){
+    waitingProcess(t("message.updateInProgress"));
+    const addListId = recordModif.add.filter(id => id != "");
+    if(addListId.length>0){
+        const addList = currentProject.files.filter(file => 
+            addListId.includes(file.id));
+        await $fetch("/api/addFile",{
+            method:"POST",
+            body:{
+                files: addList,
+                folder: currentFolder,
+                id_project: currentProject.id
+            }
+        })
+    }
+    processOk(currentProject.name + " " + t("message.updateProject"));
+    
 }
 
 </script>
@@ -441,14 +481,20 @@ function createProject() {
 
                         </UTooltip>
 
-                        <UTable v-if="item.label === 'label.files'" :rows="currentProject.files" :columns="tabFilesStruct"
-                            id="filesTable" :empty-state="{
+                        <UTable v-if="item.label === 'label.files'"
+                            :rows="currentProject.files"
+                            :columns="tabFilesStruct"
+                            id="filesTable"
+                            :empty-state="{
                                 icon: 'i-heroicons-document',
                                 label: t('label.noFile')
-                            }" :loading="loading > 0" :loading-state="{
-    icon: 'i-heroicons-arrow-path-20-solid',
-    label: labLoading
-}">
+                            }" 
+                            :loading="loading > 0"
+                            :loading-state="{
+                                icon: 'i-heroicons-arrow-path-20-solid',
+                                label: labLoading
+                            }"
+                        >
                             <template #delete-data="{ row }">
                                 <UButton :title="labDeleteRow" icon="i-heroicons-x-mark" size="xl" color="red"
                                     variant="link" @click="deleteRow(row.id)" />
@@ -464,6 +510,7 @@ function createProject() {
                         :title="t('button.update')"
                         icon="i-heroicons-arrow-path"
                         :label="t('button.update')"
+                        @click="updateProject()"
                     />
                     <UButton v-if="currentProject.id == ''"
                         :title="t('button.create')"

@@ -40,6 +40,8 @@ export default {
         badProjectName: "Le nom de project doit contenir au moins 3 caractère (hors les espaces)",
         created: "a été créé",
         createdFail: "La création du projet a échoué",
+        updateInProgress: "Le project est en cours de mise à jour",
+        updateProject:"est mise à jour",
         waitCreateProject: "Projet en cours de création"
     },
     title: {

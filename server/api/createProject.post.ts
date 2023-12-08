@@ -1,31 +1,7 @@
 import pg from "pg";
 import type { MultiPartData } from "h3";
-import { readFile, rm } from "fs/promises";
+import { rm } from "fs/promises";
 import { join } from "path";
-
-function addFile(file: tFile, folder: string, client: any, id_project: string) {
-
-    return readFile(join("/shareFile", folder, file.id),{encoding:"hex"})
-        .then(buffer => {
-            // thx: https://stackoverflow.com/a/14408194
-            return client.query(`SELECT lo_from_bytea(0, '${"\\x" + buffer}') as oid`);
-        })
-        .then(async(respQuery) => {
-            if (respQuery.rows.length === 0) {
-                throw new Error("OID not create");
-            }
-            const oid = respQuery.rows[0].oid;              
-            return client.query(`INSERT INTO file(name, date_create, f_type,
-                                                  f_size, content,id_project)
-                                 VALUES ('${file.name}', NOW(),
-                                         '${file.type}', '${file.size}',
-                                         '${oid}', '${id_project}')`);
-        })
-        .catch((err) => {
-            console.error("Add file fail : ", file.name, err);
-            throw new Error("Add file fail");
-        });
-}
 
 function getFromMultipartFormData(item: MultiPartData[], field: string) {
     return item.filter(x => x.name == field)[0].data.toString();
@@ -63,8 +39,16 @@ export default defineEventHandler((event) => {
                     if (respQuery.rows.length === 0) {
                         throw new Error("project not create");
                     }
-                    return Promise.all(project.files.map((x: tFile) => addFile(x,
-                        folder, client, respQuery.rows[0].id)));
+                    // return Promise.all(project.files.map((x: tFile) => addFile(x,
+                    //     folder, client, respQuery.rows[0].id)));
+                    return $fetch("/api/addFile",{
+                        method:"POST",
+                        body: {
+                            files: project.files,
+                            folder: folder,
+                            id_project: respQuery.rows[0].id
+                        }
+                    });
 
                 })
                 .then(() => rm(join("/shareFile", folder),
@@ -78,6 +62,6 @@ export default defineEventHandler((event) => {
         .then(() => 0)
         .catch((err:Error) => {
             console.error(err);
-            return 1;
+            throw err;
         } );
 });
