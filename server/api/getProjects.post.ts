@@ -1,7 +1,6 @@
 import pg from "pg";
-import { compare } from "bcrypt";
 import type { tProject } from "~/plugins/file";
-
+import { teamFromHash } from "./function/team";
 
 export default defineEventHandler(async (event): Promise<{
     projects: tProject[] | [],
@@ -13,36 +12,12 @@ export default defineEventHandler(async (event): Promise<{
 
     await client.connect();
 
-    // Take user team
-    const getTeamSQL = `SELECT e.enumlabel
-                        FROM pg_type t, pg_enum e
-                        WHERE t.typname = 'team'`;
-
-    const listTeam = await client.query(getTeamSQL);
-    if (listTeam.rowCount == 1) {
-        throw new Error("No team");
-    }
-    // Verify team asked
-
-    // thx https://advancedweb.hu/how-to-use-async-functions-with-array-filter-in-javascript/
-    const asyncFilter = async (arr, predicate) => {
-        const results = await Promise.all(arr.map(predicate));
-    
-        return arr.filter((_v, index) => results[index]);
-    };
-
-    const team = await asyncFilter(listTeam.rows, async (x: { enumlabel: string }) => {
-        return await compare(x.enumlabel, askProject.team);
-    });
-
-    if (team.length != 1) {
-        throw new Error("ask bad team");
-    }
-
+    // Get team name
+    const team = await teamFromHash(askProject.team);
     // Get number projects for this team
     const countProjectsSql = `SELECT COUNT(id) as nb_project
                               FROM project
-                              WHERE team = '${team[0].enumlabel}'`;
+                              WHERE team = '${team}'`;
     const resultCount = await client.query(countProjectsSql);
 
     // No Projet
@@ -66,7 +41,7 @@ export default defineEventHandler(async (event): Promise<{
                                    file.f_type, file.f_size, file.id as f_id  
                             FROM project
                             FULL JOIN file on project.id = file.id_project
-                            WHERE team = '${team[0].enumlabel}'
+                            WHERE team = '${team}'
                             ORDER BY ${orderBy} ${sort}
                             LIMIT ${limit} OFFSET ${offset}`;
 

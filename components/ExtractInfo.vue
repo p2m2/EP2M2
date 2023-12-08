@@ -10,6 +10,7 @@ import type { tFile, tProject } from "../plugins/file";
 const { t } = useI18n();
 import { string, minLength, toTrimmed, object, parse } from 'valibot'
 import type { FormSubmitEvent } from "@nuxt/ui/dist/runtime/types";
+import {useCookie } from "nuxt/app";
 const toast = useToast()
 
 const labSelectFile = ref<string>("Télécharger le(s) fichier(s)");
@@ -357,7 +358,7 @@ function createProject() {
     body.append("folder", currentFolder);
     body.append("project", JSON.stringify(currentProject));
     // todo get team name
-    body.append("team", "other");
+    body.append("team", useCookie("team").value as string);
     // todo undisplay modal and waiting popup
     waitingProcess(t("message.waitCreateProject"));
     $fetch("api/createProject", {
