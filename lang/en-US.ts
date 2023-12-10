@@ -42,6 +42,7 @@ export default {
         created: "created",
         createdFail: "Project's creation failed",
         loading: "Loading",
+        updateFail: "Update fail",
         updateInProgress: "Update of project in progress",
         updateProject:"updated",
         waitCreateProject: "Hold on please, we're creating your project"

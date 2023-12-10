@@ -42,6 +42,7 @@ export default {
         created: "a été créé",
         createdFail: "La création du projet a échoué",
         loading: "chargement",
+        updateFail: "Échec de la mise à jour",
         updateInProgress: "Le project est en cours de mise à jour",
         updateProject:"est mise à jour",
         waitCreateProject: "Projet en cours de création"

@@ -360,21 +360,27 @@ function createProject() {
 
 async function updateProject(){
     waitingProcess(t("message.updateInProgress"));
+
+    const holdOn = [];
+
     const addListId = recordModif.add.filter(id => id != "");
     if(addListId.length>0){
         const addList = currentProject.files.filter(file => 
             addListId.includes(file.id));
-        await $fetch("/api/addFile",{
+        holdOn.push ($fetch("/api/addFile",{
             method:"POST",
             body:{
                 files: addList,
                 folder: currentFolder,
                 id_project: currentProject.id
             }
-        })
+        }))
     }
-    processOk(currentProject.name + " " + t("message.updateProject"));
-    
+
+    Promise.all(holdOn)
+    .then(() => processOk(currentProject.name + " " + 
+                          t("message.updateProject")))
+    .catch(() => processFail(t("message.updateFail")));    
 }
 
 </script>
@@ -421,7 +427,7 @@ async function updateProject(){
             label: t('label.noProject')
         }" :loading="loading > 0" :loading-state="{
     icon: 'i-heroicons-arrow-path-20-solid',
-    label: t("message.loading")
+    label: t('message.loading')
 }">
             <template #createDate-data="{ row }">
                 {{ localDate(row.createDate) }}
@@ -482,7 +488,7 @@ async function updateProject(){
                             :loading="loading > 0"
                             :loading-state="{
                                 icon: 'i-heroicons-arrow-path-20-solid',
-                                label: t("message.loading")
+                                label: t('message.loading')
                             }"
                         >
                             <template #delete-data="{ row }">
