@@ -385,6 +385,16 @@ async function updateProject(){
         holdOn.push($fetch("/api/delFile",{method:"POST",body: delListId}));
     }
 
+    if(recordModif.name.value != ""){
+        holdOn.push($fetch("/api/changeNameProject",{
+            method:"POST",
+            body: {
+                id: currentProject.id,
+                name: recordModif.name.value
+            }
+        }));
+    }
+
     Promise.all(holdOn)
     .then(() => processOk(currentProject.name + " " + 
                           t("message.updateProject")))
