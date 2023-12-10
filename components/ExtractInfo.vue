@@ -301,6 +301,9 @@ function openProject(id: string) {
         emptyProject(oldProject);
     }
     else {
+        // reset of record
+        recordModif.add=[""];
+        recordModif.del=[""];
         const tempProject = showProject.value.filter(p => p.id == id)
 
         currentProject.id = id;
