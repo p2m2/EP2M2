@@ -243,9 +243,9 @@ async function getFiles(evt: Event | null): Promise<void> {
 
 
 function deleteRow(id: string) {
-    // get index of row
+            // get index of row
     const index = currentProject.files.findIndex((file) => file.id == id);
-
+        
     // Delete the row 
     if (index != undefined) {
         currentProject.files.splice(index, 1);
@@ -375,6 +375,11 @@ async function updateProject(){
                 id_project: currentProject.id
             }
         }))
+    }
+
+    const delListId = recordModif.del.filter(id => id !="" );
+    if (delListId.length>0){
+        holdOn.push($fetch("/api/delFile",{method:"POST",body: delListId}));
     }
 
     Promise.all(holdOn)
