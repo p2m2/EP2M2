@@ -2,6 +2,7 @@ export default {
     button: {
         create: "Créer",
         deleteProject: "Supprimer",
+        deleteRow: "Supprimer",
         exportProject: "Export",
         help: "Aide",
         home: "Accueil",
@@ -40,6 +41,7 @@ export default {
         badProjectName: "Le nom de project doit contenir au moins 3 caractère (hors les espaces)",
         created: "a été créé",
         createdFail: "La création du projet a échoué",
+        loading: "chargement",
         updateInProgress: "Le project est en cours de mise à jour",
         updateProject:"est mise à jour",
         waitCreateProject: "Projet en cours de création"

@@ -13,16 +13,9 @@ import type { FormSubmitEvent } from "@nuxt/ui/dist/runtime/types";
 import {useCookie } from "nuxt/app";
 const toast = useToast()
 
-const labSelectFile = ref<string>("Télécharger le(s) fichier(s)");
-
-
-const labDeleteRow = ref<string>("supprimer");
-
-const labLoading = ref<string>("Chargement ...");
 
 const isOpen = ref<boolean>(false);
 const loading = ref<number>(0);
-
 
 // Define struct of table of file
 // 3 columns (name, type, size in KB, delete actions)
@@ -301,10 +294,6 @@ async function extract(idProject: string) {
 
 }
 
-defineExpose({
-    labSelectFile,
-});
-
 function openProject(id: string) {
     currentFolder = crypto.getRandomValues(new Uint32Array(4)).join("-");
     if (id === "") {
@@ -432,7 +421,7 @@ async function updateProject(){
             label: t('label.noProject')
         }" :loading="loading > 0" :loading-state="{
     icon: 'i-heroicons-arrow-path-20-solid',
-    label: labLoading
+    label: t("message.loading")
 }">
             <template #createDate-data="{ row }">
                 {{ localDate(row.createDate) }}
@@ -493,11 +482,11 @@ async function updateProject(){
                             :loading="loading > 0"
                             :loading-state="{
                                 icon: 'i-heroicons-arrow-path-20-solid',
-                                label: labLoading
+                                label: t("message.loading")
                             }"
                         >
                             <template #delete-data="{ row }">
-                                <UButton :title="labDeleteRow" icon="i-heroicons-x-mark" size="xl" color="red"
+                                <UButton :title="t('button.deleteRow')" icon="i-heroicons-x-mark" size="xl" color="red"
                                     variant="link" @click="deleteRow(row.id)" />
                             </template>
                         </UTable>
