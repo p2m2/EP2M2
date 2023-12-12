@@ -27,7 +27,7 @@ export default defineEventHandler(async (event): Promise<{
     }
 
     // Nomber project by page
-    const limit = 10;
+    const limit = 5;
     
     // Filter of page
     const orderBy = askProject.orderBy == "createDate" ? "project.date_create" :

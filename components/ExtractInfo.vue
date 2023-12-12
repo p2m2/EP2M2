@@ -21,18 +21,19 @@ const loading = ref<number>(0);
 // 3 columns (name, type, size in KB, delete actions)
 const tabFilesStruct = [{
     key: "name",
-    label: t("label.tabFileName"),
+    title: t("label.tabFileName"),
     sortable: true
 }, {
     key: "type",
-    label: t("label.tabType"),
+    title: t("label.tabType"),
     sortable: true
 }, {
     key: "size",
-    label: t("label.tabSize"),
+    title: t("label.tabSize"),
     sortable: true
 }, {
-    key: "delete"
+    key: "delete",
+    sortable: false
 }];
 
 // Define of struct of table of project
@@ -60,7 +61,7 @@ const tabProjectStruct = [
     }
 ];
 
-const itemsPerPage = 10;
+const itemsPerPage = ref<number>(5);
 
 // Variable to know by which column the project's table sorted
 const sortProject = ref<{
@@ -115,6 +116,8 @@ const recordModif = {
     add:[""], del: [""]
 };
 
+const currentPage = ref<number>(1);
+
 /**
  * Get all list of projects of one page and number of page
  * @param page number page
@@ -143,11 +146,14 @@ async function actualize({ page, itemsPerPage, sortBy }) {
         sortProject.value.column = sortBy[0].key;
         sortProject.value.direction = sortBy[0].order;
     }
+    
     await getProjects(page)
         .then((resp) => {
             projects.projects = resp.projects;
             projects.count = resp.count;
         });    
+
+    currentPage.value = page;
 }
 
 // Condition part to valid Project name in input 
@@ -410,6 +416,11 @@ async function updateProject(){
     .catch(() => processFail(t("message.updateFail")));    
 }
 
+
+
+function changeProjectPage(page){
+    actualize({page:page, itemsPerPage:undefined, sortBy:{undefined}});
+}
 </script>
     
 <style>
@@ -452,11 +463,12 @@ async function updateProject(){
         <v-data-table-server
             v-model:items-per-page="itemsPerPage"
             :headers="tabProjectStruct"
-            :items-length="showProject.length"
-            :items="showProject"
+            :items-length="projects.projects.length"
+            :items="projects.projects"
             :loading="loading > 0"
             item-value="name"
             @update:options="actualize"
+            @update:page="getProjects"
         >
             <template v-slot:headers="{ 
                 columns, isSorted, getSortIcon, toggleSort }"
@@ -489,6 +501,16 @@ async function updateProject(){
                     @click="openProject(item.id)" />
                 <UButton :title="t('button.deleteProject')" icon="i-heroicons-x-mark" size="xl" color="red" variant="link"
                     @click="deleteRow(item.id)" />
+            </template>
+            <template v-slot:bottom>
+                <div class="text-center pt-2">
+                    <v-pagination 
+                        v-model="currentPage"
+                        :length="projects.count"
+                        :total-visible="4"
+                        @update:modelValue="changeProjectPage"
+                    />
+                </div>
             </template>
         </v-data-table-server>
     </UContainer>
@@ -526,26 +548,51 @@ async function updateProject(){
                                 @click="simulateClick('inFilesSelect')" icon="i-heroicons-document-plus" />
 
                         </UTooltip>
-
-                        <UTable v-if="item.label === 'label.files'"
-                            :rows="currentProject.files"
-                            :columns="tabFilesStruct"
-                            id="filesTable"
-                            :empty-state="{
-                                icon: 'i-heroicons-document',
-                                label: t('label.noFile')
-                            }" 
+                        <v-data-table v-if="item.label === 'label.files'"
+                            v-model:items-per-page="itemsPerPage"
+                            :headers="tabFilesStruct"
+                            :items-length="currentProject.files.length"
+                            :items="currentProject.files"
                             :loading="loading > 0"
-                            :loading-state="{
-                                icon: 'i-heroicons-arrow-path-20-solid',
-                                label: t('message.loading')
-                            }"
+                            item-value="name"
                         >
-                            <template #delete-data="{ row }">
-                                <UButton :title="t('button.deleteRow')" icon="i-heroicons-x-mark" size="xl" color="red"
-                                    variant="link" @click="deleteRow(row.id)" />
+                            <template v-slot:headers="{ 
+                                columns, isSorted, getSortIcon, toggleSort }"
+                            >
+                                <tr>
+                                    <template 
+                                        v-for="column in columns" 
+                                        :key="column.key"
+                                    >
+                                        <td>
+                                            <div 
+                                                class="cursor-pointer flex items-center" 
+                                                @click="() => toggleSort(column)"
+                                            >
+                                                {{ column.title }}
+                                                <UIcon v-if="column.sortable"
+                                                    :name=" !isSorted(column)?
+                                                    'i-heroicons-arrows-up-down-20-solid' :
+                                                    getSortIcon(column) == '$sortAsc'?
+                                                    'i-heroicons-bars-arrow-up-20-solid' :
+                                                    'i-heroicons-bars-arrow-down-20-solid'"
+                                                    class="w-5 h-5 m-1.5 min-w-[20px]"
+                                                />
+                                            </div>
+                                        </td>
+                                    </template>
+                                </tr>
                             </template>
-                        </UTable>
+                            <template v-slot:item.delete="{ item }">
+                                <UButton 
+                                    :title="t('button.deleteRow')" 
+                                    icon="i-heroicons-x-mark"
+                                    size="xl" color="red"
+                                    variant="link"
+                                    @click="deleteRow(item.id)" 
+                                />
+                            </template>
+                        </v-data-table>
                         <div v-else>
                             <p>couxcou</p>
                         </div>
