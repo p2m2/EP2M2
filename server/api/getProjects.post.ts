@@ -28,11 +28,13 @@ export default defineEventHandler(async (event): Promise<{
 
     // Nomber project by page
     const limit = 10;
-
+    
     // Filter of page
-    const orderBy = askProject.orderBy == "date" ? "project.date_create" :
+    const orderBy = askProject.orderBy == "createDate" ? "project.date_create" :
         "project.id";
-    const sort = askProject.sort == "DESC" ? "DESC" : "ASC";
+    
+    const sort = askProject.sort == "desc" ? "DESC" : "ASC";
+    
     const offset = (askProject.page - 1) * limit;
 
     // Get Project about filter
@@ -40,11 +42,15 @@ export default defineEventHandler(async (event): Promise<{
                                    project.date_create, file.name as f_name,
                                    file.f_type, file.f_size, file.id as f_id  
                             FROM project
-                            FULL JOIN file on project.id = file.id_project
-                            WHERE team = '${team}'
-                            ORDER BY ${orderBy} ${sort}
-                            LIMIT ${limit} OFFSET ${offset}`;
-
+                            FULL JOIN file on file.id_project = project.id
+                            WHERE project.id IN (
+                                SELECT id
+                                FROM project
+                                WHERE team = '${team}'
+                                ORDER BY ${orderBy} ${sort}
+                                LIMIT ${limit} OFFSET ${offset})
+                            ORDER BY ${orderBy} ${sort}`;
+    
     const resultProject = await client.query(getProjectsSQL);
 
     await client.end();

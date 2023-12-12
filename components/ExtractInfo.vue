@@ -41,28 +41,33 @@ const tabFilesStruct = [{
 const tabProjectStruct = [
     {
         key: "name",
-        label: t("label.project"),
+        title: t("label.project"),
         sortable: true
     },
     {
         key: "createDate",
-        label: t("label.createDate"),
+        title: t("label.createDate"),
         sortable: true
     },
     {
         key: "nbFile",
-        label: t("label.nbFile"),
+        title: t("label.nbFile"),
         sortable: false
     },
     {
-        key: "action"
+        key: "action",
+        sortable: false
     }
 ];
 
+const itemsPerPage = 10;
+
 // Variable to know by which column the project's table sorted
-const sortProject = ref<{ column: string; direction: "asc" | "desc"; }>({
-    column: "",
-    direction: "asc"
+const sortProject = ref<{
+    column: "name"|"createDate",
+    direction: "asc" | "desc" }>({
+    column: "createDate",
+    direction: "desc"
 })
 
 /**
@@ -121,7 +126,7 @@ async function getProjects(page: number = 1): Promise<{
         method: "POST",
         body: {
             team: useCookie("team", { sameSite: "strict" }).value,
-            orderby: sortProject.value.column,
+            orderBy: sortProject.value.column,
             sort: sortProject.value.direction,
             page: page
         }
@@ -133,12 +138,16 @@ const projects = reactive<{ projects: tProject[], count: number }>(
     await getProjects());
 const showProject = computed(() => projects.projects);
 
-async function actualize() {
-    await getProjects()
+async function actualize({ page, itemsPerPage, sortBy }) {
+    if(sortBy.length){    
+        sortProject.value.column = sortBy[0].key;
+        sortProject.value.direction = sortBy[0].order;
+    }
+    await getProjects(page)
         .then((resp) => {
             projects.projects = resp.projects;
             projects.count = resp.count;
-        });
+        });    
 }
 
 // Condition part to valid Project name in input 
@@ -296,11 +305,11 @@ async function extract(idProject: string) {
 
 function openProject(id: string) {
     currentFolder = crypto.getRandomValues(new Uint32Array(4)).join("-");
-    if (id === "") {
+
         emptyProject(currentProject);
         emptyProject(oldProject);
-    }
-    else {
+
+    if (id != "") {
         // reset of record
         recordModif.add=[""];
         recordModif.del=[""];
@@ -338,7 +347,7 @@ async function processOk(msg: string) {
     emptyProject(currentProject);
     currentFolder = "";
     toast.add({ title: msg });
-    await actualize();
+    await actualize({page:1, itemsPerPage:10, sortBy:[{key:sortProject.value.column, order:sortProject.value.direction}]});
 }
 
 function processFail(msg: string) {
@@ -440,25 +449,48 @@ async function updateProject(){
         </UTooltip>
     </UContainer>
     <UContainer>
-        <UTable v-model:sort="sortProject" :rows="showProject" :columns="tabProjectStruct" id="filesTable" :empty-state="{
-            icon: 'i-heroicons-folder',
-            label: t('label.noProject')
-        }" :loading="loading > 0" :loading-state="{
-    icon: 'i-heroicons-arrow-path-20-solid',
-    label: t('message.loading')
-}">
-            <template #createDate-data="{ row }">
-                {{ localDate(row.createDate) }}
+        <v-data-table-server
+            v-model:items-per-page="itemsPerPage"
+            :headers="tabProjectStruct"
+            :items-length="showProject.length"
+            :items="showProject"
+            :loading="loading > 0"
+            item-value="name"
+            @update:options="actualize"
+        >
+            <template v-slot:headers="{ 
+                columns, isSorted, getSortIcon, toggleSort }"
+            >
+                <tr>
+                    <template v-for="column in columns" :key="column.key">
+                        <td>
+                            <div class="cursor-pointer flex items-center" @click="() => toggleSort(column)">
+                                {{ column.title }}
+                                <UIcon v-if="column.sortable"
+                                    :name=" !isSorted(column)?
+                                    'i-heroicons-arrows-up-down-20-solid' :
+                                    getSortIcon(column) == '$sortAsc'?
+                                    'i-heroicons-bars-arrow-up-20-solid' :
+                                    'i-heroicons-bars-arrow-down-20-solid'"
+                                    class="w-5 h-5 m-1.5 min-w-[20px]"
+                                />
+                            </div>
+                        </td>
+                    </template>
+                </tr>
             </template>
-            <template #action-data="{ row }">
-                <UButton :title="t('button.exportProject')" icon="i-heroicons-arrow-down-on-square" size="xl" color="green"
-                    variant="link" @click="extract(row.id)" :disabled="row.nbFile == 0" />
+            <template v-slot:item.createDate="{ value }">
+               {{ localDate(value) }}
+            </template>
+            <template v-slot:item.action="{ item }">
+               <UButton :title="t('button.exportProject')" icon="i-heroicons-arrow-down-on-square" size="xl" color="green"
+                    variant="link" @click="extract(item.id)" :disabled="item.nbFile == 0" />
                 <UButton :title="t('button.viewProject')" icon="i-heroicons-pencil" size="xl" color="blue" variant="link"
-                    @click="openProject(row.id)" />
+                    @click="openProject(item.id)" />
                 <UButton :title="t('button.deleteProject')" icon="i-heroicons-x-mark" size="xl" color="red" variant="link"
-                    @click="deleteRow(row.id)" />
+                    @click="deleteRow(item.id)" />
             </template>
-        </UTable>
+        </v-data-table-server>
     </UContainer>
 
     <UProgress v-if="lockProject" animation="elastic" :max="[msgProgress]" />

@@ -1,11 +1,18 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 import { defineNuxtConfig } from "nuxt/config";
+import vuetify, { transformAssetUrls } from "vite-plugin-vuetify";
 
 export default defineNuxtConfig({
     devtools: { enabled: true },
     modules: [
         "@nuxt/ui",
-        "@nuxtjs/i18n"
+        "@nuxtjs/i18n",
+        (_options, nuxt) => {
+            nuxt.hooks.hook("vite:extendConfig", (config) => {
+            // @ts-expect-error
+                config.plugins.push(vuetify({ autoImport: true }));
+            });
+        },
     ],
     typescript: {
         typeCheck: false
@@ -36,5 +43,15 @@ export default defineNuxtConfig({
         head: {
             link: [{ rel: "icon", type: "image/ico", href: "/p2m2.ico" }]
         }
-    }
+    },
+    build: {
+        transpile: ["vuetify"],
+    },
+    vite: {
+        vue: {
+            template: {
+                transformAssetUrls,
+            },
+        },
+    },
 });
