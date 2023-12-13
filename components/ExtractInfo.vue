@@ -142,6 +142,7 @@ const projects = reactive<{ projects: tProject[], count: number }>(
 const showProject = computed(() => projects.projects);
 
 async function actualize({ page, itemsPerPage, sortBy }) {
+    loading.value ++;
     if(sortBy.length){    
         sortProject.value.column = sortBy[0].key;
         sortProject.value.direction = sortBy[0].order;
@@ -154,6 +155,7 @@ async function actualize({ page, itemsPerPage, sortBy }) {
         });    
 
     currentPage.value = page;
+    loading.value --;
 }
 
 // Condition part to valid Project name in input 
@@ -421,6 +423,13 @@ async function updateProject(){
 function changeProjectPage(page){
     actualize({page:page, itemsPerPage:undefined, sortBy:{undefined}});
 }
+
+function closeWinProject(){
+    if(validProjectName && currentProject.id ==""){
+
+    }
+    isOpen.value = false;
+}
 </script>
     
 <style>
@@ -514,8 +523,15 @@ function changeProjectPage(page){
             </template>
         </v-data-table-server>
     </UContainer>
-
-    <UProgress v-if="lockProject" animation="elastic" :max="[msgProgress]" />
+    <v-progress-linear
+        :active="lockProject"
+        :indeterminate="true"
+        absolute
+        bottom
+        color="deep-purple-accent-4"
+    >
+        {{ msgProgress }}
+    </v-progress-linear>
 
     <UModal v-model="isOpen" prevent-close :display="!lockProject">
         <UForm :schema="schema" :state="currentProject" class="space-y-4" @submit="onSubmit">
@@ -528,7 +544,7 @@ function changeProjectPage(page){
                             {{ t("title.projectName") }}
                         </h3>
                         <UButton color="gray" variant="link" icon="i-heroicons-x-mark-20-solid" class="-my-1"
-                            @click="isOpen = false" />
+                            @click="closeWinProject()" />
                     </div>
                     <UFormGroup name="name">
                         <UInput v-model="currentProject.name" autofocus requires />
