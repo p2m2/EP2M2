@@ -7,10 +7,12 @@ export default {
         help: "Help",
         home: "Home",
         lang: "Change langage",
+        no: "No",
         submit: "Submit",
         topProfOut: "Profile under menu and logout",
         update: "Update",
         viewProject: "View",
+        yes: "Yes"
     },
     image:{
         banner:{
@@ -42,6 +44,8 @@ export default {
         created: "created",
         createdFail: "Project's creation failed",
         loading: "Loading",
+        confLoseModif: "You'll lose all modifications.",
+        confQuestion: "Are you sure to continue?",
         updateFail: "Update fail",
         updateInProgress: "Update of project in progress",
         updateProject:"updated",

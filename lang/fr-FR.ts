@@ -7,10 +7,12 @@ export default {
         help: "Aide",
         home: "Accueil",
         lang: "Changer de langue",
+        no: "Non",
         submit: "Valider",
         topProfOut: "Accéder au sous-menu profile et déconnection",
         update: "Mise à jour",
         viewProject: "Détails",
+        yes: "Oui"
     },
     image: {
         banner: {
@@ -42,6 +44,8 @@ export default {
         created: "a été créé",
         createdFail: "La création du projet a échoué",
         loading: "chargement",
+        confLoseModif: "Attention tous les modifications seront perdues.",
+        confQuestion: "Êtes-vous sûr de vouloir continuer ?",
         updateFail: "Échec de la mise à jour",
         updateInProgress: "Le project est en cours de mise à jour",
         updateProject:"est mise à jour",

@@ -16,6 +16,8 @@ const toast = useToast()
 
 const isOpen = ref<boolean>(false);
 const loading = ref<number>(0);
+const stateConfBox = ref<string>("");
+const openConfBox = ref<boolean>(false);
 
 // Define struct of table of file
 // 3 columns (name, type, size in KB, delete actions)
@@ -424,11 +426,77 @@ function changeProjectPage(page){
     actualize({page:page, itemsPerPage:undefined, sortBy:{undefined}});
 }
 
-function closeWinProject(){
-    if(validProjectName && currentProject.id ==""){
 
+/**
+ * Wait a element display in DOM
+ * @param selector 
+ * @param adding true: wait adding element in Dow; false: wait removing in Dom
+ */
+// thx https://stackoverflow.com/a/61511955
+function waitForElm(selector:string, adding:boolean = true) {
+    return new Promise(resolve => {
+        if (document.querySelector(selector) && adding) {
+            return resolve(document.querySelector(selector));
+        }
+
+        const observer = new MutationObserver(mutations => {
+            if(adding){
+                if (document.querySelector(selector)) {
+                    observer.disconnect();
+                    resolve(document.querySelector(selector));
+                }
+            } else {
+                if (document.querySelector(selector) == null) {
+                    observer.disconnect();
+                    resolve(0);
+                }
+            }
+            
+        });
+
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true
+        });
+    });
+}
+
+/**
+ * function to manage confirmation box
+ * @param msg 
+ */
+async function confBox(msg: string):Promise<boolean> {
+
+    openConfBox.value = true;
+    await waitForElm("#confirMsgId");
+    
+    const confMsg = document.getElementById("confirMsgId");
+    if(confMsg){
+        confMsg.textContent = msg;
     }
-    isOpen.value = false;
+
+    await waitForElm("#confirMsgId", false);
+    
+    if(stateConfBox.value == "yes"){
+        stateConfBox.value =""       
+        return true;
+    }else{
+        stateConfBox.value =""       
+        return false;
+    }
+}
+
+/**
+ * Manage the close windows of project
+ */
+async function closeWinProject(){
+    
+    if((validProjectName.value && currentProject.id =="")
+       || (modifiedProject.value)){
+        isOpen.value = !await confBox(t("message.confLoseModif"));
+    }else{
+        isOpen.value = false;
+    }
 }
 </script>
     
@@ -533,6 +601,7 @@ function closeWinProject(){
         {{ msgProgress }}
     </v-progress-linear>
 
+    <!-- Details / create / modification project box -->
     <UModal v-model="isOpen" prevent-close :display="!lockProject">
         <UForm :schema="schema" :state="currentProject" class="space-y-4" @submit="onSubmit">
             <UCard>
@@ -631,4 +700,26 @@ function closeWinProject(){
             </UCard>
         </UForm>
     </UModal>
+
+    <!-- Confirmation dialog box -->
+    <v-dialog
+      v-model="openConfBox"
+      width="auto"
+    >
+        <v-card>
+            <v-card-text>
+                <p id="confirMsgId"></p>
+                <br/>
+                <p>{{ t("message.confQuestion") }}</p>
+            </v-card-text>
+            <v-card-actions>
+                <v-btn color="primary" @click="openConfBox=false; stateConfBox='yes'">
+                    {{ t("button.yes") }}
+                </v-btn>
+                <v-btn color="primary" @click="openConfBox=false">
+                    {{ t("button.no") }}
+                </v-btn>
+            </v-card-actions>
+        </v-card>
+    </v-dialog>
 </template>
