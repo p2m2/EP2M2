@@ -143,7 +143,7 @@ const projects = reactive<{ projects: tProject[], count: number }>(
     await getProjects());
 const showProject = computed(() => projects.projects);
 
-async function actualize({ page, itemsPerPage, sortBy }) {
+async function actualize({page, itemsPerPage, sortBy }) {
     loading.value ++;
     if(sortBy.length){    
         sortProject.value.column = sortBy[0].key;
@@ -357,7 +357,7 @@ async function processOk(msg: string) {
     emptyProject(currentProject);
     currentFolder = "";
     toast.add({ title: msg });
-    await actualize({page:1, itemsPerPage:10, sortBy:[{key:sortProject.value.column, order:sortProject.value.direction}]});
+    await actualize({page:1, itemsPerPage:5, sortBy:[{key:sortProject.value.column, order:sortProject.value.direction}]});
 }
 
 function processFail(msg: string) {
@@ -498,6 +498,33 @@ async function closeWinProject(){
         isOpen.value = false;
     }
 }
+
+async function deleteProject(id:string, name:string){
+    if(!await confBox(t("message.confDelProject"))){
+        return
+    }
+    loading.value ++;
+    fetch("/api/delProject",{
+        method: "POST",
+        body: id
+    })
+    .then(() => toast.add({
+                    title: t("message.okDelProject"),
+                    description: name
+                }))
+    .catch(() => toast.add({
+                    title: t("message.koDelProject"),
+                    description: name
+                }))
+    .finally(() => {
+        loading.value --;
+        actualize({page:1, itemsPerPage:5,
+                   sortBy:[{
+                        key:sortProject.value.column,
+                        order:sortProject.value.direction
+                    }]});
+    })
+}
 </script>
     
 <style>
@@ -577,7 +604,7 @@ async function closeWinProject(){
                 <UButton :title="t('button.viewProject')" icon="i-heroicons-pencil" size="xl" color="blue" variant="link"
                     @click="openProject(item.id)" />
                 <UButton :title="t('button.deleteProject')" icon="i-heroicons-x-mark" size="xl" color="red" variant="link"
-                    @click="deleteRow(item.id)" />
+                    @click="deleteProject(item.id, item.name)" />
             </template>
             <template v-slot:bottom>
                 <div class="text-center pt-2">
