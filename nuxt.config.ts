@@ -4,6 +4,16 @@ import vuetify, { transformAssetUrls } from "vite-plugin-vuetify";
 
 export default defineNuxtConfig({
     devtools: { enabled: true },
+    $production: {
+        routeRules: {
+            "/**": { isr: true }
+        }
+    },
+    $development: {
+        routeRules: {
+            "/**": { isr: true }
+        }
+    },
     modules: [
         "@nuxt/ui",
         "@nuxtjs/i18n",
