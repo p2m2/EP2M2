@@ -24,5 +24,6 @@ export default defineEventHandler(async (event) : Promise<number|string> => {
     
     return await hash(resultUser.rows[0].team, 10)
         .then((hash:string) => hash)
-        .catch(() => -5);
+        .catch(() => -5)
+        .finally(() => client.end());
 });

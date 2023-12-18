@@ -17,6 +17,7 @@ export default defineEventHandler((event) => {
                 // thx https://stackoverflow.com/a/11691651
                 .then(() => client.query(`DELETE FROM file
                                           WHERE id IN 
-                                          (${delListId.join(",")})`));
+                                          (${delListId.join(",")})`))
+                .finally(() => client.end());
         });
 });

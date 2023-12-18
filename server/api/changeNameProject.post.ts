@@ -14,6 +14,6 @@ export default defineEventHandler((event) => {
                                   SET name = '${body.name}'
                                   WHERE id = '${body.id}'`);
                 })
-                .then(() => client.end());
+                .finally(() => client.end());
         });
 });

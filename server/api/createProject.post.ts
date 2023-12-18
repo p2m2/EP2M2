@@ -54,15 +54,14 @@ export default defineEventHandler((event) => {
                 })
                 .then(() => rm(join("/shareFile", folder),
                     { recursive: true, force: true }))
-                .then(() => 0)
                 .catch((err: Error) => {
                     console.error(err);
                     throw err;
-                });
+                })
+                .finally(() => client.end());
         })
-        .then(() => 0)
         .catch((err:Error) => {
             console.error(err);
             throw err;
-        } );
+        });
 });

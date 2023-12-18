@@ -13,6 +13,7 @@ export default defineEventHandler((event) => {
                 .then(() => client.query(`DELETE FROM file
                                           WHERE id_project ='${idProject}'`))
                 .then(() => client.query(`DELETE FROM project
-                                          WHERE id ='${idProject}'`));
+                                          WHERE id ='${idProject}'`))
+                .finally(() => client.end());
         });
 });

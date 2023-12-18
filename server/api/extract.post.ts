@@ -56,5 +56,6 @@ export default defineEventHandler(async (event) => {
         .then((csv:string) => {
             const csvBlob = new Blob([csv]);
             return sendStream(event, csvBlob.stream());
-        });
+        })
+        .finally(() => client.end());
 });
