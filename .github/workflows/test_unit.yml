@@ -12,30 +12,12 @@ permissions:
 jobs:
   test:
     runs-on: ubuntu-latest
-    services:
-      service-p2m2tool-api:
-        image: inraep2m2/service-p2m2tools-api
-        ports:
-          - 8080:8080
-      db:
-        image: postgres:latest
-        # Provide the password for postgres
-        env:
-          POSTGRES_PASSWORD: ep2m2
-          POSTGRES_DB: ep2m2db
-          POSTGRES_USER: ep2m2
-        # Set health checks to wait until postgres has started
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
     
     steps:
       - name: Get repo
         uses: actions/checkout@v3
+      - name: check files
+        run: ls -l
       - name: Test in container with compose
         run: docker compose -f "compose.test.yaml" up -d --build 
       - name: Test & coverage
