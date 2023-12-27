@@ -16,8 +16,6 @@ jobs:
     steps:
       - name: Get repo
         uses: actions/checkout@v3
-      - name: check files
-        run: ls -l
       - name: Test in container with compose
         run: docker compose -f "compose.test.yaml" up -d --build 
       - name: Test & coverage
