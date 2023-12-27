@@ -27,8 +27,9 @@ jobs:
         image: postgres:latest
         # Provide the password for postgres
         env:
-          POSTGRES_PASSWORD: secret
-          POSTGRES_DB: testdb
+          POSTGRES_PASSWORD: ep2m2
+          POSTGRES_DB: ep2m2db
+          POSTGRES_USER: ep2m2
         # Set health checks to wait until postgres has started
         options: >-
           --health-cmd pg_isready
@@ -49,8 +50,7 @@ jobs:
         run: psql --help
       - name: Configure Database
         run: |
-          PGPASSWORD=secret psql -U postgres -d testdb -tc "CREATE TABLE proj
-          (id SERIAL PRIMARY KEY);"
+          psql -tc "CREATE TABLE proj(id SERIAL PRIMARY KEY);"
       - name: Use Node.js
         uses: actions/setup-node@v3
         with:
