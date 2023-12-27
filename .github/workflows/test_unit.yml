@@ -42,22 +42,8 @@ jobs:
     steps:
       - name: Get repo
         uses: actions/checkout@v3
-      - name: add client
-        run: |
-          sudo apt-get update -y
-          sudo apt-get install --yes postgresql-client
-      - name: check psql
-        run: psql --help
-      - name: Configure Database
-        run: |
-          psql -tc "CREATE TABLE proj(id SERIAL PRIMARY KEY);"
-      - name: Use Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: latest
-          cache: 'npm'
-      - name: Installation project s packages
-        run: npm ci
+      - name: Test in container with compose
+        run: docker compose -f "compose.test.yaml" up -d --build 
       - name: Test & coverage
         run: npm run coverage
       - name: Report coverage
