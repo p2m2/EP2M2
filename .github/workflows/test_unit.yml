@@ -8,7 +8,13 @@ permissions:
   contents: read
   pull-requests: write
   checks: write
-    
+
+env:
+  PGPASSWORD: ep2m2
+  PGUSER: ep2m2
+  PGPORT: 5432
+  PGDATABASE: ep2m2db
+
 jobs:
   test:
     runs-on: ubuntu-latest
