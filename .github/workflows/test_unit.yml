@@ -41,6 +41,10 @@ jobs:
     steps:
       - name: Get repo
         uses: actions/checkout@v3
+      - name: add client
+        run: |
+          apt-get update
+          apt-get install --yes postgresql-client
       - name: Configure Database
         run: psql -U ep2m2 -f ./db/init.sql
       - name: Use Node.js
