@@ -45,6 +45,8 @@ jobs:
         run: |
           sudo apt-get update -y
           sudo apt-get install --yes postgresql-client
+      - name: check psql
+        run: psql --help
       - name: Configure Database
         run: |
           PGPASSWORD=secret psql -U postgres -d testdb -tc "CREATE TABLE proj

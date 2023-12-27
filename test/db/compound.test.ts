@@ -28,6 +28,7 @@ describe("Compound table", async ()=>{
         x.column_name);
     
     test("Check name of column", () =>{
+        // thx : https://stackoverflow.com/a/77081601
         expect(new Set(columnNames)).toEqual(
             new Set(compound.map(x => x.columnName)));
     });
