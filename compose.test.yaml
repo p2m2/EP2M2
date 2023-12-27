@@ -8,7 +8,7 @@ services:
       - "80:3000"
     volumes:
       - shareFile:/shareFile
-      - ./test:/EP2M2/test
+      - /home/runner/work/EP2M2/EP2M2/test:/EP2M2/test
     environment:
       PGPASSWORD: ep2m2
       PGUSER: ep2m2

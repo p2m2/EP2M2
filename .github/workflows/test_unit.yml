@@ -19,7 +19,10 @@ jobs:
       - name: Test in container with compose
         run: docker compose -f "compose.test.yaml" up -d --build 
       - name: Wait end execute tests
-        run: timeout 60s sh -c 'until !(docker ps | grep ep2m2_web); do sleep 2; done'
+        run: |
+          timeout 60s sh -c 'until !(docker ps | grep ep2m2_web); do sleep 2; done';
+          timeout 60s sh -c 'until ls /home/runner/work/EP2M2/EP2M2/test | grep results; do sleep 2; done';
+          timeout 60s sh -c 'until ls /home/runner/work/EP2M2/EP2M2/test/results | grep coverage; do sleep 2; done';
       - name: Report coverage
         if: always()
         uses: davelosert/vitest-coverage-report-action@v2
