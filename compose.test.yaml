@@ -6,8 +6,11 @@ services:
     volumes:
       - shareFile:/shareFile
       - ./test:/EP2M2/test
-    env_file:
-      - ./secrets/pg.env
+    environment:
+      PGPASSWORD: ep2m2
+      PGUSER: ep2m2
+      PGPORT: 5432
+      PGDATABASE: ep2m2db
 
       
   api:
@@ -21,8 +24,11 @@ services:
     container_name: db
     volumes:
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
-    env_file:
-      - ./secrets/pg.env
+    environment:
+      PGPASSWORD: ep2m2
+      PGUSER: ep2m2
+      PGPORT: 5432
+      PGDATABASE: ep2m2db
 
 volumes:
   shareFile:
