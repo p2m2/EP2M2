@@ -42,7 +42,7 @@ jobs:
       - name: Get repo
         uses: actions/checkout@v3
       - name: Configure Database
-        run: psql -f ./db/init.sql
+        run: psql -U ep2m2 -f ./db/init.sql
       - name: Use Node.js
         uses: actions/setup-node@v3
         with:
