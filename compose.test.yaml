@@ -1,6 +1,6 @@
 services:
   web:
-    build: .Dockerfile.test
+    build: ./Dockerfile.test
     ports:
       - "80:3000"
     volumes:
