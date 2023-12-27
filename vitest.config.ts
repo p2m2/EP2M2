@@ -30,11 +30,14 @@ export default mergeConfig([nuxtConfig],defineConfig({
         globals: true,
         environment: "jsdom",
         coverage:{
-            reporter: ["json-summary", "json"],
+            reporter: ["json-summary", "json", "html"],
             lines: 80,
             branches: 80,
             functions: 80,
-            statements: 80
+            statements: 80,
+            // If you want a coverage reports even if your tests are failing, include the reportOnFailure option
+            reportOnFailure: true,
+            reportsDirectory: "./test/results/coverage"
         },
         reporters: ["junit", "json", "verbose"],
         outputFile: {

@@ -27,10 +27,8 @@ services:
     volumes:
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
     environment:
-      PGPASSWORD: ep2m2
-      PGUSER: ep2m2
-      PGPORT: 5432
-      PGDATABASE: ep2m2db
+      POSTGRES_PASSWORD: ep2m2
+      POSTGRES_USER: ep2m2
 
 volumes:
   shareFile:
