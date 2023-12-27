@@ -27,8 +27,8 @@ jobs:
         image: postgres:latest
         # Provide the password for postgres
         env:
-          POSTGRES_PASSWORD: ep2m2
-          POSTGRES_USER: ep2m2
+          POSTGRES_PASSWORD: secret
+          POSTGRES_DB: testdb
         # Set health checks to wait until postgres has started
         options: >-
           --health-cmd pg_isready
@@ -46,7 +46,9 @@ jobs:
           sudo apt-get update -y
           sudo apt-get install --yes postgresql-client
       - name: Configure Database
-        run: sudo psql -U ep2m2 -f ./db/init.sql
+        run: |
+          PGPASSWORD=secret psql -U postgres -d testdb -tc "CREATE TABLE proj
+          (id SERIAL PRIMARY KEY);"
       - name: Use Node.js
         uses: actions/setup-node@v3
         with:
