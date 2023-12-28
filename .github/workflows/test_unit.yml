@@ -16,13 +16,21 @@ jobs:
     steps:
       - name: Get repo
         uses: actions/checkout@v3
+      - name: install tree
+        run: sudo apt install tree -y
       - name: Test in container with compose
-        run: docker compose -f "compose.test.yaml" up -d --build 
+        run: |
+          tree /
+          sudo docker compose -f "compose.test.yaml" up -d --build 
+          tree /home/runner/work/EP2M2/EP2M2/
       - name: Wait end execute tests
         run: |
           timeout 60s sh -c 'until !(docker ps | grep ep2m2_web); do sleep 2; done';
-          timeout 60s sh -c 'until ls /home/runner/work/EP2M2/EP2M2/test | grep results; do sleep 2; done';
-          timeout 60s sh -c 'until ls /home/runner/work/EP2M2/EP2M2/test/results | grep coverage; do sleep 2; done';
+          ls -l /home/runner/work/EP2M2/EP2M2/
+          tree /;
+          timeout 60s sh -c 'until ls /home/runner/work/EP2M2/EP2M2/test | grep results; do sleep 2; /home/runner/work/EP2M2/EP2M2/test; done';
+          timeout 60s sh -c 'until ls /home/runner/work/EP2M2/EP2M2/test/results | grep coverage
+          ; do sleep 2; done';
       - name: Report coverage
         if: always()
         uses: davelosert/vitest-coverage-report-action@v2

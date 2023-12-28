@@ -37,12 +37,12 @@ export default mergeConfig([nuxtConfig],defineConfig({
             statements: 80,
             // If you want a coverage reports even if your tests are failing, include the reportOnFailure option
             reportOnFailure: true,
-            reportsDirectory: "./test/results/coverage"
+            reportsDirectory: "/EP2M2/test/results/coverage"
         },
         reporters: ["junit", "json", "verbose"],
         outputFile: {
-            junit: "./test/results/results.xml",
-            json: "./test/results/results.json"
+            junit: "/EP2M2/test/results/results.xml",
+            json: "/EP2M2/test/results/results.json"
         },
     },
 
