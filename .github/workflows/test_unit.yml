@@ -49,10 +49,6 @@ jobs:
           cache: 'npm'
       - name: Installation project s packages
         run: npm ci
-      - name: affiche
-        run: |
-          ls -l
-          ls -l ./test
       - name: Configure database
         run: node ./db/init.js
       - name: Test
@@ -60,13 +56,6 @@ jobs:
       - name: Coverage
         if: always()
         run: npm run coverage
-      - name: affiche 2
-        if: always()
-        run: |
-          ls -l
-          ls -l ./test
-          ls -l ./test/results
-          ls -l ./test/results/coverage
       - name: Report coverage
         if: always()
         uses: davelosert/vitest-coverage-report-action@v2
