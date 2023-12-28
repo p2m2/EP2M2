@@ -72,8 +72,6 @@ jobs:
         uses: davelosert/vitest-coverage-report-action@v2
         with:
           file-coverage-mode: all
-          working-directory: ./test/
-          vite-config-path: ./vite[st].config.{t|mt|ct|j|mj|cj}s
       - name: Summary Tests
         uses: EnricoMi/publish-unit-test-result-action@v2
         if: always()
