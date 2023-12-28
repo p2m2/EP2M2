@@ -58,6 +58,7 @@ jobs:
       - name: Test
         run: npm run test
       - name: Coverage
+        if: always()
         run: npm run coverage
       - name: affiche 2
         if: always()
