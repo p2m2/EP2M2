@@ -9,44 +9,78 @@ permissions:
   pull-requests: write
   checks: write
 
+env:
+  PGPASSWORD: ep2m2
+  PGUSER: ep2m2
+  PGPORT: 5432
+  PGDATABASE: ep2m2db
+
 jobs:
   test:
     runs-on: ubuntu-latest
+    services:
+      service-p2m2tool-api:
+        image: inraep2m2/service-p2m2tools-api
+        ports:
+          - 8080:8080
+      db:
+        image: postgres:latest
+        # Provide the password for postgres
+        env:
+          POSTGRES_PASSWORD: ep2m2
+          POSTGRES_DB: ep2m2db
+          POSTGRES_USER: ep2m2
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
     
     steps:
       - name: Get repo
         uses: actions/checkout@v3
-      - name: install tree
-        run: sudo apt install tree -y
-      - name: Test in container with compose
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: latest
+          cache: 'npm'
+      - name: Installation project s packages
+        run: npm ci
+      - name: affiche
         run: |
-          tree /
-          sudo docker compose -f "compose.test.yaml" up -d --build 
-          tree /home/runner/work/EP2M2/EP2M2/
-      - name: Wait end execute tests
+          ls -l
+          ls -l ./test
+      - name: Configure database
+        run: node ./db/init.js
+      - name: Test
+        run: npm run test
+      - name: Coverage
+        run: npm run coverage
+      - name: affiche 2
+        if: always()
         run: |
-          timeout 60s sh -c 'until !(docker ps | grep ep2m2_web); do sleep 2; done';
-          ls -l /home/runner/work/EP2M2/EP2M2/
-          tree /;
-          timeout 60s sh -c 'until ls /home/runner/work/EP2M2/EP2M2/test | grep results; do sleep 2; /home/runner/work/EP2M2/EP2M2/test; done';
-          timeout 60s sh -c 'until ls /home/runner/work/EP2M2/EP2M2/test/results | grep coverage
-          ; do sleep 2; done';
+          ls -l
+          ls -l ./test
+          ls -l ./test/results
+          ls -l ./test/results/coverage
       - name: Report coverage
         if: always()
         uses: davelosert/vitest-coverage-report-action@v2
         with:
           file-coverage-mode: all
-          working-directory: ./test
       - name: Summary Tests
         uses: EnricoMi/publish-unit-test-result-action@v2
         if: always()
         with:
           files: |
-            test/**/*.xml
+            ./test/**/*.xml
       - name: Complet report tests
         uses: dorny/test-reporter@v1
         if: always()
         with:
           reporter: "java-junit"
           name: Test Unit
-          path: test/**/*.xml
+          path: ./test/**/*.xml
