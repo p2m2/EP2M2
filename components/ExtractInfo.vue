@@ -127,7 +127,7 @@ const currentPage = ref<number>(1);
 async function getProjects(page: number = 1): Promise<{
     projects: tProject[], count: number
 }> {
-    return await $fetch("api/getProjects", {
+    return await $fetch("/api/getProjects", {
         method: "POST",
         body: {
             team: useCookie("team", { sameSite: "strict" }).value,
