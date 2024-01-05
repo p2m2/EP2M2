@@ -31,7 +31,7 @@ export default defineNuxtConfig({
         preference: "light"
     },
     i18n: {
-        strategy: "no_prefix",
+        // strategy: "no_prefix",
         locales: [
             {
                 code: "en-US",
@@ -46,7 +46,18 @@ export default defineNuxtConfig({
 
         ],
         lazy: true,
-        langDir: "lang"
+        langDir: "lang",
+        customRoutes: "config",   // disable custom route with page components
+        pages: {
+            index: {
+                en: "/",
+                fr: "/",
+            },
+            control: {
+                en: "/control",
+                fr: "/control",
+            }
+        }
     },
     pages:true,
     // thx: https://stackoverflow.com/a/77140279

@@ -43,21 +43,30 @@ export default class Table {
     get header(){
         return this._headers.filter(x => x.key != "id");
     }
+
+    async totalItems(){
+        const client = new pg.Client();
+        await client.connect();
+        // get number of rows
+        // TODO add id in all table or use sql properties to get nb rows
+        const resp = await client.query(`SELECT COUNT(id) as nb_rows
+                                   FROM ${this._nameTable}`);
+        console.log(resp);
+        
+        client.end();
+        console.log(resp.rows[0].nb_rows);
+        return resp.rows[0].nb_rows;
+    }
     /**
      * Get number of page of Table
      * @param nbRowsByPage number : number of rows by page
      * @returns number
      */
     async getNbPage(nbRowsByPage: number){
-        const client = new pg.Client();
-        await client.connect();
-        // get number of rows
-        // TODO add id in all table or use sql properties to get nb rows
-        const resp = await client.query(`SELECT COUNT(id) as nbRows
-                                   FROM ${this._nameTable}`);
-        client.end();
-        return Math.floor(resp.rows[0].nbRows/nbRowsByPage) +
-            (resp.rows[0].nbRows%nbRowsByPage?1:0);
+        const nbRows = this.totalItems;
+
+        return Math.floor(nbRows/nbRowsByPage) +
+            (nbRows%nbRowsByPage?1:0);
     }
 
     /**

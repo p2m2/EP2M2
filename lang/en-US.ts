@@ -15,6 +15,12 @@ export default {
         viewProject: "View",
         yes: "Yes"
     },
+    header:{
+        action: "Actions",
+        name: "Name",
+        url: "URL",
+        description: "Description"
+    },
     image:{
         banner:{
             alt:"P2M2 icon",
@@ -54,6 +60,11 @@ export default {
         updateInProgress: "Update of project in progress",
         updateProject:"updated",
         waitCreateProject: "Hold on please, we're creating your project"
+    },
+    tabs:{
+        reference: "Reference",
+        machine: "Machine",
+        fitting: "Fitting"
     },
     title:{
         projectName: "Projet name"

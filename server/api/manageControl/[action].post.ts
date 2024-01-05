@@ -17,11 +17,19 @@ export default defineEventHandler(async (event) => {
     }
 
     if (action == "nbPages"){
-        return table.getNbPage(2);
+        return await table.getNbPage(2);
     }
 
     if(action == "getPage"){
-        return table.getPage(1, 2);
+        return await table.getPage(1, 2);
+    }
+
+    if(action == "totalItems"){
+        console.log("vas-y");
+        
+        console.log(await table.totalItems());
+        
+        return await table.totalItems();
     }
     return table.header;
 });

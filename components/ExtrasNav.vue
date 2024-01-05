@@ -14,14 +14,15 @@ import lang from "~/components/LangButton.vue";
 import {reactive} from "vue";
 // import { useI18n } from "#imports";
 const { t } = useI18n();
+const localePath = useLocalePath()
 
 const iconLinkTo = ref("i-heroicons-home-modern");
 const titleLinkTo = ref(t("button.home"));
-const pathLinkTo = ref("/");
+const pathLinkTo = ref(localePath({name: "index"}));
 if(props.linkTo == "control"){
     iconLinkTo.value = "i-heroicons-scale";
     titleLinkTo.value = t("button.control");
-    pathLinkTo.value = "/control"
+    pathLinkTo.value = localePath({name: "control"})
 }
 
 // Variable identify user
