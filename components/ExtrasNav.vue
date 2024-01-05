@@ -3,10 +3,26 @@
  -->
 
 <script setup lang="ts">
+
+const props = defineProps({
+    linkTo: {
+        type:"String",
+        required:true
+    }
+});
 import lang from "~/components/LangButton.vue";
 import {reactive} from "vue";
 // import { useI18n } from "#imports";
 const { t } = useI18n();
+
+const iconLinkTo = ref("i-heroicons-home-modern");
+const titleLinkTo = ref(t("button.home"));
+const pathLinkTo = ref("/");
+if(props.linkTo == "control"){
+    iconLinkTo.value = "i-heroicons-scale";
+    titleLinkTo.value = t("button.control");
+    pathLinkTo.value = "/control"
+}
 
 // Variable identify user
 const user = reactive<{firstName: string, lastName: string}>({
@@ -48,8 +64,8 @@ const items = <object[]>[
 <template>
     <UContainer class="float-right block">
         <lang/>
-        <UButton icon="i-heroicons-home-modern" color="white" size="xl"
-                 :title="t('button.home')"/>
+        <UButton :icon="iconLinkTo" color="white" size="xl"
+                 :title="titleLinkTo" :to="pathLinkTo"/>
         <UButton icon="i-heroicons-light-bulb" color="white" size="xl"
                  :title="t('button.help')"/>
 

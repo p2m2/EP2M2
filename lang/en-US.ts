@@ -1,5 +1,6 @@
 export default {
     button:{
+        control: "Manage control samples",
         create: "Create",
         deleteProject: "Delete",
         deleteRow: "Delete",

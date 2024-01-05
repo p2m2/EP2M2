@@ -1,5 +1,6 @@
 export default {
     button: {
+        control: "Gestion témoins",
         create: "Créer",
         deleteProject: "Supprimer",
         deleteRow: "Supprimer",
