@@ -1,4 +1,4 @@
-export { tFile, tProject };
+export { tFile, tProject, tCompound };
 
 declare global {
     interface tFile{
@@ -14,5 +14,11 @@ declare global {
         nbFile:number,
         files:tFile[],
         // TODO: add operation post export
+    }
+    interface tCompound{
+        id:string,
+        name:string,
+        description:string,
+        url:string
     }
 }

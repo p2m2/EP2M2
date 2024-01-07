@@ -1,44 +1,689 @@
 <script setup lang="ts">
-const { t } = useI18n();
+// const { t } = useI18n();
 const props = defineProps({
     nameTable: {
         type:String,
         required:true
     }
 });
-console.log(props.nameTable);
-const structTable = await $fetch("/api/manageControl/header",{
+
+// const isOpen = ref<boolean>(false);
+// const loading = ref(false);
+// const stateConfBox = ref<string>("");
+// const openConfBox = ref<boolean>(false);
+// const itemsSortBy = ref([]);
+// const currentItemsPerPage = ref<number>(5);
+// const currentPage = ref<number>(1);
+
+// const structTable = await $fetch("/api/manageControl/header",{
+//     method:"post",
+//     body:{nameTable:props.nameTable}
+// });
+// structTable.push({key:"action", sortable:false});
+
+// /**
+//  * Get all list of items of one page and number of page
+//  * @param page number page
+//  */
+// async function getItems(page: number = 1){
+//     return await $fetch("/api/manageControl/getPage", {
+//         method: "POST",
+//         body: {
+//             itemByPage:currentItemsPerPage.value,
+//             sortBy:itemsSortBy.value,
+//             page: page,
+//             nameTable:props.nameTable
+//         }
+//     });
+// }
+
+// const items = reactive<[]>(await getItems());
+
+// async function actualize({page, itemsPerPage, sortBy }) {
+//     loading.value = true;
+    
+//     if(sortBy.length){ 
+//         itemsSortBy.value = sortBy;
+//     }
+
+//     if(itemsPerPage){
+//         currentItemsPerPage.value = itemsPerPage;
+//     }
+    
+//     await getItems(page)
+//         .then((resp) => {
+//             items.values = resp;
+//         });    
+
+    
+//     currentPage.value = page;
+//     loading.value = false;
+// }
+
+// function changeItemPage(page){
+//     actualize({page:page, itemsPerPage:undefined, sortBy:{undefined}});
+// }
+
+
+// async function getItems(page, itemsPerPage, sortBy ) {
+//     return await $fetch("/api/manageControl/getPage",{
+//         method:"post",
+//         body:{
+//             nameTable:props.nameTable,
+//             sortBy:sortBy,
+//             page:page,
+//             itemByPage:itemsPerPage
+//         }
+//     });
+// }
+
+// const items = reactive(
+//     await getItems(1, itemsPerPage.value, sortBy.value));
+
+// const totalItems = await $fetch("/api/manageControl/totalItems",{
+//     method:"post",
+//     body:{nameTable:props.nameTable}
+// });
+// // console.log(items);
+
+// async function actualize({page, itemsPerPage, sortBy }) {
+//     loading.value = true;
+//     items.value = await getItems(page, itemsPerPage, sortBy );  
+//     console.log(items.value);
+//     loading.value = false;
+// }
+
+import { ref, reactive, computed } from "vue";
+import type { tFile, tCompound } from "../plugins/file";
+// import { useI18n, useToast } from "#imports";
+const { t } = useI18n();
+import { string, minLength, toTrimmed, object, parse } from "valibot";
+import type { FormSubmitEvent } from "@nuxt/ui/dist/runtime/types";
+import {useCookie } from "nuxt/app";
+const toast = useToast();
+
+
+const isOpen = ref<boolean>(false);
+const loading = ref<boolean>(false);
+const stateConfBox = ref<string>("");
+const openConfBox = ref<boolean>(false);
+
+// Define of struct of table of compound
+// 4 columns (name, Creation Date, number file in compound, actions)
+// In actions we have 3 buttons (export, consult/modify, delete)
+const tabCompoundStruct = await $fetch("/api/manageControl/header",{
     method:"post",
     body:{nameTable:props.nameTable}
 });
+tabCompoundStruct.push({key:"action", sortable:false});
 
-structTable.push({key:"action"});
+const compPerPage = ref<number>(5);
 
-const nbPage = await $fetch("/api/manageControl/nbPages",{
-    method:"post",
-    body:{nameTable:props.nameTable}
+// Variable to know by which column the compound's table sorted
+const sortCompound = ref<{
+    key: string,
+    order: "asc" | "desc" }[]>([{ key: "name",
+        order: "desc"
+    }]);
+
+/**
+ * Empty variable (type tCompound) passing in parameter
+ * @param compound 
+ */
+function emptyCompound(compound: tCompound) {
+    compound.id = "";
+    compound.name = "";
+    compound.url = "";
+    compound.description = "";
+}
+
+// The compound consulted
+const currentCompound = reactive<tCompound>({
+    id: "",
+    name: "",
+    description: "",
+    url: "0"
+});
+// old version of consulted compound
+const oldCompound = reactive<tCompound>({
+    id: "",
+    name: "",
+    description: "",
+    url: "0"
 });
 
-const items = await $fetch("/api/manageControl/getPage",{
-    method:"post",
-    body:{nameTable:props.nameTable}
+// Check if consulted compound was modified
+const modifiedCompound = computed<boolean>(() =>
+    // thx: https://stackoverflow.com/a/1144249
+    JSON.stringify(currentCompound) != JSON.stringify(oldCompound));
+
+// record modification of compound
+const recordModif = {
+    name:computed<string>(() =>
+        (modifiedCompound.value && oldCompound.name != currentCompound.name)?
+            currentCompound.name : ""
+    ),
+    add:[""], del: [""]
+};
+
+const currentPage = ref<number>(1);
+
+/**
+ * Get all list of compounds of one page and number of page
+ * @param page number page
+ */
+async function getCompounds(page: number = 1): Promise<{
+    compounds: tCompound[], count: number
+}> {
+    const compounds = await $fetch("/api/manageControl/getPage",{
+        method:"post",
+        body:{
+            nameTable:props.nameTable,
+            sortBy:sortCompound.value,
+            page:page,
+            itemByPage:compPerPage.value
+        }
+    });
+    const  totalItems = await $fetch("/api/manageControl/totalItems",{
+        method:"post",
+        body:{nameTable:props.nameTable}
+    });
+
+    return {compounds: compounds, count: totalItems};
+}
+
+// Part define variable to show compounds's list in table
+const compounds = reactive<{ compounds: tCompound[], count: number }>(
+    await getCompounds());
+const showCompound = computed(() => compounds.compounds);
+
+async function actualize({page, itemsPerPage, sortBy }) {
+    loading.value= true;
+    if(sortBy.length){    
+        sortCompound.value = sortBy;
+    }
+    if(itemsPerPage){
+        compPerPage.value = itemsPerPage;
+    }
+    
+    await getCompounds(page)
+        .then((resp) => {
+            compounds.compounds = resp.compounds;
+            compounds.count = resp.count;
+        });    
+
+    currentPage.value = page;
+    loading.value=false;
+}
+
+// Condition part to valid Compound name in input 
+// and show button to create/modify compound
+const schema = object({
+    name: string([
+        toTrimmed(),
+        minLength(3, t("message.badCompoundName"))
+    ]),
 });
 
-const totalItems = await $fetch("/api/manageControl/totalItems",{
-    method:"post",
-    body:{nameTable:props.nameTable}
+const validCompoundName = computed<boolean>(() => {
+    try {
+        parse(schema, { name: currentCompound.name });
+    } catch (error) {
+        return false;
+    }
+
+    return true;
 });
 
+// Define struct of tab of one compound
+const containCompound = [{
+    label: "label.files",
+    icon: "i-heroicons-document-duplicate"
+}, {
+    label: "label.templateOperation",
+    icon: "i-heroicons-variable"
+}
+];
+
+
+async function onSubmit(event: FormSubmitEvent<any>) {
+    // Do something with data
+    // console.log(event.data)
+}
+
+
+function openCompound(id: string) {
+
+    emptyCompound(currentCompound);
+    emptyCompound(oldCompound);
+
+    if (id != "") {
+        // reset of record
+        recordModif.add=[""];
+        recordModif.del=[""];
+        const tempCompound = showCompound.value.filter(p => p.id == id);
+
+        currentCompound.id = id;
+        currentCompound.name = tempCompound[0].name;
+        currentCompound.description = tempCompound[0].description;
+        currentCompound.url = tempCompound[0].url;
+        oldCompound.id = id;
+        oldCompound.name = tempCompound[0].name;
+        oldCompound.description = tempCompound[0].description;
+        oldCompound.url = tempCompound[0].url;
+    }
+    isOpen.value = true;
+}
+
+function localDate(rowDate: string): string {
+    return (new Date(rowDate)).toLocaleString();
+}
+
+const lockCompound = ref<boolean>(false);
+const msgProgress = ref<string>("");
+
+function waitingProcess(msg: string) {
+    lockCompound.value = true;
+    msgProgress.value = msg;
+}
+
+async function processOk(msg: string) {
+    isOpen.value = false;
+    lockCompound.value = false;
+    emptyCompound(currentCompound);
+    toast.add({ title: msg });
+    await actualize({page:1, itemsPerPage:5, sortBy:sortCompound.value});
+}
+
+function processFail(msg: string) {
+    lockCompound.value = false;
+    toast.add({ title: msg });
+}
+function createCompound() {
+    waitingProcess(t("message.waitCreateCompound"));
+    $fetch("/api/manageControl/add", {
+        method: "POST",
+        body: {
+            items: [currentCompound],
+            nameTable: props.nameTable
+        }
+    })
+        .then(() => processOk(currentCompound.name + " " + t("message.created")))
+        .catch(() => processFail(t("message.createdFail")));
+}
+
+async function updateCompound(){
+    waitingProcess(t("message.updateInProgress"));
+
+    const holdOn = [];
+
+    
+    const addListId = recordModif.add.filter(id => id != "");
+    if(addListId.length>0){
+        const addList = currentCompound.files.filter(file => 
+            addListId.includes(file.id));
+        holdOn.push ($fetch("/api/addFile",{
+            method:"POST",
+            body:{
+                files: addList,
+                folder: currentFolder,
+                id_compound: currentCompound.id
+            }
+        }));
+    }
+
+    const delListId = recordModif.del.filter(id => id !="" );
+    if (delListId.length>0){
+        holdOn.push($fetch("/api/delFile",{method:"POST",body: delListId}));
+    }
+
+    if(recordModif.name.value != ""){
+        holdOn.push($fetch("/api/changeNameCompound",{
+            method:"POST",
+            body: {
+                id: currentCompound.id,
+                name: recordModif.name.value
+            }
+        }));
+    }
+
+    Promise.all(holdOn)
+        .then(() => processOk(currentCompound.name + " " + 
+                          t("message.updateCompound")))
+        .catch(() => processFail(t("message.updateFail")));    
+}
+
+
+
+function changeCompoundPage(page){
+    actualize({page:page, itemsPerPage:undefined, sortBy:{undefined}});
+}
+
+
+/**
+ * Wait a element display in DOM
+ * @param selector 
+ * @param adding true: wait adding element in Dow; false: wait removing in Dom
+ */
+// thx https://stackoverflow.com/a/61511955
+function waitForElm(selector:string, adding:boolean = true) {
+    return new Promise(resolve => {
+        if (document.querySelector(selector) && adding) {
+            return resolve(document.querySelector(selector));
+        }
+
+        const observer = new MutationObserver(mutations => {
+            if(adding){
+                if (document.querySelector(selector)) {
+                    observer.disconnect();
+                    resolve(document.querySelector(selector));
+                }
+            } else {
+                if (document.querySelector(selector) == null) {
+                    observer.disconnect();
+                    resolve(0);
+                }
+            }
+            
+        });
+
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true
+        });
+    });
+}
+
+/**
+ * function to manage confirmation box
+ * @param msg 
+ */
+async function confBox(msg: string):Promise<boolean> {
+
+    openConfBox.value = true;
+    await waitForElm("#confirMsgId");
+    
+    const confMsg = document.getElementById("confirMsgId");
+    if(confMsg){
+        confMsg.textContent = msg;
+    }
+
+    await waitForElm("#confirMsgId", false);
+    
+    if(stateConfBox.value == "yes"){
+        stateConfBox.value ="";       
+        return true;
+    }else{
+        stateConfBox.value ="";       
+        return false;
+    }
+}
+
+/**
+ * Manage the close windows of compound
+ */
+async function closeWinCompound(){
+    
+    if((validCompoundName.value && currentCompound.id =="")
+       || (modifiedCompound.value)){
+        isOpen.value = !await confBox(t("message.confLoseModif"));
+    }else{
+        isOpen.value = false;
+    }
+}
+
+async function deleteCompound(id:string, name:string){
+    if(!await confBox(t("message.confDelCompound"))){
+        return;
+    }
+    loading.value=true;
+    fetch("/api/delCompound",{
+        method: "POST",
+        body: id
+    })
+        .then(() => toast.add({
+            title: t("message.okDelCompound"),
+            description: name
+        }))
+        .catch(() => toast.add({
+            title: t("message.koDelCompound"),
+            description: name
+        }))
+        .finally(() => {
+            loading.value =false;
+            actualize({page:1, itemsPerPage:5,
+                sortBy:sortCompound.value});
+        });
+}
 </script>
-
+    
 <template>
   <v-data-table-server
-    :headers="structTable"
-    :items="items"
-    :items-length="totalItems"
+    v-model:items-per-page="compPerPage"
+    v-model:page="currentPage"
+    :headers="tabCompoundStruct"
+    :items-length="compounds.count"
+    :items="compounds.compounds"
+    :loading="loading"
+    item-value="name"
+    @update:options="actualize"
+    @update:page="getCompounds"
   >
-    <template #headers="{ columns, isSorted, getSortIcon, toggleSort }">
+    <template #top>
+      <v-toolbar flat>
+        <v-btn
+          prepend-icon="mdi-plus"
+          @click="openCompound('')"
+        >
+          {{ t('button.add' + props.nameTable) }}
+        </v-btn>
+      </v-toolbar>
+    </template>
+
+    <template
+      #headers="{ 
+        columns, isSorted, getSortIcon, toggleSort }"
+    >
       <tr>
+        <template
+          v-for="column in columns"
+          :key="column.key"
+        >
+          <td>
+            <div
+              class="cursor-pointer flex items-center"
+              @click="() => toggleSort(column)"
+            >
+              {{ t("header."+column.key) }}
+              <UIcon
+                v-if="column.sortable"
+                :name=" !isSorted(column)?
+                  'i-heroicons-arrows-up-down-20-solid' :
+                  getSortIcon(column) == '$sortAsc'?
+                    'i-heroicons-bars-arrow-up-20-solid' :
+                    'i-heroicons-bars-arrow-down-20-solid'"
+                class="w-5 h-5 m-1.5 min-w-[20px]"
+              />
+            </div>
+          </td>
+        </template>
+      </tr>
+    </template>
+    <template #item.createDate="{ value }">
+      {{ localDate(value) }}
+    </template>
+    <template #item.action="{ item }">
+      <UButton
+        :title="t('button.viewCompound')"
+        icon="i-heroicons-pencil"
+        size="xl"
+        color="blue"
+        variant="link"
+        @click="openCompound(item.id)"
+      />
+      <UButton
+        :title="t('button.deleteCompound')"
+        icon="i-heroicons-x-mark"
+        size="xl"
+        color="red"
+        variant="link"
+        @click="deleteCompound(item.id, item.name)"
+      />
+    </template>
+  </v-data-table-server>
+
+  <v-progress-linear
+    :active="lockCompound"
+    :indeterminate="true"
+    absolute
+    bottom
+    color="deep-purple-accent-4"
+  >
+    {{ msgProgress }}
+  </v-progress-linear>
+
+  <!-- Details / create / modification compound box -->
+  <UModal
+    v-model="isOpen"
+    prevent-close
+    :display="!lockCompound"
+  >
+    <UForm
+      :schema="schema"
+      :state="currentCompound"
+      class="space-y-4"
+      @submit="onSubmit"
+    >
+      <UCard>
+        <template #header>
+          <div class="flex items-center justify-between">
+            <h3
+              class="text-base font-semibold
+                                leading-6 text-gray-900 
+                                dark:text-white"
+            >
+              {{ t("title.compoundName") }}
+            </h3>
+            <UButton
+              color="gray"
+              variant="link"
+              icon="i-heroicons-x-mark-20-solid"
+              class="-my-1"
+              @click="closeWinCompound()"
+            />
+          </div>
+          <UFormGroup name="name">
+            <UInput
+              v-model="currentCompound.name"
+              autofocus
+              requires
+            />
+          </UFormGroup>
+        </template>
+        <v-text-field
+          v-model="currentCompound.url"
+          :label="t('label.url')"
+        />
+        <v-textarea
+          v-model="currentCompound.description"
+          clearable
+          :label="t('Label.description')"
+        />
+        <template
+          v-if="validCompoundName"
+          #footer
+        >
+          <UButton
+            v-if="currentCompound.id != '' && modifiedCompound"
+            :title="t('button.update')"
+            icon="i-heroicons-arrow-path"
+            :label="t('button.update')"
+            @click="updateCompound()"
+          />
+          <UButton
+            v-if="currentCompound.id == ''"
+            :title="t('button.create')"
+            icon="i-heroicons-check-badge"
+            :label="t('button.create')"
+            @click="createCompound()"
+          />
+        </template>
+      </UCard>
+    </UForm>
+  </UModal>
+
+  <!-- Confirmation dialog box -->
+  <v-dialog
+    v-model="openConfBox"
+    width="auto"
+  >
+    <v-card>
+      <v-card-text>
+        <p id="confirMsgId" />
+        <br>
+        <p>{{ t("message.confQuestion") }}</p>
+      </v-card-text>
+      <v-card-actions>
+        <v-btn
+          color="primary"
+          @click="openConfBox=false; stateConfBox='yes'"
+        >
+          {{ t("button.yes") }}
+        </v-btn>
+        <v-btn
+          color="primary"
+          @click="openConfBox=false"
+        >
+          {{ t("button.no") }}
+        </v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
+</template>
+
+<style>
+.extractButton {
+    background-color: var(--greenP2M2);
+    margin: 2px;
+    padding: 1rem 2rem 1rem 2rem;
+    border: 2px solid var(--blueP2M2);
+    color: var(--blueP2M2);
+    font-weight: bold;
+    transition: all 0.5s ease-out;
+    cursor: pointer;
+    text-align: center;
+    justify-content: center;
+}
+
+.sizeBy3 {
+    width: 33%;
+}
+
+.sizeAlone {
+    width: 10%;
+}
+
+.extractButton:hover,
+.extractButton:focus {
+    background-color: var(--blueP2M2);
+    color: var(--greenP2M2);
+    border: 2px solid var(--greenP2M2);
+}
+</style>
+
+<!-- <template>
+  <v-data-table-server
+    v-model:items-per-page="currentItemsPerPage"
+    :headers="structTable"
+    :items-length="items.length"
+    :items="items"
+    :loading="loading"
+    item-value="name"
+    @update:options="actualize"
+    @update:page="getItems"
+  > -->
+    <!-- <template #headers="{ columns, isSorted, getSortIcon, toggleSort }">
+      <tr class="bg-green-lighten-3">
         <template
           v-for="column in columns"
           :key="column.key"
@@ -51,23 +696,93 @@ const totalItems = await $fetch("/api/manageControl/totalItems",{
             <template v-if="isSorted(column)">
               <v-icon :icon="getSortIcon(column)" />
             </template>
+            <v-icon
+              v-else-if="column.sortable"
+              icon="mdi-swap-vertical"
+            />
           </td>
         </template>
       </tr>
     </template>
     <template #item.action="{ item }">
-      <v-btn
-        density="compact"
-        icon="mdi-pen"
+      <v-icon
+        size="small"
+        @click="console.log(item)"
+      >
+        mdi-pen
+      </v-icon>
+      <v-icon
+        size="small"
+        @click="console.log(item)"
+      >
+        mdi-trash-can
+      </v-icon>
+    </template> -->
+
+    <!-- <template
+      #headers="{ 
+        columns, isSorted, getSortIcon, toggleSort }"
+    >
+      <tr>
+        <template
+          v-for="column in columns"
+          :key="column.key"
+        >
+          <td>
+            <div
+              class="cursor-pointer flex items-center"
+              @click="() => toggleSort(column)"
+            >
+              {{ column.title }}
+              <UIcon
+                v-if="column.sortable"
+                :name=" !isSorted(column)?
+                  'i-heroicons-arrows-up-down-20-solid' :
+                  getSortIcon(column) == '$sortAsc'?
+                    'i-heroicons-bars-arrow-up-20-solid' :
+                    'i-heroicons-bars-arrow-down-20-solid'"
+                class="w-5 h-5 m-1.5 min-w-[20px]"
+              />
+            </div>
+          </td>
+        </template>
+      </tr>
+    </template>
+    <template #item.action="{ item }">
+      <UButton
+        :title="t('button.exportCompound')"
+        icon="i-heroicons-arrow-down-on-square"
+        size="xl"
         color="green"
-        @click="console.log(item)"
+        variant="link"
+        @click="console.log(item.id)"
       />
-      <v-btn
-        density="compact"
-        icon="mdi-trash-can"
+      <UButton
+        :title="t('button.viewCompound')"
+        icon="i-heroicons-pencil"
+        size="xl"
+        color="blue"
+        variant="link"
+        @click="console.log(item.id)"
+      />
+      <UButton
+        :title="t('button.deleteCompound')"
+        icon="i-heroicons-x-mark"
+        size="xl"
         color="red"
-        @click="console.log(item)"
+        variant="link"
+        @click="console.log(item.id, item.name)"
       />
     </template>
+    <template #bottom>
+      <div class="text-center pt-2">
+        <v-pagination 
+          v-model="currentPage"
+          :length="totalItems"
+          :total-visible="4"
+          @update:modelValue="changeCompoundPage"
+        />
+      </div>
+    </template>
   </v-data-table-server>
-</template>
+</template> -->

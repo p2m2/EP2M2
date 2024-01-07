@@ -1,5 +1,6 @@
 export default {
     button: {
+        addcompound: "Ajout d'un témoin",
         control: "Gestion témoins",
         create: "Créer",
         deleteProject: "Supprimer",
@@ -31,6 +32,7 @@ export default {
         addFile: "Ajouter un fichier",
         addProject: "Ajouter un projet",
         createDate: "Date de création",
+        description: "description",
         email: "E-mail",
         files: "Fichiers",
         logout: "Déconnexion",
@@ -44,6 +46,7 @@ export default {
         tabSize: "Taille (kO)",
         tabType: "Type",
         templateOperation: "Template d'opération",
+        url: "URL"
     },
     message: {
         addIssue: "Un problème dit le",
@@ -67,6 +70,7 @@ export default {
         fitting: "Ajustement"
     },
     title: {
+        compoundName:"Nom du témoin",
         projectName: "Nom du projet"
     }
 

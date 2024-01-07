@@ -14,7 +14,6 @@ export default class Table {
                               FROM information_schema.columns
                               WHERE table_name='${nameTable}';
                         `);
-            console.log(resp);
             
             if (resp.rows.length == 0){
                 client.end();
@@ -51,10 +50,8 @@ export default class Table {
         // TODO add id in all table or use sql properties to get nb rows
         const resp = await client.query(`SELECT COUNT(id) as nb_rows
                                    FROM ${this._nameTable}`);
-        console.log(resp);
         
         client.end();
-        console.log(resp.rows[0].nb_rows);
         return resp.rows[0].nb_rows;
     }
     /**
@@ -73,12 +70,12 @@ export default class Table {
      * Get rows of a page
      * @param numberPage : number: number of page
      * @param nbRowsByPage : number: number of rows by page
-     * @param sorts :columnName:string, order: "ASC"|"DESC"}[]: sort of table
+     * @param sorts :key:string, order: "ASC"|"DESC"}[]: sort of table
      * @returns : Object[] : rows
      */
     async getPage(numberPage: number,
         nbRowsByPage: number,
-        sorts: {columnName:string, order: "ASC"|"DESC"}[]|[] = [] ){
+        sorts: {key:string, order: "asc"|"desc"}[]|[] = [] ){
         
         let query = "SELECT * "; 
 
@@ -87,7 +84,7 @@ export default class Table {
         // create part query of ORDER BY
         const orderBy = [];
         for (const sort of sorts){
-            orderBy.push(sort.columnName + " " + sort.order);
+            orderBy.push(sort.key + " " + sort.order);
         }
 
         if(orderBy.length > 0){
@@ -153,14 +150,14 @@ export default class Table {
         }
 
         const values = [];
-        for(const item in items ){
+        for(const item of items ){
             values.push("('" + columns.map(x => 
                 valueOrEmpty(item[x])).join("','") + "')");
         }
 
         query += values.join(",") + ";";
 
-        const client = pg.Client();
+        const client = new pg.Client();
         await client.connect();
         const resp = await client.query(query);
         client.end();

@@ -1,5 +1,6 @@
 export default {
     button:{
+        addcompound: "Add reference",
         control: "Manage control samples",
         create: "Create",
         deleteProject: "Delete",
@@ -31,6 +32,7 @@ export default {
         addFile: "Add file",
         addProject: "Add new project",
         createDate: "Creation's date",
+        description: "description",
         email: "Email",
         files: "Files",
         logout: "Logout",
@@ -44,6 +46,7 @@ export default {
         tabSize:"Size (kB)",
         tabType:"Type",
         templateOperation: "Operation template",
+        url: "URL"
     },
     message:{
         addIssue: "There is a bug",
@@ -67,6 +70,7 @@ export default {
         fitting: "Fitting"
     },
     title:{
+        compoundName:"Reference name",
         projectName: "Projet name"
     }
 };
