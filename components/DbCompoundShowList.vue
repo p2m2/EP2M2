@@ -94,7 +94,7 @@ const props = defineProps({
 // }
 
 import { ref, reactive, computed } from "vue";
-import type { tFile, tCompound } from "../plugins/file";
+import type { tCompound } from "../plugins/file";
 // import { useI18n, useToast } from "#imports";
 const { t } = useI18n();
 import { string, minLength, toTrimmed, object, parse } from "valibot";
@@ -135,6 +135,7 @@ function emptyCompound(compound: tCompound) {
     compound.name = "";
     compound.url = "";
     compound.description = "";
+    compound.archive_date = "";
 }
 
 // The compound consulted
@@ -142,14 +143,16 @@ const currentCompound = reactive<tCompound>({
     id: "",
     name: "",
     description: "",
-    url: "0"
+    url: "0",
+    archive_date: ""
 });
 // old version of consulted compound
 const oldCompound = reactive<tCompound>({
     id: "",
     name: "",
     description: "",
-    url: "0"
+    url: "0",
+    archive_date: ""
 });
 
 // Check if consulted compound was modified
@@ -267,10 +270,12 @@ function openCompound(id: string) {
         currentCompound.name = tempCompound[0].name;
         currentCompound.description = tempCompound[0].description;
         currentCompound.url = tempCompound[0].url;
+        currentCompound.archive_date = tempCompound[0].archive_date;
         oldCompound.id = id;
         oldCompound.name = tempCompound[0].name;
         oldCompound.description = tempCompound[0].description;
         oldCompound.url = tempCompound[0].url;
+        oldCompound.archive_date = tempCompound[0].archive_date;
     }
     isOpen.value = true;
 }
@@ -445,10 +450,38 @@ async function deleteCompound(id:string, name:string){
         return;
     }
     loading.value=true;
-    fetch("/api/delCompound",{
-        method: "POST",
-        body: id
-    })
+
+    const rows = await $fetch("/api/manageControl/rows", {
+        method:"POST",
+        body:{
+            nameTable:"fitting",
+            wheres:{"id_compound":id}
+        }
+    });
+
+    const holdOn = [];
+
+    if(rows.length){
+        holdOn.push($fetch("/api/manageControl/update", {
+            method:"POST",
+            body:{
+                nameTable:props.nameTable,
+                id: id,
+                columns:{archive_date: new Date(Date.now()).toISOString() }
+            }
+        }));
+    }
+    else{
+        holdOn.push($fetch("/api/manageControl/delete",{
+            method: "POST",
+            body: {
+                nameTable: props.nameTable,
+                id: id
+            }
+        }));
+            
+    }
+    Promise.all(holdOn)
         .then(() => toast.add({
             title: t("message.okDelCompound"),
             description: name
@@ -462,6 +495,7 @@ async function deleteCompound(id:string, name:string){
             actualize({page:1, itemsPerPage:5,
                 sortBy:sortCompound.value});
         });
+
 }
 </script>
     
@@ -517,11 +551,14 @@ async function deleteCompound(id:string, name:string){
         </template>
       </tr>
     </template>
-    <template #item.createDate="{ value }">
-      {{ localDate(value) }}
+    <template #item.archive_date="{ value }">
+      {{ value==null?"":localDate(value) }}
     </template>
-    <template #item.action="{ item }">
+    <template
+      #item.action="{ item }"
+    >
       <UButton
+        v-if="item.archive_date==null"
         :title="t('button.viewCompound')"
         icon="i-heroicons-pencil"
         size="xl"
@@ -530,6 +567,7 @@ async function deleteCompound(id:string, name:string){
         @click="openCompound(item.id)"
       />
       <UButton
+        v-if="item.archive_date==null"
         :title="t('button.deleteCompound')"
         icon="i-heroicons-x-mark"
         size="xl"

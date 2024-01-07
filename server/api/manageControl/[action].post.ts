@@ -22,6 +22,8 @@ export default defineEventHandler(async (event) => {
         return await table.getRows(body.wheres);
     case "update":
         return await table.update(body.id, body.columns);
+    case "delete":
+        return await table.del(body.id);
     default:
         return table.header;
     }

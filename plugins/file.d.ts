@@ -19,6 +19,7 @@ declare global {
         id:string,
         name:string,
         description:string,
-        url:string
+        url:string,
+        archive_date:string,
     }
 }

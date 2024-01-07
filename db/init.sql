@@ -107,7 +107,7 @@ CREATE TABLE fitting
   id_machine SERIAL REFERENCES machine (id),
   date_create TIMESTAMPTZ NOT NULL,
   url_provider VARCHAR(255),
-  lot VARCHAR(255) UNIQUE,
+  lot VARCHAR(255),
   rt numeric,
   PRIMARY KEY (id_compound, id_machine, date_create)
 );
