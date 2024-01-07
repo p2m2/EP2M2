@@ -1,8 +1,11 @@
 export default {
     button: {
         addcompound: "Ajout d'un témoin",
+        addmachine: "Ajout d'une machine",
         control: "Gestion témoins",
         create: "Créer",
+        deleteCompound: "Supprimer/Archiver",
+        deleteMachine: "Supprimer/Archiver",
         deleteProject: "Supprimer",
         deleteRow: "Supprimer",
         exportProject: "Export",
@@ -13,6 +16,8 @@ export default {
         submit: "Valider",
         topProfOut: "Accéder au sous-menu profile et déconnection",
         update: "Mise à jour",
+        viewCompound: "Détails",
+        viewMachine: "Détails",
         viewProject: "Détails",
         yes: "Oui"
     },
@@ -37,6 +42,7 @@ export default {
         email: "E-mail",
         files: "Fichiers",
         logout: "Déconnexion",
+        m_type: "type",
         nbFile: "Nb de fichiers",
         noFile: "Pas de fichier",
         noProject: "Aucun projet",

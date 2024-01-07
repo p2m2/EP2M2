@@ -8,7 +8,7 @@ const props = defineProps({
 });
 
 import { ref, reactive, computed } from "vue";
-import type { tCompound } from "../plugins/file";
+import type { tMachine } from "../plugins/file";
 // import { useI18n, useToast } from "#imports";
 const { t } = useI18n();
 import { string, minLength, toTrimmed, object, parse } from "valibot";
@@ -20,61 +20,61 @@ const loading = ref<boolean>(false);
 const stateConfBox = ref<string>("");
 const openConfBox = ref<boolean>(false);
 
-// Define of struct of table of compound
-const tabCompoundStruct = await $fetch("/api/manageControl/header",{
+// Define of struct of table of machine
+const tabMachineStruct = await $fetch("/api/manageControl/header",{
     method:"post",
     body:{nameTable:props.nameTable}
 });
-tabCompoundStruct.push({key:"action", sortable:false});
+tabMachineStruct.push({key:"action", sortable:false});
 
 const compPerPage = ref<number>(5);
 
-// Variable to know by which column the compound's table sorted
-const sortCompound = ref<{
+// Variable to know by which column the machine's table sorted
+const sortMachine = ref<{
     key: string,
     order: "asc" | "desc" }[]>([{ key: "name",
         order: "desc"
     }]);
 
 /**
- * Empty variable (type tCompound) passing in parameter
- * @param compound 
+ * Empty variable (type tMachine) passing in parameter
+ * @param machine 
  */
-function emptyCompound(compound: tCompound) {
-    compound.id = "";
-    compound.name = "";
-    compound.url = "";
-    compound.description = "";
-    compound.archive_date = "";
+function emptyMachine(machine: tMachine) {
+    machine.id = "";
+    machine.name = "";
+    machine.m_type = "";
+    machine.description = "";
+    machine.archive_date = "";
 }
 
-// The compound consulted
-const currentCompound = reactive<tCompound>({
+// The machine consulted
+const currentMachine = reactive<tMachine>({
     id: "",
     name: "",
     description: "",
-    url: "0",
+    m_type: "",
     archive_date: ""
 });
-// old version of consulted compound
-const oldCompound = reactive<tCompound>({
+// old version of consulted machine
+const oldMachine = reactive<tMachine>({
     id: "",
     name: "",
     description: "",
-    url: "",
+    m_type: "",
     archive_date: ""
 });
 
-// Check if consulted compound was modified
-const modifiedCompound = computed<boolean>(() =>
+// Check if consulted machine was modified
+const modifiedMachine = computed<boolean>(() =>
     // thx: https://stackoverflow.com/a/1144249
-    JSON.stringify(currentCompound) != JSON.stringify(oldCompound));
+    JSON.stringify(currentMachine) != JSON.stringify(oldMachine));
 
-// record modification of compound
+// record modification of machine
 const recordModif = {
     name:computed<string>(() =>
-        (modifiedCompound.value && oldCompound.name != currentCompound.name)?
-            currentCompound.name : ""
+        (modifiedMachine.value && oldMachine.name != currentMachine.name)?
+            currentMachine.name : ""
     ),
     add:[""], del: [""]
 };
@@ -82,17 +82,17 @@ const recordModif = {
 const currentPage = ref<number>(1);
 
 /**
- * Get all list of compounds of one page and number of page
+ * Get all list of machines of one page and number of page
  * @param page number page
  */
-async function getCompounds(page: number = 1): Promise<{
-    compounds: tCompound[], count: number
+async function getMachines(page: number = 1): Promise<{
+    machines: tMachine[], count: number
 }> {
-    const compounds = await $fetch("/api/manageControl/getPage",{
+    const machines = await $fetch("/api/manageControl/getPage",{
         method:"post",
         body:{
             nameTable:props.nameTable,
-            sortBy:sortCompound.value,
+            sortBy:sortMachine.value,
             page:page,
             itemByPage:compPerPage.value
         }
@@ -102,45 +102,45 @@ async function getCompounds(page: number = 1): Promise<{
         body:{nameTable:props.nameTable}
     });
 
-    return {compounds: compounds, count: totalItems};
+    return {machines: machines, count: totalItems};
 }
 
-// Part define variable to show compounds's list in table
-const compounds = reactive<{ compounds: tCompound[], count: number }>(
-    await getCompounds());
-const showCompound = computed(() => compounds.compounds);
+// Part define variable to show machines's list in table
+const machines = reactive<{ machines: tMachine[], count: number }>(
+    await getMachines());
+const showMachine = computed(() => machines.machines);
 
 async function actualize({page, itemsPerPage, sortBy }) {
     loading.value= true;
     if(sortBy.length){    
-        sortCompound.value = sortBy;
+        sortMachine.value = sortBy;
     }
     if(itemsPerPage){
         compPerPage.value = itemsPerPage;
     }
     
-    await getCompounds(page)
+    await getMachines(page)
         .then((resp) => {
-            compounds.compounds = resp.compounds;
-            compounds.count = resp.count;
+            machines.machines = resp.machines;
+            machines.count = resp.count;
         });    
 
     currentPage.value = page;
     loading.value=false;
 }
 
-// Condition part to valid Compound name in input 
-// and show button to create/modify compound
+// Condition part to valid Machine name in input 
+// and show button to create/modify machine
 const schema = object({
     name: string([
         toTrimmed(),
-        minLength(3, t("message.badCompoundName"))
+        minLength(3, t("message.badMachineName"))
     ]),
 });
 
-const validCompoundName = computed<boolean>(() => {
+const validMachineName = computed<boolean>(() => {
     try {
-        parse(schema, { name: currentCompound.name });
+        parse(schema, { name: currentMachine.name });
     } catch (error) {
         return false;
     }
@@ -148,27 +148,27 @@ const validCompoundName = computed<boolean>(() => {
     return true;
 });
 
-function openCompound(id: string) {
+function openMachine(id: string) {
 
-    emptyCompound(currentCompound);
-    emptyCompound(oldCompound);
+    emptyMachine(currentMachine);
+    emptyMachine(oldMachine);
 
     if (id != "") {
         // reset of record
         recordModif.add=[""];
         recordModif.del=[""];
-        const tempCompound = showCompound.value.filter(p => p.id == id);
+        const tempMachine = showMachine.value.filter(p => p.id == id);
 
-        currentCompound.id = id;
-        currentCompound.name = tempCompound[0].name;
-        currentCompound.description = tempCompound[0].description;
-        currentCompound.url = tempCompound[0].url;
-        currentCompound.archive_date = tempCompound[0].archive_date;
-        oldCompound.id = id;
-        oldCompound.name = tempCompound[0].name;
-        oldCompound.description = tempCompound[0].description;
-        oldCompound.url = tempCompound[0].url;
-        oldCompound.archive_date = tempCompound[0].archive_date;
+        currentMachine.id = id;
+        currentMachine.name = tempMachine[0].name;
+        currentMachine.description = tempMachine[0].description;
+        currentMachine.m_type = tempMachine[0].m_type;
+        currentMachine.archive_date = tempMachine[0].archive_date;
+        oldMachine.id = id;
+        oldMachine.name = tempMachine[0].name;
+        oldMachine.description = tempMachine[0].description;
+        oldMachine.m_type = tempMachine[0].m_type;
+        oldMachine.archive_date = tempMachine[0].archive_date;
     }
     isOpen.value = true;
 }
@@ -177,58 +177,58 @@ function localDate(rowDate: string): string {
     return (new Date(rowDate)).toLocaleString();
 }
 
-const lockCompound = ref<boolean>(false);
+const lockMachine = ref<boolean>(false);
 const msgProgress = ref<string>("");
 
 function waitingProcess(msg: string) {
-    lockCompound.value = true;
+    lockMachine.value = true;
     msgProgress.value = msg;
 }
 
 async function processOk(msg: string) {
     isOpen.value = false;
-    lockCompound.value = false;
-    emptyCompound(currentCompound);
+    lockMachine.value = false;
+    emptyMachine(currentMachine);
     toast.add({ title: msg });
-    await actualize({page:1, itemsPerPage:5, sortBy:sortCompound.value});
+    await actualize({page:1, itemsPerPage:5, sortBy:sortMachine.value});
 }
 
 function processFail(msg: string) {
-    lockCompound.value = false;
+    lockMachine.value = false;
     toast.add({ title: msg });
 }
-function createCompound() {
-    waitingProcess(t("message.waitCreateCompound"));
+function createMachine() {
+    waitingProcess(t("message.waitCreateMachine"));
     $fetch("/api/manageControl/add", {
         method: "POST",
         body: {
-            items: [currentCompound],
+            items: [currentMachine],
             nameTable: props.nameTable
         }
     })
-        .then(() => processOk(currentCompound.name + " " + t("message.created")))
+        .then(() => processOk(currentMachine.name + " " + t("message.created")))
         .catch(() => processFail(t("message.createdFail")));
 }
 
-async function updateCompound(){
+async function updateMachine(){
     waitingProcess(t("message.updateInProgress"));
 
     const rows = await $fetch("/api/manageControl/rows", {
         method:"POST",
         body:{
             nameTable:"fitting",
-            wheres:{"id_compound":currentCompound.id}
+            wheres:{"id_machine":currentMachine.id}
         }
     });
 
     const holdOn = [];
     if(rows.length){
-        // archived compound yet used
+        // archived machine yet used
         holdOn.push($fetch("/api/manageControl/update", {
             method:"POST",
             body:{
                 nameTable:props.nameTable,
-                id: currentCompound.id,
+                id: currentMachine.id,
                 columns:{archive_date: new Date(Date.now()).toISOString() }
             }
         }));
@@ -236,30 +236,30 @@ async function updateCompound(){
         holdOn.push($fetch("/api/manageControl/add", {
             method:"POST",
             body:{
-                items: [currentCompound],
+                items: [currentMachine],
                 nameTable: props.nameTable
             }
         }));
     }
     else{
-        // modified compound
+        // modified machine
         holdOn.push($fetch("/api/manageControl/update", {
             method:"POST",
             body:{
                 nameTable:props.nameTable,
-                id: currentCompound.id,
+                id: currentMachine.id,
                 columns: {
-                    name: currentCompound.name,
-                    description: currentCompound.description,
-                    url: currentCompound.url,
+                    name: currentMachine.name,
+                    description: currentMachine.description,
+                    m_type: currentMachine.m_type,
                 }  
             }
         }));
     } 
 
     Promise.all(holdOn)
-        .then(() => processOk(currentCompound.name + " " + 
-                          t("message.updateCompound")))
+        .then(() => processOk(currentMachine.name + " " + 
+                          t("message.updateMachine")))
         .catch(() => processFail(t("message.updateFail")));    
 }
 
@@ -324,20 +324,20 @@ async function confBox(msg: string):Promise<boolean> {
 }
 
 /**
- * Manage the close windows of compound
+ * Manage the close windows of machine
  */
-async function closeWinCompound(){
+async function closeWinMachine(){
     
-    if((validCompoundName.value && currentCompound.id =="")
-       || (modifiedCompound.value)){
+    if((validMachineName.value && currentMachine.id =="")
+       || (modifiedMachine.value)){
         isOpen.value = !await confBox(t("message.confLoseModif"));
     }else{
         isOpen.value = false;
     }
 }
 
-async function deleteCompound(id:string, name:string){
-    if(!await confBox(t("message.confDelCompound"))){
+async function deleteMachine(id:string, name:string){
+    if(!await confBox(t("message.confDelMachine"))){
         return;
     }
     loading.value=true;
@@ -346,7 +346,7 @@ async function deleteCompound(id:string, name:string){
         method:"POST",
         body:{
             nameTable:"fitting",
-            wheres:{"id_compound":id}
+            wheres:{"id_machine":id}
         }
     });
 
@@ -374,17 +374,17 @@ async function deleteCompound(id:string, name:string){
     }
     Promise.all(holdOn)
         .then(() => toast.add({
-            title: t("message.okDelCompound"),
+            title: t("message.okDelMachine"),
             description: name
         }))
         .catch(() => toast.add({
-            title: t("message.koDelCompound"),
+            title: t("message.koDelMachine"),
             description: name
         }))
         .finally(() => {
             loading.value =false;
             actualize({page:1, itemsPerPage:5,
-                sortBy:sortCompound.value});
+                sortBy:sortMachine.value});
         });
 
 }
@@ -394,19 +394,19 @@ async function deleteCompound(id:string, name:string){
   <v-data-table-server
     v-model:items-per-page="compPerPage"
     v-model:page="currentPage"
-    :headers="tabCompoundStruct"
-    :items-length="compounds.count"
-    :items="compounds.compounds"
+    :headers="tabMachineStruct"
+    :items-length="machines.count"
+    :items="machines.machines"
     :loading="loading"
     item-value="name"
     @update:options="actualize"
-    @update:page="getCompounds"
+    @update:page="getMachines"
   >
     <template #top>
       <v-toolbar flat>
         <v-btn
           prepend-icon="mdi-plus"
-          @click="openCompound('')"
+          @click="openMachine('')"
         >
           {{ t('button.add' + props.nameTable) }}
         </v-btn>
@@ -450,27 +450,27 @@ async function deleteCompound(id:string, name:string){
     >
       <UButton
         v-if="item.archive_date==null"
-        :title="t('button.viewCompound')"
+        :title="t('button.viewMachine')"
         icon="i-heroicons-pencil"
         size="xl"
         color="blue"
         variant="link"
-        @click="openCompound(item.id)"
+        @click="openMachine(item.id)"
       />
       <UButton
         v-if="item.archive_date==null"
-        :title="t('button.deleteCompound')"
+        :title="t('button.deleteMachine')"
         icon="i-heroicons-x-mark"
         size="xl"
         color="red"
         variant="link"
-        @click="deleteCompound(item.id, item.name)"
+        @click="deleteMachine(item.id, item.name)"
       />
     </template>
   </v-data-table-server>
 
   <v-progress-linear
-    :active="lockCompound"
+    :active="lockMachine"
     :indeterminate="true"
     absolute
     bottom
@@ -479,15 +479,15 @@ async function deleteCompound(id:string, name:string){
     {{ msgProgress }}
   </v-progress-linear>
 
-  <!-- Details / create / modification compound box -->
+  <!-- Details / create / modification machine box -->
   <UModal
     v-model="isOpen"
     prevent-close
-    :display="!lockCompound"
+    :display="!lockMachine"
   >
     <UForm
       :schema="schema"
-      :state="currentCompound"
+      :state="currentMachine"
       class="space-y-4"
     >
       <UCard>
@@ -498,50 +498,50 @@ async function deleteCompound(id:string, name:string){
                                 leading-6 text-gray-900 
                                 dark:text-white"
             >
-              {{ t("title.compoundName") }}
+              {{ t("title.machineName") }}
             </h3>
             <UButton
               color="gray"
               variant="link"
               icon="i-heroicons-x-mark-20-solid"
               class="-my-1"
-              @click="closeWinCompound()"
+              @click="closeWinMachine()"
             />
           </div>
           <UFormGroup name="name">
             <UInput
-              v-model="currentCompound.name"
+              v-model="currentMachine.name"
               autofocus
               requires
             />
           </UFormGroup>
         </template>
         <v-text-field
-          v-model="currentCompound.url"
-          :label="t('label.url')"
+          v-model="currentMachine.m_type"
+          :label="t('label.m_type')"
         />
         <v-textarea
-          v-model="currentCompound.description"
+          v-model="currentMachine.description"
           clearable
           :label="t('label.description')"
         />
         <template
-          v-if="validCompoundName"
+          v-if="validMachineName"
           #footer
         >
           <UButton
-            v-if="currentCompound.id != '' && modifiedCompound"
+            v-if="currentMachine.id != '' && modifiedMachine"
             :title="t('button.update')"
             icon="i-heroicons-arrow-path"
             :label="t('button.update')"
-            @click="updateCompound()"
+            @click="updateMachine()"
           />
           <UButton
-            v-if="currentCompound.id == ''"
+            v-if="currentMachine.id == ''"
             :title="t('button.create')"
             icon="i-heroicons-check-badge"
             :label="t('button.create')"
-            @click="createCompound()"
+            @click="createMachine()"
           />
         </template>
       </UCard>

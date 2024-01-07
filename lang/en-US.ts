@@ -1,8 +1,11 @@
 export default {
     button:{
         addcompound: "Add reference",
+        addmachine: "Add machine",
         control: "Manage control samples",
         create: "Create",
+        deleteCompound: "Delete/Archive",
+        deleteMachine: "Delete/Archive",
         deleteProject: "Delete",
         deleteRow: "Delete",
         exportProject: "Export",
@@ -13,12 +16,15 @@ export default {
         submit: "Submit",
         topProfOut: "Profile under menu and logout",
         update: "Update",
+        viewCompound: "View",
+        viewMachine: "View",
         viewProject: "View",
         yes: "Yes"
     },
     header:{
         action: "Actions",
         archive_date: "Archived",
+        m_type: "Type",
         name: "Name",
         url: "URL",
         description: "Description"
@@ -37,6 +43,7 @@ export default {
         email: "Email",
         files: "Files",
         logout: "Logout",
+        m_type: "type",
         nbFile: "File's number",
         noFile: "No file",
         noProject: "No projet",

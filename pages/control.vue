@@ -4,6 +4,7 @@
 
 <script lang="ts">
 import comp from "~/components/DbCompoundShowList.vue";
+import machine from "~/components/DbMachineShowList.vue";
 import banner from "~/components/BannerMain.vue";
 import extras from "~/components/ExtrasNav.vue";
 import login from "~/components/LoginForm.vue";
@@ -12,6 +13,7 @@ import { useCookie } from "nuxt/app";
 
 export default{
     components:{
+        machine,
         comp,
         login,
         banner,
@@ -104,6 +106,10 @@ export default{
         <comp
           v-if="tab=='reference'"
           name-table="compound"
+        />
+        <machine
+          v-if="tab=='machine'"
+          name-table="machine"
         />
       </div>
     </UContainer>
