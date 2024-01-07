@@ -18,6 +18,7 @@ export default {
     },
     header:{
         action: "Actions",
+        archive_date: "Archived",
         name: "Name",
         url: "URL",
         description: "Description"

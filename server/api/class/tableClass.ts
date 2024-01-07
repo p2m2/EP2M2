@@ -43,7 +43,7 @@ export default class Table {
         return this._headers.filter(x => x.key != "id");
     }
 
-    async totalItems(){
+    async totalItems(): Promise<number>{
         const client = new pg.Client();
         await client.connect();
         // get number of rows
