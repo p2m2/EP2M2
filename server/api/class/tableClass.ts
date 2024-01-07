@@ -175,7 +175,12 @@ export default class Table {
         let query = `UPDATE ${this._nameTable} SET `;
 
         for(const column in columns){
-            query += column + "='" + columns[column] +"',";
+            if(columns[column]){
+                query += column + "='" + columns[column] +"',";
+            }
+            else{
+                query += column + "='',";
+            }  
         }
        
         // delete last ,

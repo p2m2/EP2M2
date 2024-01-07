@@ -98,8 +98,6 @@ import type { tCompound } from "../plugins/file";
 // import { useI18n, useToast } from "#imports";
 const { t } = useI18n();
 import { string, minLength, toTrimmed, object, parse } from "valibot";
-import type { FormSubmitEvent } from "@nuxt/ui/dist/runtime/types";
-import {useCookie } from "nuxt/app";
 const toast = useToast();
 
 
@@ -151,7 +149,7 @@ const oldCompound = reactive<tCompound>({
     id: "",
     name: "",
     description: "",
-    url: "0",
+    url: "",
     archive_date: ""
 });
 
@@ -237,23 +235,6 @@ const validCompoundName = computed<boolean>(() => {
 
     return true;
 });
-
-// Define struct of tab of one compound
-const containCompound = [{
-    label: "label.files",
-    icon: "i-heroicons-document-duplicate"
-}, {
-    label: "label.templateOperation",
-    icon: "i-heroicons-variable"
-}
-];
-
-
-async function onSubmit(event: FormSubmitEvent<any>) {
-    // Do something with data
-    // console.log(event.data)
-}
-
 
 function openCompound(id: string) {
 
@@ -355,7 +336,11 @@ async function updateCompound(){
             body:{
                 nameTable:props.nameTable,
                 id: currentCompound.id,
-                columns:currentCompound
+                columns: {
+                    name: currentCompound.name,
+                    description: currentCompound.description,
+                    url: currentCompound.url,
+                }  
             }
         }));
     } 
@@ -364,12 +349,6 @@ async function updateCompound(){
         .then(() => processOk(currentCompound.name + " " + 
                           t("message.updateCompound")))
         .catch(() => processFail(t("message.updateFail")));    
-}
-
-
-
-function changeCompoundPage(page){
-    actualize({page:page, itemsPerPage:undefined, sortBy:{undefined}});
 }
 
 
@@ -598,7 +577,6 @@ async function deleteCompound(id:string, name:string){
       :schema="schema"
       :state="currentCompound"
       class="space-y-4"
-      @submit="onSubmit"
     >
       <UCard>
         <template #header>
