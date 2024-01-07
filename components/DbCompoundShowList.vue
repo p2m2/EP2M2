@@ -331,7 +331,7 @@ async function updateCompound(){
             body:{
                 nameTable:props.nameTable,
                 id: currentCompound.id,
-                columns:{archive_date: Date.now()}
+                columns:{archive_date: new Date(Date.now()).toISOString() }
             }
         }));
         // create new compond modified
