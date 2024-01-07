@@ -315,37 +315,45 @@ function createCompound() {
 async function updateCompound(){
     waitingProcess(t("message.updateInProgress"));
 
-    const holdOn = [];
+    const rows = await $fetch("/api/manageControl/rows", {
+        method:"POST",
+        body:{
+            nameTable:"fitting",
+            wheres:{"id_compound":currentCompound.id}
+        }
+    });
 
-    
-    const addListId = recordModif.add.filter(id => id != "");
-    if(addListId.length>0){
-        const addList = currentCompound.files.filter(file => 
-            addListId.includes(file.id));
-        holdOn.push ($fetch("/api/addFile",{
+    const holdOn = [];
+    if(rows.length){
+        // archived compound yet used
+        holdOn.push($fetch("/api/manageControl/update", {
             method:"POST",
             body:{
-                files: addList,
-                folder: currentFolder,
-                id_compound: currentCompound.id
-            }
-        }));
-    }
-
-    const delListId = recordModif.del.filter(id => id !="" );
-    if (delListId.length>0){
-        holdOn.push($fetch("/api/delFile",{method:"POST",body: delListId}));
-    }
-
-    if(recordModif.name.value != ""){
-        holdOn.push($fetch("/api/changeNameCompound",{
-            method:"POST",
-            body: {
+                nameTable:props.nameTable,
                 id: currentCompound.id,
-                name: recordModif.name.value
+                columns:{archive_date: Date.now()}
+            }
+        }));
+        // create new compond modified
+        holdOn.push($fetch("/api/manageControl/add", {
+            method:"POST",
+            body:{
+                items: [currentCompound],
+                nameTable: props.nameTable
             }
         }));
     }
+    else{
+        // modified compound
+        holdOn.push($fetch("/api/manageControl/update", {
+            method:"POST",
+            body:{
+                nameTable:props.nameTable,
+                id: currentCompound.id,
+                columns:currentCompound
+            }
+        }));
+    } 
 
     Promise.all(holdOn)
         .then(() => processOk(currentCompound.name + " " + 

@@ -84,9 +84,32 @@ CREATE TRIGGER t_content BEFORE UPDATE OR DELETE ON file
 CREATE TABLE compound
 (
   id SERIAL PRIMARY KEY,
-  name VARCHAR(255),
+  name VARCHAR(255) UNIQUE,
   url VARCHAR(255),
-  description TEXT
+  description TEXT,
+  archive_date TIMESTAMPTZ
+);
+
+CREATE TYPE m_type AS ENUM ('UV', 'FID', 'MZ');
+
+CREATE TABLE machine
+(
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(255) UNIQUE,
+  m_type m_type,
+  description TEXT,
+  archive_date TIMESTAMPTZ
+);
+
+CREATE TABLE fitting
+(
+  id_compound SERIAL REFERENCES compound (id),
+  id_machine SERIAL REFERENCES machine (id),
+  date_create TIMESTAMPTZ NOT NULL,
+  url_provider VARCHAR(255),
+  lot VARCHAR(255) UNIQUE,
+  rt numeric,
+  PRIMARY KEY (id_compound, id_machine, date_create)
 );
 
 INSERT INTO users (name, email, hash, team)

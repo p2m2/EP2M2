@@ -111,7 +111,7 @@ export default class Table {
         const client = new pg.Client();
         await client.connect();
 
-        let query = `SELECT * FROM ${this._nameTable} `;
+        let query = `SELECT * FROM ${this._nameTable} WHERE `;
 
         // create WHERE part of query
         const where:string[] = [];
@@ -140,7 +140,8 @@ export default class Table {
         const valueOrEmpty = ((x: string|number|undefined) => 
             x?x.toString():"");
 
-        const columns = this._headers.map(x => x.key).filter(x => x!= "id");
+        const columns = this._headers.map(x => x.key).filter(x => 
+            x!= "id" && x!= "archive_date");
 
         let query = `INSERT INTO ${this._nameTable} 
                        (${columns.join(",")}) VALUES `;
@@ -171,16 +172,20 @@ export default class Table {
      */
     async update(id:number, columns:{[columnName:string]:string|number}) {
 
-        let query = `UPDATE ${this._nameTable} WHERE id = ${id} SET `;
+        let query = `UPDATE ${this._nameTable} SET `;
 
         for(const column in columns){
             query += column + "='" + columns[column] +"',";
         }
-
+       
         // delete last ,
-        query.slice(0,-1);
+        query = query.slice(0,-1);
 
-        const client = pg.Client();
+        query +=  ` WHERE id = ${id} `;
+
+        console.log(query);
+        
+        const client = new pg.Client();
         await client.connect();
         await client.query(query);
         client.end();
@@ -191,7 +196,7 @@ export default class Table {
      * @param id :number: id of element
      */
     async del(id:number){
-        const client = pg.Client();
+        const client = new pg.Client();
         await client.connect();
         await client.query(`DELETE FROM ${this._nameTable} WHERE id=${id}`);
         client.end();

@@ -18,6 +18,10 @@ export default defineEventHandler(async (event) => {
         return await table.totalItems();
     case "add":   
         return await table.add(body.items);
+    case "rows":
+        return await table.getRows(body.wheres);
+    case "update":
+        return await table.update(body.id, body.columns);
     default:
         return table.header;
     }
