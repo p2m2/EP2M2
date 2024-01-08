@@ -1,10 +1,12 @@
 export default {
     button: {
         addcompound: "Ajout d'un témoin",
+        addfitting: "Ajout d'un ajustement",
         addmachine: "Ajout d'une machine",
         control: "Gestion témoins",
         create: "Créer",
         deleteCompound: "Supprimer/Archiver",
+        deleteFitting: "Archiver",
         deleteMachine: "Supprimer/Archiver",
         deleteProject: "Supprimer",
         deleteRow: "Supprimer",
@@ -16,17 +18,23 @@ export default {
         submit: "Valider",
         topProfOut: "Accéder au sous-menu profile et déconnection",
         update: "Mise à jour",
-        viewCompound: "Détails",
-        viewMachine: "Détails",
+        viewCompound: "Modifier",
+        viewFitting: "Modifier",
+        viewMachine: "Modifier",
         viewProject: "Détails",
         yes: "Oui"
     },
     header:{
         action: "Actions",
         archive_date: "Archivé le",
+        date_create: "Créé le ",
+        description: "Description",
+        lot: "N° lot",
         name: "Nom",
+        name_compound: "Témoin",
+        name_machine: "Machine",
         url: "URL",
-        description: "Description"
+        rt:"RT"
     },
     image: {
         banner: {
@@ -49,11 +57,14 @@ export default {
         password: "Mot de passe",
         profile: "Profile",
         project: "Projet",
+        selectCompound: "Selectionner le témoin",
+        selectMachine: "Selectionner la machine",
         tabFileName: "Nom",
         tabSize: "Taille (kO)",
         tabType: "Type",
         templateOperation: "Template d'opération",
-        url: "URL"
+        url: "URL",
+        url_provider: "URL fournisseur"
     },
     message: {
         addIssue: "Un problème dit le",
@@ -63,6 +74,7 @@ export default {
         confQuestion: "Êtes-vous sûr de vouloir continuer ?",
         created: "a été créé",
         createdFail: "La création du projet a échoué",
+        fitting: "L'ajustement ",
         koDelProject: "Nous n'avons pas supprimé le projet",
         loading: "chargement",
         okDelProject: "Nous avons supprimé le projet",

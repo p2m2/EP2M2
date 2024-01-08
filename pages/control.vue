@@ -3,6 +3,7 @@
  -->
 
 <script lang="ts">
+import fit from "~/components/DbFittingShowList.vue";
 import comp from "~/components/DbCompoundShowList.vue";
 import machine from "~/components/DbMachineShowList.vue";
 import banner from "~/components/BannerMain.vue";
@@ -13,6 +14,7 @@ import { useCookie } from "nuxt/app";
 
 export default{
     components:{
+        fit,
         machine,
         comp,
         login,
@@ -110,6 +112,9 @@ export default{
         <machine
           v-if="tab=='machine'"
           name-table="machine"
+        />
+        <fit
+          v-if="tab=='fitting'"
         />
       </div>
     </UContainer>

@@ -1,10 +1,12 @@
 export default {
     button:{
         addcompound: "Add reference",
+        addfitting: "Add fitting",
         addmachine: "Add machine",
         control: "Manage control samples",
         create: "Create",
         deleteCompound: "Delete/Archive",
+        deleteFitting: "Archive",
         deleteMachine: "Delete/Archive",
         deleteProject: "Delete",
         deleteRow: "Delete",
@@ -16,18 +18,25 @@ export default {
         submit: "Submit",
         topProfOut: "Profile under menu and logout",
         update: "Update",
-        viewCompound: "View",
-        viewMachine: "View",
-        viewProject: "View",
+        viewCompound: "Modify",
+        viewFitting: "Modify",
+        viewMachine: "Modify",
+        viewProject: "View/Modify",
         yes: "Yes"
     },
     header:{
         action: "Actions",
         archive_date: "Archived",
+        date_create: "Created ",
+        description: "Description",
+        lot: "Séries number",
         m_type: "Type",
         name: "Name",
+        name_compound: "Reference",
+        name_machine: "Machine",
         url: "URL",
-        description: "Description"
+        rt:"RT"
+        
     },
     image:{
         banner:{
@@ -50,11 +59,14 @@ export default {
         password: "Password",
         profile: "Profile",
         project: "Project",
+        selectCompound: "Select reference",
+        selectMachine: "Select machine",
         tabFileName:"Name",
         tabSize:"Size (kB)",
         tabType:"Type",
         templateOperation: "Operation template",
-        url: "URL"
+        url: "URL",
+        url_provider: "URL provider"
     },
     message:{
         addIssue: "There is a bug",
@@ -64,6 +76,7 @@ export default {
         confQuestion: "Are you sure to continue?",
         created: "created",
         createdFail: "Project's creation failed",
+        fitting: "The fitting ",
         koDelProject: "We didn't delete, the named project",
         loading: "Loading",
         okDelProject: "We deleted, the named project",

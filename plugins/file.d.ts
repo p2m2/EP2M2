@@ -1,4 +1,4 @@
-export { tFile, tProject, tCompound, tMachine};
+export { tFile, tProject, tCompound, tMachine,tFitting};
 
 declare global {
     interface tFile{
@@ -27,6 +27,16 @@ declare global {
         name:string,
         description:string,
         m_type:"UV"|"FID"|"MZ"|"",
+        archive_date:string,
+    }
+    interface tFitting{
+        id:string,
+        id_compound:string,
+        id_machine:string,
+        date_create:string,
+        url_provider:string,
+        lot:string,
+        rt:number,
         archive_date:string,
     }
 }

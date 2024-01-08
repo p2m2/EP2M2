@@ -48,7 +48,7 @@ export default class Table {
         await client.connect();
         // get number of rows
         // TODO add id in all table or use sql properties to get nb rows
-        const resp = await client.query(`SELECT COUNT(id) as nb_rows
+        const resp = await client.query(`SELECT COUNT(*) as nb_rows
                                    FROM ${this._nameTable}`);
         
         client.end();
