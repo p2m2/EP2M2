@@ -5,11 +5,11 @@ import Table from "~/server/api/class/tableClass";
 describe("tableClass", async ()=>{
 
     test("Check create table object", async ()=>{
-        expect(new Table("users")).toBeInstanceOf(Table);
+        expect(await(new Table("users"))).toBeInstanceOf(Table);
     });
 
-    test("bad name table", ()=>{
-        expect(new Table("unknow")).toThrowError("unknow table does't exist");
+    test("bad name table",async ()=>{
+        expect(await(new Table("unknow"))).toThrowError("unknow table does't exist");
     });
 
     // Define structure of compound table
@@ -20,9 +20,9 @@ describe("tableClass", async ()=>{
         {columnName:"description", type:"text", maxLength:null}
     ];
     const compTable = new Table("compound");
-    const compHeader = compTable.getHeader();
+    const compHeader = compTable.header;
 
-    test("Check number of header", async ()=>{
+    test("Check number of header", ()=>{
         expect(compHeader.length).toBe(compound.length - 1);
     });
 

@@ -1,13 +1,10 @@
-import {defineConfig, mergeConfig} from "vite";
-import vue from "@vitejs/plugin-vue";
-import { fileURLToPath, URL } from "node:url";
+import { defineVitestConfig } from "@nuxt/test-utils/config";
 import Components from "unplugin-vue-components/vite";
-import nuxtConfig from "./nuxt.config";
 import * as path from "path";
 
 const r = (p: string) => path.resolve(__dirname, p);
 
-export default mergeConfig([nuxtConfig],defineConfig({
+export default defineVitestConfig({
     // root:".",
     // base:".",
     plugins:[
@@ -24,7 +21,7 @@ export default mergeConfig([nuxtConfig],defineConfig({
                 }
             ]
         }),
-        vue(),
+        // vue(),
     ],
     test: {
         globals: true,
@@ -54,4 +51,4 @@ export default mergeConfig([nuxtConfig],defineConfig({
         },
     },
     
-}));
+});
