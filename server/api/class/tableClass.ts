@@ -17,7 +17,7 @@ export default class Table {
             
             if (resp.rows.length == 0){
                 client.end();
-                throw new Error(`Table ${nameTable} doesn't exist`);
+                throw new Error(`${nameTable} table doesn't exist`);
             }
 
             for(const row of resp.rows as {column_name:string, data_type:string}[]){
