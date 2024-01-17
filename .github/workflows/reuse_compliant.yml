@@ -5,13 +5,14 @@
 name: REUSE Compliance Check
 
 on: 
+  workflow_dispatch:
   pull_request_target:
     branches: 
       - main
       - develop
 
 jobs:
-  test:
+  Check-REUSE-compliant:
     runs-on: ubuntu-latest
     steps:
     # Load my repo
