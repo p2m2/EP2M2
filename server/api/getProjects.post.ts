@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2024 Marcellino Palerme <marcellino.palerme@inrae.fr>
+//
+// SPDX-License-Identifier: MIT
+
 import pg from "pg";
 import type { tProject } from "~/plugins/file";
 import { teamFromHash } from "./function/team";

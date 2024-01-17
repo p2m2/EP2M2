@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2024 Marcellino Palerme <marcellino.palerme@inrae.fr>
+//
+// SPDX-License-Identifier: MIT
+
 const pg = require("pg");
 const client = new pg.Client({
     database: "ep2m2db",

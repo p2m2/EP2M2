@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2024 Marcellino Palerme <marcellino.palerme@inrae.fr>
+//
+// SPDX-License-Identifier: MIT
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
 import { defineNuxtConfig } from "nuxt/config";
 import vuetify, { transformAssetUrls } from "vite-plugin-vuetify";

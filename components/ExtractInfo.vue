@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2024 Marcellino Palerme <marcellino.palerme@inrae.fr>
+
+SPDX-License-Identifier: MIT
+-->
+
 <!-- 
     This composant provide part to managa raw file from engine and extract all
     information.

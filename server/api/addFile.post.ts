@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2024 Marcellino Palerme <marcellino.palerme@inrae.fr>
+//
+// SPDX-License-Identifier: MIT
+
 import pg from "pg";
 import {readFile, rm} from "fs/promises";
 import {join} from "path";

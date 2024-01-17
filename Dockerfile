@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2024 Marcellino Palerme <marcellino.palerme@inrae.fr>
+#
+# SPDX-License-Identifier: MIT
 FROM node:latest
 WORKDIR /EP2M2
 COPY ./.output .

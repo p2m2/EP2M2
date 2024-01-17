@@ -1,4 +1,10 @@
- <!-- This module provide banner of site -->
+<!--
+SPDX-FileCopyrightText: 2024 Marcellino Palerme <marcellino.palerme@inrae.fr>
+
+SPDX-License-Identifier: MIT
+-->
+
+<!-- This module provide banner of site -->
 <script setup lang="ts">
 // import { useI18n } from "#imports";
 const { t } = useI18n();

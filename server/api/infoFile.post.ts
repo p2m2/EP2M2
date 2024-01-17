@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2024 Marcellino Palerme <marcellino.palerme@inrae.fr>
+//
+// SPDX-License-Identifier: MIT
+
 // import fs from "fs";
 import { readFileSync, existsSync, mkdirSync} from "fs";
 import { writeFile, rm} from "fs/promises";

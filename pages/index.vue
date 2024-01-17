@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2024 Marcellino Palerme <marcellino.palerme@inrae.fr>
+
+SPDX-License-Identifier: MIT
+-->
+
 <!-- 
   This file contain the componant root of application ep2m2.
   EP2M2 provide web wide to extract all information from raw files of 
