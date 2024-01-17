@@ -1,4 +1,10 @@
 <!--
+SPDX-FileCopyrightText: 2024 Marcellino Palerme <marcellino.palerme@inrae.fr>
+
+SPDX-License-Identifier: MIT
+-->
+
+<!--
     This module give access to help, profile, logout, home page 
  -->
 

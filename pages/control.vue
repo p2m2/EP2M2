@@ -1,4 +1,10 @@
 <!--
+SPDX-FileCopyrightText: 2024 Marcellino Palerme <marcellino.palerme@inrae.fr>
+
+SPDX-License-Identifier: MIT
+-->
+
+<!--
     This page provide manage of compound control
  -->
 

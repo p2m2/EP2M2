@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2024 Marcellino Palerme <marcellino.palerme@inrae.fr>
+
+SPDX-License-Identifier: CC-BY-NC-4.0
+-->
+
 # Home
 Home page is entry of web site after your sign in (To sign in we use sign in provide by renater)
 ![Home page](/wireframe/home.png)

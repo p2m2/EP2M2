@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2024 Marcellino Palerme <marcellino.palerme@inrae.fr>
+
+// SPDX-License-Identifier: MIT
 import { defineVitestConfig } from "@nuxt/test-utils/config";
 import Components from "unplugin-vue-components/vite";
 import * as path from "path";

@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2024 Marcellino Palerme <marcellino.palerme@inrae.fr>
+//
+// SPDX-License-Identifier: MIT
+
 // import this after install `@mdi/font` package
 import "@mdi/font/css/materialdesignicons.css";
 

@@ -1,3 +1,10 @@
+<!--
+SPDX-FileCopyrightText: 2024 2023 Marcellino Palerme <marcellino.palerme@inrae.fr>
+SPDX-FileCopyrightText: 2024 Marcellino Palerme <marcellino.palerme@inrae.fr>
+
+SPDX-License-Identifier: CC-BY-NC-4.0
+-->
+
 # Accueil
 La page d'accueil est l'entrée du site après s'être identifier ( l'identification se fera à partir de l'identification fournit par renater)
 ![Page d'accueil](/wireframe/home.png)
