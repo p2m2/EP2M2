@@ -5,7 +5,7 @@
 name: REUSE Compliance Check
 
 on: 
-  pull_request:
+  pull_request_target:
     branches: 
       - main
       - develop
@@ -14,8 +14,17 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
+    # Load my repo
     - uses: actions/checkout@v4
+    # Check if futur new repo is REUSE compliant
     - name: REUSE Compliance Check
       uses: fsfe/reuse-action@v2
       with:
         args: --include-submodules lint
+    # Close pull request if not REUSE compliant
+    - name: Stop pull request
+      if: ${{ failure() }}
+      uses: superbrothers/close-pull-request@v3
+      with:
+        # Optional. Post a issue comment just before closing a pull request.
+        comment: "We do not accept PRs. Your part isn't REUSE Compliant. (see reuse.software)."
