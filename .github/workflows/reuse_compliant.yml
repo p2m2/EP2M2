@@ -12,13 +12,11 @@ on:
       - develop
 
 jobs:
-  test:
+  Check-REUSE-compliant:
     runs-on: ubuntu-latest
     steps:
     # Load my repo
     - uses: actions/checkout@v4
-    - name: create file without license
-      run: echo "coucou" > without_license.txt
     # Check if futur new repo is REUSE compliant
     - name: REUSE Compliance Check
       uses: fsfe/reuse-action@v2
