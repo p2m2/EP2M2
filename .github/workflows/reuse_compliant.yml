@@ -1,0 +1,18 @@
+# SPDX-FileCopyrightText: 2024 Marcellino Palerme <marcellino.palerme@inrae.fr>
+#
+# SPDX-License-Identifier: MIT
+
+name: REUSE Compliance Check
+
+on: 
+  pull_request_target:
+    branches: 
+      - main
+      - develop
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    # Load my repo
+    - uses: actions/checkout@v4
