@@ -2,9 +2,13 @@
 #
 # SPDX-License-Identifier: MIT
 
+# thx:
+# https://stackoverflow.com/a/65389878
+# https://stackoverflow.com/a/67840292
 name: REUSE Compliance Check
 
 on: 
+  # thx: https://stackoverflow.com/a/71057825
   workflow_dispatch:
   pull_request_target:
     branches: 
