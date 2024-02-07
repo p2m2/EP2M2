@@ -12,17 +12,19 @@ SPDX-License-Identifier: MIT
 <script setup lang="ts" >
 import { ref, reactive, computed } from "vue";
 import type { tFile, tProject } from "../plugins/file";
-// import { useI18n, useToast } from "#imports";
 const { t } = useI18n();
 import { string, minLength, toTrimmed, object, parse } from 'valibot'
 import type { FormSubmitEvent } from "@nuxt/ui/dist/runtime/types";
 import {useCookie } from "nuxt/app";
 const toast = useToast()
 
-
+// close / open box of project
 const isOpen = ref<boolean>(false);
+// loading status of project's table
 const loading = ref<number>(0);
+// result of confirmation box
 const stateConfBox = ref<string>("");
+// close / open confirmation box
 const openConfBox = ref<boolean>(false);
 
 // Define struct of table of file
@@ -68,7 +70,7 @@ const tabProjectStruct = [
         sortable: false
     }
 ];
-
+// Number ligne by page in tables
 const itemsPerPage = ref<number>(5);
 
 // Variable to know by which column the project's table sorted
@@ -117,18 +119,19 @@ const modifiedProject = computed<boolean>(() =>
 
 // record modification of project
 const recordModif = {
+    // automatic record new name
     name:computed<string>(() =>
         (modifiedProject && oldProject.name != currentProject.name)?
             currentProject.name : ""
     ),
     add:[""], del: [""]
 };
-
+// Page of table, init at first page
 const currentPage = ref<number>(1);
 
 /**
  * Get all list of projects of one page and number of page
- * @param page number page
+ * @param page number page we want have
  */
 async function getProjects(page: number = 1): Promise<{
     projects: tProject[], count: number
@@ -147,22 +150,33 @@ async function getProjects(page: number = 1): Promise<{
 // Part define variable to show projects's list in table
 const projects = reactive<{ projects: tProject[], count: number }>(
     await getProjects());
+// list of showed projects
 const showProject = computed(() => projects.projects);
 
+/**
+ * Actulaze the list of projects
+ * @param param0 {page:number, itemsPerPage:number, sortBy:[{key:string,
+ *                                                           order:string}]}
+ */
 async function actualize({page, itemsPerPage, sortBy }) {
+    // Table become mode loading
     loading.value ++;
+    // check if we have a sort
     if(sortBy.length){    
+        // take first sort
         sortProject.value.column = sortBy[0].key;
         sortProject.value.direction = sortBy[0].order;
     }
-    
+    // get list of projects
     await getProjects(page)
         .then((resp) => {
+            // update project list
             projects.projects = resp.projects;
             projects.count = resp.count;
         });    
-
+    // Indicate which page we are choose
     currentPage.value = page;
+    // Stop loading of table
     loading.value --;
 }
 
@@ -230,10 +244,14 @@ async function getFiles(evt: Event | null): Promise<void> {
     // Get file from client
     const fileList = (evt?.currentTarget as HTMLInputElement).files;
     if (fileList) for (const myFile of fileList) {
+        // add file 
         formData.append('file', myFile);
     }
+    // give name of directory where save temporaly file
     formData.append('folder', currentFolder);
+    // loading table
     loading.value++;
+    // Ask server type of files
     $fetch("api/infoFile", {
         method: "post",
         body: formData
@@ -243,8 +261,10 @@ async function getFiles(evt: Event | null): Promise<void> {
             
             for (const oneFile of resp as tFile[]) {
                 if ((oneFile as tFile).type == "unknown") {
+                    // Create list of unkeept file
                     unkeepFiles.push(oneFile);
                 } else {
+                    // add file
                     currentProject.files.push(oneFile);
                     // save modification when update project
                     if(currentProject.id != ""){
@@ -263,12 +283,16 @@ async function getFiles(evt: Event | null): Promise<void> {
         .catch(() => {
             console.log("fail");
         })
+        // stop loading
         .finally(() => loading.value--)
 }
 
-
+/**
+ * Delete one file of project
+ * @param id id of file
+ */
 function deleteRow(id: string) {
-            // get index of row
+    // get index of row
     const index = currentProject.files.findIndex((file) => file.id == id);
         
     // Delete the row 
@@ -289,7 +313,12 @@ async function onSubmit(event: FormSubmitEvent<any>) {
     // console.log(event.data)
 }
 
+/**
+ * export in one csv all elements extract from analyzes of the project
+ * @param idProject id of project
+ */
 async function extract(idProject: string) {
+    // Ask server csv file
     const response = await $fetch("/api/extract", {
         method: "post",
         body: idProject
@@ -299,38 +328,51 @@ async function extract(idProject: string) {
     if (response === "" || !response) {
         return 0
     }
-
+    // Create binary csv file
     const data = new Blob([response], { type: 'text/csv' });
 
     // console.log(data.value);
-
+    // Create a link on page web
     const eleLink = document.createElement('a');
+    // Named the file to download
     eleLink.download = `Extration_${new Date(Date.now()).toISOString()
         .replaceAll(/\W/g, "")}.csv`;
+    // Hide the link
     eleLink.style.display = 'none';
-
+    // Add in link the binary file
     eleLink.href = URL.createObjectURL(data);
-
+    // Add link in DOM
     document.body.appendChild(eleLink);
+    // Click on link
     eleLink.click();
-
+    // Delete URL
     URL.revokeObjectURL(eleLink.href);
+    // Delete the link
     document.body.removeChild(eleLink);
 
 }
 
+/**
+ * Initialize all variable to manage a project
+ * Open box (overlay) of project
+ * @param id:string identify of project
+ */
 function openProject(id: string) {
+    // random name of folder for tempory files
     currentFolder = crypto.getRandomValues(new Uint32Array(4)).join("-");
-
+        // empty variable to manage history of project
         emptyProject(currentProject);
         emptyProject(oldProject);
 
+    // case if not a new project
     if (id != "") {
         // reset of record
         recordModif.add=[""];
         recordModif.del=[""];
+        // get consulted project 
         const tempProject = showProject.value.filter(p => p.id == id)
 
+        // copy consulted project in two variables managed history project
         currentProject.id = id;
         currentProject.name = tempProject[0].name;
         currentProject.createDate = tempProject[0].createDate;
@@ -342,55 +384,99 @@ function openProject(id: string) {
         oldProject.nbFile = tempProject[0].nbFile;
         Object.assign(oldProject.files, tempProject[0].files);
     }
+    // Open box (overlay) of project
     isOpen.value = true;
 }
 
+/**
+ * Transform data iso in human reading
+ * @param rowDate string date in iso 
+ */
 function localDate(rowDate: string): string {
     return (new Date(rowDate)).toLocaleString();
 }
 
+// variable to show/hide progress bar and lock/unlock project box
+// (during modification to server you can't continue modify project)
 const lockProject = ref<boolean>(false);
+// message in progress bar
 const msgProgress = ref<string>("");
 
+/**
+ * Block project and show progress bar with a message
+ * @param msg string message to show in progress bar
+ */
 function waitingProcess(msg: string) {
+    // lock project and show progress bar
     lockProject.value = true;
+    // put message in progress bar
     msgProgress.value = msg;
 }
 
+/**
+ * 
+ * @param msg string message when processing is OK
+ */
 async function processOk(msg: string) {
+    // Close project box
     isOpen.value = false;
+    // unlock porject and hide progress bar
     lockProject.value = false;
+    // empty 
     emptyProject(currentProject);
+    // 
     currentFolder = "";
+    // Show success message (pop-up)
     toast.add({ title: msg });
+    // refresh project table
     await actualize({page:1, itemsPerPage:5, sortBy:[{key:sortProject.value.column, order:sortProject.value.direction}]});
 }
 
+/**
+ * 
+ * @param msg string message when processing is fail
+ */
 function processFail(msg: string) {
+    // unlock project and hide progress bar
     lockProject.value = false;
+    // show fail message (pop-up)
     toast.add({ title: msg });
 }
+
+/**
+ * Create a new project in database
+ */
 function createProject() {
+    // Prepare data to send to server
     const body = new FormData();
+    // indicate which tempory folder use to get analyzes files
     body.append("folder", currentFolder);
+    // give all info on project
     body.append("project", JSON.stringify(currentProject));
     // todo get team name
     body.append("team", useCookie("team").value as string);
     // todo undisplay modal and waiting popup
     waitingProcess(t("message.waitCreateProject"));
+    // ask server create project
     $fetch("api/createProject", {
         method: "POST",
         body: body
     })
+        // Indicate success and back to update project table
         .then(() => processOk(currentProject.name + " " + t("message.created")))
+        // Indicate fail and stay on project box
         .catch(() => processFail(t("message.createdFail")));
 }
 
+/**
+ * Update project on database
+ */
 async function updateProject(){
+    // Show waiting bar
     waitingProcess(t("message.updateInProgress"));
-
+    // Array keep all promises
     const holdOn = [];
-
+    // Get list of added file id
     const addListId = recordModif.add.filter(id => id != "");
     if(addListId.length>0){
         const addList = currentProject.files.filter(file => 
@@ -564,11 +650,13 @@ async function deleteProject(id:string, name:string){
 </style>
 
 <template>
+    <!-- Part of button to add project -->
     <UContainer class="flex justify-start items-left">
         <UTooltip :text="t('label.addProject')" :popper="{ placement: 'right' }">
             <UButton class="extractButton w-1/3" @click="openProject('')" icon="i-heroicons-folder-plus" />
         </UTooltip>
     </UContainer>
+    <!-- Part of table show projects of team -->
     <UContainer>
         <v-data-table-server
             v-model:items-per-page="itemsPerPage"
@@ -580,14 +668,19 @@ async function deleteProject(id:string, name:string){
             @update:options="actualize"
             @update:page="getProjects"
         >
+            <!-- Personnalize header -->
             <template v-slot:headers="{ 
                 columns, isSorted, getSortIcon, toggleSort }"
             >
                 <tr>
                     <template v-for="column in columns" :key="column.key">
                         <td>
+                            <!-- headers are clickable -->
                             <div class="cursor-pointer flex items-center" @click="() => toggleSort(column)">
+                                <!-- Print title of column -->
                                 {{ column.title }}
+                                <!-- If we can sort column then show state of 
+                                     sort -->
                                 <UIcon v-if="column.sortable"
                                     :name=" !isSorted(column)?
                                     'i-heroicons-arrows-up-down-20-solid' :
@@ -601,17 +694,23 @@ async function deleteProject(id:string, name:string){
                     </template>
                 </tr>
             </template>
+            <!-- Print creation date in human readly format -->
             <template v-slot:item.createDate="{ value }">
                {{ localDate(value) }}
             </template>
+            <!-- In column action each line have several buttons -->
             <template v-slot:item.action="{ item }">
+                <!-- Button to export project in .csv -->
                <UButton :title="t('button.exportProject')" icon="i-heroicons-arrow-down-on-square" size="xl" color="green"
                     variant="link" @click="extract(item.id)" :disabled="item.nbFile == 0" />
+                <!-- Button to consult and modify project -->
                 <UButton :title="t('button.viewProject')" icon="i-heroicons-pencil" size="xl" color="blue" variant="link"
                     @click="openProject(item.id)" />
+                <!-- Button to delete project -->
                 <UButton :title="t('button.deleteProject')" icon="i-heroicons-x-mark" size="xl" color="red" variant="link"
                     @click="deleteProject(item.id, item.name)" />
             </template>
+            <!-- manage paginition of table -->
             <template v-slot:bottom>
                 <div class="text-center pt-2">
                     <v-pagination 
@@ -624,6 +723,7 @@ async function deleteProject(id:string, name:string){
             </template>
         </v-data-table-server>
     </UContainer>
+    <!-- waiting bar   -->
     <v-progress-linear
         :active="lockProject"
         :indeterminate="true"
@@ -634,7 +734,7 @@ async function deleteProject(id:string, name:string){
         {{ msgProgress }}
     </v-progress-linear>
 
-    <!-- Details / create / modification project box -->
+    <!-- Details / create / modification project box overlay-->
     <UModal v-model="isOpen" prevent-close :display="!lockProject">
         <UForm :schema="schema" :state="currentProject" class="space-y-4" @submit="onSubmit">
             <UCard>
@@ -645,27 +745,34 @@ async function deleteProject(id:string, name:string){
                                 dark:text-white">
                             {{ t("title.projectName") }}
                         </h3>
+                        <!-- Closed button of box -->
                         <UButton color="gray" variant="link" icon="i-heroicons-x-mark-20-solid" class="-my-1"
                             @click="closeWinProject()" />
                     </div>
+                    <!-- input to add/modify project name -->
                     <UFormGroup name="name">
                         <UInput v-model="currentProject.name" autofocus requires />
                     </UFormGroup>
                 </template>
+                <!-- tabs -->
                 <UTabs :items="containProject">
+                    <!-- Name of tabs is translate -->
                     <template #default="{ item }">
                         <span class="truncate">
                             {{ t(item.label) }}
                         </span>
                     </template>
                     <template #item="{ item }">
+                        <!-- tab to manage analyzes -->
                         <UTooltip v-if="item.label === 'label.files'" :text="t('label.addFile')"
                             :popper="{ placement: 'right' }">
+                            <!-- button to add analyze files -->
                             <input type="file" id="inFilesSelect" multiple style="display: none;" />
                             <UButton color="white" variant="outline" :title="t('label.addFile')"
                                 @click="simulateClick('inFilesSelect')" icon="i-heroicons-document-plus" />
 
                         </UTooltip>
+                        <!-- table of analyze files of project -->
                         <v-data-table v-if="item.label === 'label.files'"
                             v-model:items-per-page="itemsPerPage"
                             :headers="tabFilesStruct"
@@ -674,6 +781,7 @@ async function deleteProject(id:string, name:string){
                             :loading="loading > 0"
                             item-value="name"
                         >
+                            <!-- custom headers -->
                             <template v-slot:headers="{ 
                                 columns, isSorted, getSortIcon, toggleSort }"
                             >
@@ -683,11 +791,16 @@ async function deleteProject(id:string, name:string){
                                         :key="column.key"
                                     >
                                         <td>
+                                            <!-- headers are clickable -->
                                             <div 
                                                 class="cursor-pointer flex items-center" 
                                                 @click="() => toggleSort(column)"
                                             >
+                                                <!-- Print title of column -->
                                                 {{ column.title }}
+                                                <!-- If we can sort column then
+                                                     show state of 
+                                                     sort -->
                                                 <UIcon v-if="column.sortable"
                                                     :name=" !isSorted(column)?
                                                     'i-heroicons-arrows-up-down-20-solid' :
@@ -701,7 +814,9 @@ async function deleteProject(id:string, name:string){
                                     </template>
                                 </tr>
                             </template>
+                            <!-- custom delete column -->
                             <template v-slot:item.delete="{ item }">
+                                <!-- each colunm has button to delete line -->
                                 <UButton 
                                     :title="t('button.deleteRow')" 
                                     icon="i-heroicons-x-mark"
@@ -711,18 +826,24 @@ async function deleteProject(id:string, name:string){
                                 />
                             </template>
                         </v-data-table>
+                        <!-- others tabs -->
                         <div v-else>
                             <p>couxcou</p>
                         </div>
                     </template>
                 </UTabs>
+                <!-- Footer with button to validate only if correct value in
+                     project -->
                 <template #footer v-if="validProjectName">
+                    <!-- Button to update project only if we have modification
+                     -->
                     <UButton v-if="currentProject.id != '' && modifiedProject"
                         :title="t('button.update')"
                         icon="i-heroicons-arrow-path"
                         :label="t('button.update')"
                         @click="updateProject()"
                     />
+                    <!-- Button create project -->
                     <UButton v-if="currentProject.id == ''"
                         :title="t('button.create')"
                         icon="i-heroicons-check-badge"
@@ -743,8 +864,10 @@ async function deleteProject(id:string, name:string){
             <v-card-text>
                 <p id="confirMsgId"></p>
                 <br/>
+                <!-- confirmation message -->
                 <p>{{ t("message.confQuestion") }}</p>
             </v-card-text>
+            <!-- Yes / No buttons -->
             <v-card-actions>
                 <v-btn color="primary" @click="openConfBox=false; stateConfBox='yes'">
                     {{ t("button.yes") }}
