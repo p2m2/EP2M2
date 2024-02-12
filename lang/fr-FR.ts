@@ -37,8 +37,9 @@ export default {
         name: "Nom",
         name_compound: "Témoin",
         name_machine: "Machine",
+        rt:"RT",
+        team:"Équipe",
         url: "URL",
-        rt:"RT"
     },
     image: {
         banner: {

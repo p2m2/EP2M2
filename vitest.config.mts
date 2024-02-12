@@ -27,6 +27,7 @@ export default defineVitestConfig({
         // vue(),
     ],
     test: {
+        setupFiles: "dotenv/config",
         globals: true,
         environment: "jsdom",
         coverage:{

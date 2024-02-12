@@ -15,7 +15,7 @@ export default defineEventHandler(async (event) => {
     case "header":
         return table.header;
     case "nbPages":
-        return await table.getNbPage(2);
+        return await table.getNbPage(body.itemByPage);
     case "getPage":
         return await table.getPage(body.page, body.itemByPage, body.sortBy);
     case "totalItems":

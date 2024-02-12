@@ -38,8 +38,9 @@ export default {
         name: "Name",
         name_compound: "Reference",
         name_machine: "Machine",
+        rt:"RT",
+        team:"Team",
         url: "URL",
-        rt:"RT"
         
     },
     image:{
