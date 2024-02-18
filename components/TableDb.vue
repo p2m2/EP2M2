@@ -26,27 +26,86 @@ const props = defineProps({
 
 const { t } = useI18n();
 
+// global variable
+// Get Number of items in table
+const gtotalItems = await $fetch("/api/manageControl/totalItems",{
+    method:"post",
+    body:{nameTable:props.nameDbTable}
+});
+// Number items showed
+const rfItemsPerPage = ref<number>(props.itemsPerPage);
+// Page of table
+const rfCurrentPage = ref<number>(1);
+// manage sorted
+const rfSortBy = ref<tOneSort[]>();
+// Loading state of table
+const rfLoading = ref<boolean>(false);
+
 // Define of struct of table 
 const tableStruct = await $fetch("/api/manageControl/header",{
     method:"post",
     body:{nameTable:props.nameDbTable}
 });
 
-const items = await $fetch("/api/manageControl/rows",{
-    method:"post",
-    body:{
-        wheres:{"1":"1"},
-        nameTable:props.nameDbTable
+// list of items
+const rfItems = ref(await getItems());
+
+/**
+ * Get all list of items of one page and number of page
+ * @param page number page
+ */
+function getItems(page: number = 1):Promise<object[]>{
+    // change state of table in loading
+    rfLoading.value= true;
+    // set the number of page
+    rfCurrentPage.value = page;
+    return $fetch("/api/manageControl/getPage",{
+        method:"post",
+        body:{
+            nameTable:props.nameDbTable,
+            sortBy:rfSortBy.value,
+            page:page,
+            itemByPage:rfItemsPerPage.value
+        }
+    })
+        .then((resp) => {
+            rfLoading.value= false;
+            return resp;
+        })
+        .catch(() => {
+            rfLoading.value= false;
+            return [];
+        });
+
+}
+
+/**
+ * Update item show onto table
+ * @param param {page:number, itemsPerPage:number, sortBy:tOneSort[]}
+ */
+async function actualize({page, itemsPerPage, sortBy}:
+{page:number,itemsPerPage:number,sortBy:tOneSort[]}) {
+    // apply sort of row
+    if(sortBy.length){    
+        rfSortBy.value = sortBy;
     }
-});
+    // get number of items showed
+    if(itemsPerPage){
+        rfItemsPerPage.value = itemsPerPage;
+    }
+    // get list of items of page
+    rfItems.value = await getItems(page);    
+}
+
 </script>
 
 <template>
   <v-data-table-server
     :headers="tableStruct"
-    :items="items"
-    :items-length="items.length"
-    :items-per-page="itemsPerPage"
+    :items="rfItems"
+    :items-length="gtotalItems"
+    :items-per-page="rfItemsPerPage"
+    @update:options="actualize"
   >
     <!-- Custom head of table -->
     <template

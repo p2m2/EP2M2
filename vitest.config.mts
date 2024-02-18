@@ -4,6 +4,7 @@
 import { defineVitestConfig } from "@nuxt/test-utils/config";
 import Components from "unplugin-vue-components/vite";
 import * as path from "path";
+import vue from "@vitejs/plugin-vue";
 
 const r = (p: string) => path.resolve(__dirname, p);
 
@@ -24,12 +25,17 @@ export default defineVitestConfig({
                 }
             ]
         }),
-        // vue(),
+        vue(),
     ],
     test: {
         setupFiles: "dotenv/config",
         globals: true,
         environment: "jsdom",
+        server: {
+            deps: {
+                inline: ["vuetify"],
+            },
+        },
         coverage:{
             reporter: ["json-summary", "json", "html"],
             lines: 80,

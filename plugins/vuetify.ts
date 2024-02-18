@@ -8,9 +8,18 @@ import "@mdi/font/css/materialdesignicons.css";
 import "vuetify/styles";
 import { createVuetify } from "vuetify";
 
+export type {tOneSort};
+
 export default defineNuxtPlugin((app) => {
     const vuetify = createVuetify({
     // ... your configuration
     });
     app.vueApp.use(vuetify);
 });
+
+declare global {
+    interface tOneSort {
+        key: string,
+        order: "asc" | "desc"
+    }
+}
