@@ -24,7 +24,7 @@ const props = defineProps({
     },
     // add column
     addColumn:{
-        type:Object as PropType<tColumns>||null,
+        type:Object as PropType<tColumns>|null,
         default: null,
         required:false
     }
@@ -122,6 +122,10 @@ async function actualize({page, itemsPerPage, sortBy}:
     :items-per-page="rfItemsPerPage"
     @update:options="actualize"
   >
+    <!-- Give access to top of table -->
+    <template #top>
+      <slot name="top" />
+    </template>
     <!-- Custom head of table -->
     <template
       #headers="{ 
@@ -135,7 +139,7 @@ async function actualize({page, itemsPerPage, sortBy}:
           <td>
             <div
               class="flex items-center"
-              @click="() => toggleSort(column)"
+              @click="() => isSorted(column)?toggleSort(column):0"
             >
               <v-btn
                 variant="plain"
