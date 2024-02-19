@@ -8,7 +8,7 @@ import "@mdi/font/css/materialdesignicons.css";
 import "vuetify/styles";
 import { createVuetify } from "vuetify";
 
-export type {tOneSort};
+export type {tOneSort, tHeader};
 
 export default defineNuxtPlugin((app) => {
     const vuetify = createVuetify({
@@ -18,8 +18,15 @@ export default defineNuxtPlugin((app) => {
 });
 
 declare global {
+    // Define sort
     interface tOneSort {
         key: string,
         order: "asc" | "desc"
+    }
+    // Define a vetify column
+    interface tHeader{ 
+        key: string,
+        type: string,
+        sortable:boolean
     }
 }

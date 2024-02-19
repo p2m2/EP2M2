@@ -5,7 +5,7 @@
 import pg from "pg";
 
 export default class Table {
-    _headers: { key: string; type: string; sortable:boolean; }[] = [];
+    _headers: tHeader[] = [];
     _nameTable!: string;
     constructor(nameTable:string) {
         const client = new pg.Client();

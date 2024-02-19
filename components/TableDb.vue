@@ -22,6 +22,12 @@ const props = defineProps({
         default: 10,
         required: false
     },
+    // add column
+    addColumn:{
+        type:Object as PropType<tColumns>||null,
+        default: null,
+        required:false
+    }
 });
 
 const { t } = useI18n();
@@ -49,6 +55,15 @@ const tableStruct = await $fetch("/api/manageControl/header",{
 
 // list of items
 const rfItems = ref(await getItems());
+
+
+// Add columns in structur of table
+if(props.addColumn && props.addColumn?.columns.length>0){
+    for(const column of props.addColumn.columns){
+        tableStruct.push(column);
+    } 
+}
+
 
 /**
  * Get all list of items of one page and number of page
@@ -144,6 +159,19 @@ async function actualize({page, itemsPerPage, sortBy}:
           </td>
         </template>
       </tr>
+    </template>
+    <!-- Give user access to added colmn -->
+    <template
+      v-for="column of props.addColumn?.columns"
+      #['item.'+column.key]="{item}"
+    >
+      <!-- thx: https://stackoverflow.com/a/53431262 -->
+      <!-- Create slot with added column name -->
+      <!-- Give all information of item -->
+      <slot
+        :name="'item.' + column.key"
+        v-bind="item"
+      />
     </template>
   </v-data-table-server>
 </template>
