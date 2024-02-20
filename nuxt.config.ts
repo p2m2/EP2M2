@@ -23,7 +23,7 @@ export default defineNuxtConfig({
         "@nuxtjs/i18n",
         (_options, nuxt) => {
             nuxt.hooks.hook("vite:extendConfig", (config) => {
-            // @ts-expect-error
+            // @ts-expect-error because internet say that
                 config.plugins.push(vuetify({ autoImport: true }));
             });
         },
@@ -50,7 +50,7 @@ export default defineNuxtConfig({
             },
 
         ],
-        lazy: true,
+        lazy: false,
         langDir: "lang",
         customRoutes: "config",   // disable custom route with page components
         pages: {

@@ -167,7 +167,7 @@ async function actualize({page, itemsPerPage, sortBy}:
     <!-- Give user access to added colmn -->
     <template
       v-for="column of props.addColumn?.columns"
-      #['item.'+column.key]="{item}"
+      #[`item.${column.key}`]="{item}"
     >
       <!-- thx: https://stackoverflow.com/a/53431262 -->
       <!-- Create slot with added column name -->
