@@ -27,8 +27,16 @@ const props = defineProps({
         type:Object as PropType<tColumns>|null,
         default: null,
         required:false
+    },
+    // ask update table: just toggle update variable in parent component
+    update:{
+        type:Boolean,
+        default:false,
+        required:false
     }
 });
+// add reactivity on update props
+const rfUpdate = toRef(props, "update");
 
 const { t } = useI18n();
 
@@ -54,8 +62,7 @@ const tableStruct = await $fetch("/api/manageControl/header",{
 });
 
 // list of items
-const rfItems = ref(await getItems());
-
+const rfItems = ref<object[]>([]);
 
 // Add columns in structur of table
 if(props.addColumn && props.addColumn?.columns.length>0){
@@ -112,6 +119,15 @@ async function actualize({page, itemsPerPage, sortBy}:
     rfItems.value = await getItems(page);    
 }
 
+// When user change update prop we update table
+watch(
+    rfUpdate,
+    async() => {
+        rfItems.value = await getItems();
+    },
+    { immediate: true }
+);
+
 </script>
 
 <template>
@@ -120,6 +136,7 @@ async function actualize({page, itemsPerPage, sortBy}:
     :items="rfItems"
     :items-length="gtotalItems"
     :items-per-page="rfItemsPerPage"
+    :loading="rfLoading"
     @update:options="actualize"
   >
     <!-- Give access to top of table -->
@@ -137,6 +154,7 @@ async function actualize({page, itemsPerPage, sortBy}:
           :key="column.key"
         >
           <td>
+            <!-- Click effect only if column is sortable -->
             <div
               class="flex items-center"
               @click="() => isSorted(column)?toggleSort(column):0"

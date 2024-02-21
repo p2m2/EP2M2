@@ -14,6 +14,11 @@ SPDX-License-Identifier: MIT
 
 -->
 
+<!-- 
+  TODO maybe
+  ask action function return 0 to update table
+-->
+
 <script setup lang="ts">
 import tabledb from "./TableDb.vue";
 // define props (input) of component
@@ -62,6 +67,18 @@ const props = defineProps({
         required: false
     },
 });
+
+// define type of actions props
+type typePropsAction = typeof props.add 
+| typeof props.archive 
+| typeof props.view  
+| typeof props.modify 
+| typeof props.delete;
+
+// define type to use string as index of action props
+type keyPropsAction = keyof typeof props
+
+const rfUpdate = ref<boolean>(false);
 // For internationalization
 const { t } = useI18n();
 
@@ -71,7 +88,7 @@ for(const action of Object.keys(props)){
     // Check if event that one no-add action define 
     // thx https://stackoverflow.com/a/6000009
     // thx AI VueMastery.com
-    if (typeof props[action as keyof typeof props] === "function"){  
+    if (typeof props[action as keyPropsAction] === "function"){  
         // Add column action  
         switch (action) {
         case "view":
@@ -95,6 +112,24 @@ let addColumn:tColumns|undefined= undefined;
 if(actIco.length>0){
     addColumn={columns:[{key:"action", sortable:false, type:""}]};
 }
+
+/**
+ * 
+ * @param action 
+ * @param item 
+ */
+function launchAction(action:{name:string}, item:object) {
+    // define action function
+    const func:typePropsAction = 
+      props[action.name as keyPropsAction] as typePropsAction;
+    // run action function
+    func(item);
+    // Update table for all action except view because this function haven't
+    // effect on database
+    if(action.name != "view"){
+        rfUpdate.value = !rfUpdate.value;
+    }
+}
 </script>
 
 <template>
@@ -102,6 +137,7 @@ if(actIco.length>0){
     :name-db-table="props.nameDbTable" 
     :items-per-page="props.itemsPerPage"
     :add-column="addColumn"
+    :update="rfUpdate"
   >
     <!-- Put add button on top of table -->
     <template
@@ -137,7 +173,7 @@ if(actIco.length>0){
               density="compact"
               size="small"
               variant="text"
-              @click="(props[action.name as keyof typeof props] as Function) (item)"
+              @click="() => launchAction(action, item)"
             />
             <!-- </div>
               </v-btn-toggle> -->
