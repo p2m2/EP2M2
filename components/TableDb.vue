@@ -7,7 +7,6 @@ SPDX-License-Identifier: MIT
 <!--
     This component display a table from database table or view.
 -->
-
 <script setup lang="ts">
 
 const props = defineProps({
@@ -35,12 +34,12 @@ const props = defineProps({
         required:false
     }
 });
-// add reactivity on update props
-const rfUpdate = toRef(props, "update");
-
+// get function to translate
 const { t } = useI18n();
 
 // global variable
+// add reactivity on update props
+const rfUpdate = toRef(props, "update");
 // Get Number of items in table
 const gtotalItems = await $fetch("/api/manageControl/totalItems",{
     method:"post",
@@ -63,6 +62,9 @@ const tableStruct = await $fetch("/api/manageControl/header",{
 
 // list of items
 const rfItems = ref<object[]>([]);
+
+// variable to block two load data when create component
+let block:number = 0;
 
 // Add columns in structur of table
 if(props.addColumn && props.addColumn?.columns.length>0){
@@ -107,6 +109,10 @@ function getItems(page: number = 1):Promise<object[]>{
  */
 async function actualize({page, itemsPerPage, sortBy}:
 {page:number,itemsPerPage:number,sortBy:tOneSort[]}) {
+    // increase variable to indicate we get data one time
+    if(block < 2){
+        block++;
+    }
     // apply sort of row
     if(sortBy.length){    
         rfSortBy.value = sortBy;
@@ -123,8 +129,17 @@ async function actualize({page, itemsPerPage, sortBy}:
 watch(
     rfUpdate,
     async() => {
-        rfItems.value = await getItems();
+        // Check we aren't in case of create component
+        if(block == 2){
+            rfItems.value = await getItems();
+        }
+        else{
+            // increase variable to indicate we pass in first time during 
+            // creation
+            block++;
+        }
     },
+    // watch execute immediately
     { immediate: true }
 );
 
