@@ -23,8 +23,10 @@ const props = defineProps({
     },
     // add column
     addColumn:{
-        type:Object as PropType<tColumns>|null,
-        default: null,
+        type:Object as PropType<tColumns>,
+        default(){
+            return {columns: []};
+        },
         required:false
     },
     // ask update table: just toggle update variable in parent component
@@ -41,10 +43,8 @@ const { t } = useI18n();
 // add reactivity on update props
 const rfUpdate = toRef(props, "update");
 // Get Number of items in table
-const gtotalItems = await $fetch("/api/manageControl/totalItems",{
-    method:"post",
-    body:{nameTable:props.nameDbTable}
-});
+const gtotalItems = ref<number>(0);
+
 // Number items showed
 const rfItemsPerPage = ref<number>(props.itemsPerPage);
 // Page of table
@@ -53,25 +53,33 @@ const rfCurrentPage = ref<number>(1);
 const rfSortBy = ref<tOneSort[]>();
 // Loading state of table
 const rfLoading = ref<boolean>(false);
-
 // Define of struct of table 
-const tableStruct = await $fetch("/api/manageControl/header",{
-    method:"post",
-    body:{nameTable:props.nameDbTable}
-});
-
+const tableStruct = ref< tHeader[]>([]);
 // list of items
 const rfItems = ref<object[]>([]);
-
 // variable to block two load data when create component
 let block:number = 0;
 
-// Add columns in structur of table
-if(props.addColumn && props.addColumn?.columns.length>0){
-    for(const column of props.addColumn.columns){
-        tableStruct.push(column);
-    } 
-}
+
+onMounted(async () => {
+    // Get Number of items in table
+    gtotalItems.value = await $fetch("/api/manageControl/totalItems",{
+        method:"post",
+        body:{nameTable:props.nameDbTable}
+    });
+    // Get struct of table 
+    tableStruct.value = await $fetch("/api/manageControl/header",{
+        method:"post",
+        body:{nameTable:props.nameDbTable}
+    });
+
+    // Add columns in structur of table
+    if(props.addColumn.columns.length > 0 && props.addColumn?.columns.length>0){
+        for(const column of props.addColumn.columns){
+            tableStruct.value.push(column);
+        } 
+    }
+});
 
 
 /**
@@ -172,7 +180,7 @@ watch(
             <!-- Click effect only if column is sortable -->
             <div
               class="flex items-center"
-              @click="() => isSorted(column)?toggleSort(column):0"
+              @click="() => column.sortable?toggleSort(column):0"
             >
               <v-btn
                 variant="plain"
