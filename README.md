@@ -40,7 +40,7 @@ password>" > .env`
 ## User guide
 
 ## Contibution
-
+[let's go](./doc/contribution.md)
 ## Report issue
 - Directly on github
 - Send e-mail at [team](mailto:p2m2-it@inrae.fr)
