@@ -4,12 +4,12 @@ const {t} = useI18n();
 
 <template>
   <!-- mandatory tag to use vuetify in nuxt3 -->
-  <v-app>
+  <v-app class="ma-2 pa-8">
     <div>
-      <v-container class="bg-white mb-4">
+      <v-container class="mb-4">
         <v-row justify="space-between">
           <!-- cliquable image of p2m2  -->
-          <v-col class="ma-2 pa-8">
+          <v-col>
             <v-img
               aspect-ratio="16/9"
               :src="t('image.banner.src')"
@@ -49,5 +49,8 @@ const {t} = useI18n();
         </v-row>
       </v-container>
     </div>
+    <v-footer>
+      <bug-button />
+    </v-footer>
   </v-app>
 </template>
