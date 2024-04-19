@@ -128,7 +128,11 @@ L'utilisateur fournit fichiers bruts des solution sœurs provenant d'une même c
 L'utilisateur créer un project dans lequel il téléverse l'ensemble des fichiers bruts de son analyse. L'opérateur sélectionne les gammes temporaires à utiliser. Il demande une extraction des informations. Il obtient alors un fichier avec l'ensemble des informations basique ainsi que celles corrigées (pour celles dont c'est possible).
 
 - [003_01] Un projet
-  - [003_01] Un projet contient aucune, une ou plusieurs gammes temporaires.
-  - [003_01] Une gamme temporaire non archivée peut être ajouter à un projet.
-  - [003_01] Une gamme temporaire peut être supprimée d'un projet.
+  - [003_01a] Un projet contient aucune, une ou plusieurs gammes temporaires.
+  - [003_01b] Une gamme temporaire non archivée peut être ajouter à un projet.
+  - [003_01c] Une gamme temporaire peut être supprimée d'un projet.
 - [003_02] Le fichier contient en plus une colonne de l'aire corrigé (fitting area) à partir du coefficient directeur de la gamme temporaire associée au méthabolite.
+
+### Extraction des informations des fichiers bruts avec correction à partir de gammes instantannée et un témoin [004]
+
+L'utilisateur créer un project dans lequel il téléverse l'ensemble des fichiers bruts de son analyse. L'opérateur indique que les fichiers contiennent les gammes instantannées. L'opérateur indique que les fichiers contiennent le témoin. Il demande une extraction des informations. Il obtient alors un fichier avec l'ensemble des informations basique ainsi que celles corrigées (pour celles dont c'est possible).
