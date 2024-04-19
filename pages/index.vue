@@ -11,20 +11,14 @@ SPDX-License-Identifier: MIT
 
  -->
 <script lang="ts">
-import banner from "~/components/BannerMain.vue";
-import extras from "~/components/ExtrasNav.vue";
 import extract from "~/components/ExtractInfo.vue";
 import login from "~/components/LoginForm.vue";
-import bug from "~/components/BugButton.vue";
 import { useCookie } from "nuxt/app";
 
 export default{
     components:{
         login,
-        banner,
-        extras,
         extract,
-        bug
     },
     data(){
         return {checkSession: false};
@@ -50,38 +44,8 @@ export default{
 </script>
 
 <template>
-  <UCard> 
-    <UNotifications />
-    <template
-      v-if="checkSession" 
-      #header
-    >
-      <UContainer class="flex justify-between">
-        <banner />
-        <extras link-to="control" />
-      </UContainer>
-    </template>
-
-    <template
-      v-else
-      #header
-    >
-      <UContainer class="flex justify-between">
-        <banner />
-      </UContainer>
-      <login />
-    </template>
-    
-    <extract v-if="checkSession" />
-
-    <bug v-else />
-    <template 
-      v-if="checkSession"
-      #footer
-    >
-      <bug />
-    </template>
-  </UCard>
+  <extract v-if="checkSession" />
+  <login v-else />
 </template>
 
 <style>

@@ -1,6 +1,7 @@
 {
   "name": "ep2m2",
   "private": true,
+  "type": "module",
   "scripts": {
     "build": "nuxt build",
     "dev": "nuxt dev",
@@ -12,40 +13,31 @@
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore"
   },
   "devDependencies": {
-    "@nuxt/devtools": "latest",
     "@nuxt/eslint-config": "^0.2.0",
-    "@nuxt/test-utils": "^3.9.0",
+    "@nuxt/test-utils": "^3.12.0",
     "@nuxt/ui": "npm:@nuxt/ui-edge@latest",
-    "@nuxtjs/i18n": "^8.0.0-rc.5",
-    "@typescript-eslint/eslint-plugin": "^6.8.0",
-    "@typescript-eslint/parser": "^6.7.3",
-    "@vitejs/plugin-vue": "^4.3.4",
-    "@vitest/coverage-v8": "^0.34.6",
-    "@vue/test-utils": "^2.4.3",
-    "cypress": "^13.2.0",
-    "eslint": "^8.52.0",
-    "eslint-config-standard-with-typescript": "^39.1.1",
-    "eslint-plugin-import": "^2.28.1",
-    "eslint-plugin-n": "^16.2.0",
-    "eslint-plugin-promise": "^6.1.1",
-    "eslint-plugin-vitest": "^0.3.10",
-    "eslint-plugin-vue": "^9.17.0",
-    "happy-dom": "^12.10.3",
-    "jsdom": "^22.1.0",
-    "nuxt": "^3.7.0",
-    "playwright-core": "^1.40.1",
-    "typescript": "^5.3.3",
-    "unplugin-vue-components": "^0.25.2",
-    "vite-plugin-vuetify": "^1.0.2",
-    "vitest": "^0.34.6",
-    "vue-tsc": "^1.8.25",
-    "vuetify": "^3.4.6"
+    "@nuxtjs/eslint-module": "^4.1.0",
+    "@nuxtjs/i18n": "npm:@nuxtjs/i18n-edge",
+    "@vue/test-utils": "^2.4.5",
+    "eslint": "^8.57.0",
+    "eslint-plugin-vitest": "^0.4.2-beta.3",
+    "happy-dom": "^13.10.1",
+    "playwright-core": "^1.42.1",
+    "resize-observer-polyfill": "^1.5.1",
+    "typescript": "^5.4.0",
+    "vite-plugin-vuetify": "^2.0.3",
+    "vitest": "^1.4.0",
+    "vue-tsc": "^1.8.27",
+    "vuetify": "^3.5.14"
   },
   "dependencies": {
     "@mdi/font": "^7.3.67",
     "@nuxt/ui": "npm:@nuxt/ui-edge@latest",
     "bcrypt": "^5.1.1",
+    "nuxt": "^3.11.1",
     "pg": "^8.11.3",
-    "valibot": "^0.19.0"
+    "valibot": "^0.19.0",
+    "vue": "^3.4.21",
+    "vue-router": "^4.3.0"
   }
 }

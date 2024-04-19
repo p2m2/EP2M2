@@ -3,26 +3,20 @@
 # SPDX-License-Identifier: MIT
 
 services:
-  web:
-    build: .
-    ports:
-      - "80:3000"
-    volumes:
-      - shareFile:/shareFile
-    env_file:
-      - ./secrets/pg.env
-    restart: "always"
 
-      
   api:
     image: inraep2m2/service-p2m2tools-api:latest
     container_name: p2m2ToolsApi
+    ports:
+      - "8080:8080"
     volumes:
       - shareFile:/shareFile
 
   db:
     image: postgres:latest
     container_name: db
+    ports:
+      - "5432:5432"
     volumes:
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
     env_file:

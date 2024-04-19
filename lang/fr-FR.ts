@@ -18,6 +18,7 @@ export default {
         help: "Aide",
         home: "Accueil",
         lang: "Changer de langue",
+        logout: "Déconnexion",
         no: "Non",
         submit: "Valider",
         topProfOut: "Accéder au sous-menu profile et déconnection",
@@ -44,6 +45,7 @@ export default {
         banner: {
             alt: "icône P2M2",
             src: "/logoP2M2_fr.png",
+            title: "Accueil",
         }
     },
     label: {
