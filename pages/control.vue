@@ -13,7 +13,6 @@ import fit from "~/components/DbFittingShowList.vue";
 import comp from "~/components/DbCompoundShowList.vue";
 import machine from "~/components/DbMachineShowList.vue";
 import banner from "~/components/BannerMain.vue";
-import extras from "~/components/ExtrasNav.vue";
 import login from "~/components/LoginForm.vue";
 import bug from "~/components/BugButton.vue";
 import { useCookie } from "nuxt/app";
@@ -25,7 +24,6 @@ export default{
         comp,
         login,
         banner,
-        extras,
         bug
     },
     data(){
@@ -72,7 +70,6 @@ export default{
     >
       <UContainer class="flex justify-between">
         <banner />
-        <extras link-to="" />
       </UContainer>
     </template>
   

@@ -5,13 +5,14 @@ SPDX-License-Identifier: MIT
 -->
 
 <!-- 
-  This file contain 
+  This file manage language button 
 
  -->
 
  <script setup lang="ts">
- const { locale, locales, setLocale } = useI18n();
-  
+ const { locale, t } = useI18n();
+ const { locales, setLocale } = useNuxtApp().$i18n;
+
  const avaiblesLang = computed(() => {
      return locales.value.filter(i => (i.code) !== locale.value).
          map((i18n)=> {return {
@@ -32,18 +33,26 @@ SPDX-License-Identifier: MIT
       <v-btn
         v-bind="props"
         size="x-large"
-        icon="mdi-translate"
+        prepend-icon="mdi-translate"
         variant="outlined"
-        class="ma-2 pa-2"
-      />
+        class="ma-2 pa-2 bt-lang"
+        stacked
+        rounded="lg"
+        :title="t('button.lang')"
+      >
+        <span class="text-subtitle-2">
+          {{ t('button.lang') }} 
+        </span>
+      </v-btn>
     </template>
     <v-list>
       <v-list-item
-        v-for="(item, i) in avaiblesLang"
-        :key="i"
+        v-for="item in avaiblesLang"
+        :key="item.code"
       >
         <v-btn
           v-if="item"
+          :class="item.code"
           @click="changeLang(item.code)"
         >
           {{ item.label }}

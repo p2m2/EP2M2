@@ -11,6 +11,7 @@ services:
       - shareFile:/shareFile
     env_file:
       - ./secrets/pg.env
+    restart: "always"
 
       
   api:

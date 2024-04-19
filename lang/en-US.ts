@@ -18,6 +18,7 @@ export default {
         help: "Help",
         home: "Home",
         lang: "Change langage",
+        logout: "Logout",
         no: "No",
         submit: "Submit",
         topProfOut: "Profile under menu and logout",
@@ -46,6 +47,7 @@ export default {
         banner:{
             alt:"P2M2 icon",
             src:"/logoP2M2_en.png",
+            title: "Home",
         }
     },
     label:{

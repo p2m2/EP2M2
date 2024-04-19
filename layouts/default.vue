@@ -9,11 +9,12 @@ const {t} = useI18n();
       <v-container class="mb-4">
         <v-row justify="space-between">
           <!-- cliquable image of p2m2  -->
-          <v-col>
+          <v-col class="bannerImage">
             <v-img
               aspect-ratio="16/9"
               :src="t('image.banner.src')"
               :alt="t('image.banner.alt')"
+              :title="t('image.banner.title')"
               style="cursor: pointer;"
               @click="navigateTo('/')"
             />
@@ -23,24 +24,15 @@ const {t} = useI18n();
           <!-- part to global buttons  -->
           <v-col
             align-self="start"
+            class="bannerNav"
           >
             <v-row
               justify="end"
               class="ma-2 pa-8"
             >
               <lang-button />
-              <v-btn
-                class="ma-2 pa-2"
-                size="x-large"
-                icon="mdi-help"
-                variant="outlined"
-              />
-              <v-btn
-                class="ma-2 pa-2"
-                size="x-large"
-                icon="mdi-logout"
-                variant="outlined"
-              />
+              <help-button />
+              <logout-button />
             </v-row>
           </v-col>
         </v-row>
