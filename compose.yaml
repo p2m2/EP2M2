@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2024 Marcellino Palerme <marcellino.palerme@inrae.fr>
+#
+# SPDX-License-Identifier: MIT
+
 services:
   web:
     build: .
@@ -7,6 +11,7 @@ services:
       - shareFile:/shareFile
     env_file:
       - ./secrets/pg.env
+    restart: "always"
 
       
   api:
@@ -16,7 +21,7 @@ services:
       - shareFile:/shareFile
 
   db:
-    image: postgres
+    image: postgres:latest
     container_name: db
     volumes:
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql

@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2024 Marcellino Palerme <marcellino.palerme@inrae.fr>
+#
+# SPDX-License-Identifier: MIT
+
 name: Tests Unit
 
 on:
@@ -8,7 +12,13 @@ permissions:
   contents: read
   pull-requests: write
   checks: write
-    
+
+env:
+  PGPASSWORD: ep2m2
+  PGUSER: ep2m2
+  PGPORT: 5432
+  PGDATABASE: ep2m2db
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -17,6 +27,21 @@ jobs:
         image: inraep2m2/service-p2m2tools-api
         ports:
           - 8080:8080
+      db:
+        image: postgres:latest
+        # Provide the password for postgres
+        env:
+          POSTGRES_PASSWORD: ep2m2
+          POSTGRES_DB: ep2m2db
+          POSTGRES_USER: ep2m2
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
     
     steps:
       - name: Get repo
@@ -28,7 +53,12 @@ jobs:
           cache: 'npm'
       - name: Installation project s packages
         run: npm ci
-      - name: Test & coverage
+      - name: Configure database
+        run: node ./db/init.js
+      - name: Test
+        run: npm run test
+      - name: Coverage
+        if: always()
         run: npm run coverage
       - name: Report coverage
         if: always()
@@ -40,11 +70,11 @@ jobs:
         if: always()
         with:
           files: |
-            test/**/*.xml
+            ./test/**/*.xml
       - name: Complet report tests
         uses: dorny/test-reporter@v1
         if: always()
         with:
           reporter: "java-junit"
           name: Test Unit
-          path: test/**/*.xml
+          path: ./test/**/*.xml

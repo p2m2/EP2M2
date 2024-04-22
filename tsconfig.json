@@ -1,11 +1,14 @@
+// SPDX-FileCopyrightText: 2024 Marcellino Palerme <marcellino.palerme@inrae.fr>
+
+// SPDX-License-Identifier: MIT
 {
   // https://nuxt.com/docs/guide/concepts/typescript
   "extends": "./.nuxt/tsconfig.json",
-  "include": [
-    "./nuxt.d.ts",
-    "../**/*",
-    "..",
-    "./types/*.d.ts"],
+  // "include": [
+  //   "./nuxt.d.ts",
+  //   "../**/*",
+  //   "..",
+  //   "./types/*.d.ts"],
   "compilerOptions": {
     "types": ["vitest/globals"]
   }

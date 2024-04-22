@@ -1,36 +1,36 @@
+<!--
+SPDX-FileCopyrightText: 2024 Marcellino Palerme <marcellino.palerme@inrae.fr>
+
+SPDX-License-Identifier: MIT
+-->
+
 <!-- 
   This file contain the componant root of application ep2m2.
   EP2M2 provide web wide to extract all information from raw files of 
   metabolomic engines.
 
  -->
-
-<script setup lang="ts">
-import banner from "~/components/BannerMain.vue";
-import extras from "~/components/ExtrasNav.vue";
+<script lang="ts">
 import extract from "~/components/ExtractInfo.vue";
 import login from "~/components/LoginForm.vue";
 import { useCookie } from "nuxt/app";
 
-</script>
-
-<script lang="ts">
 export default{
+    components:{
+        login,
+        extract,
+    },
     data(){
         return {checkSession: false};
     },
     created:async function() {
-        const token = useCookie("token");
+        const token = useCookie("token",{sameSite:"strict"});
+        const team = useCookie("team",{sameSite:"strict"});
  
-        console.log("hein");
-        console.log(token.value);
-      
-      
-        if (!token.value){
+        if (!token.value || !team.value){
             this.checkSession = false;
             return null;
         }
-
 
         this.checkSession = await $fetch("/api/checkToken", {
             method: "POST",
@@ -39,32 +39,13 @@ export default{
             },
             body: token.value.toString()
         });
-      
-    }
+    },
 };
 </script>
 
 <template>
-  <UCard v-if="checkSession"> 
-    <template #header>
-      <UContainer class="flex justify-between">
-        <banner />
-        <extras />
-      </UContainer>
-    </template>
-    
-    <extract />
-    
-    <!-- <template #footer/> -->
-  </UCard>
-  <UCard v-else>
-    <template #header>
-      <UContainer class="flex justify-between">
-        <banner />
-      </UContainer>
-      <login />
-    </template>
-  </UCard>
+  <extract v-if="checkSession" />
+  <login v-else />
 </template>
 
 <style>
