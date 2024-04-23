@@ -1,10 +1,20 @@
+<!--
+SPDX-FileCopyrightText: 2024 Marcellino Palerme <marcellino.palerme@inrae.fr>
+
+SPDX-License-Identifier: MIT
+-->
+
+<!--
+    This file provide default layout
+    This layout seen on all page
+ -->
 <script setup lang="ts">
 const {t} = useI18n();
 </script>
 
 <template>
   <!-- mandatory tag to use vuetify in nuxt3 -->
-  <v-app class="ma-2 pa-8">
+  <v-app>
     <div>
       <v-container class="mb-4">
         <v-row justify="space-between">

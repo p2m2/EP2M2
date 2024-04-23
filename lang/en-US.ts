@@ -91,6 +91,10 @@ export default {
         updateProject:"updated",
         waitCreateProject: "Hold on please, we're creating your project"
     },
+    page:{
+        'index': 'Project',
+        'serie': 'Serie',
+    },
     tabs:{
         reference: "Reference",
         machine: "Machine",

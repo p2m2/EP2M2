@@ -33,9 +33,6 @@ export default defineNuxtConfig({
     typescript: {
         typeCheck: false
     },
-    colorMode: {
-        preference: "light"
-    },
     i18n: {
         defaultLocale: "fr-FR",
         strategy: "no_prefix",
@@ -57,12 +54,12 @@ export default defineNuxtConfig({
         // customRoutes: "config",   // disable custom route with page components
         pages: {
             index: {
-                en: "/",
-                fr: "/",
+                "en-US": "/",
+                "fr-FR": "/",
             },
-            control: {
-                en: "/control",
-                fr: "/control",
+            serie: {
+                "en-US": "/serie",
+                "fr-FR": "/serie",
             }
         }
     },
@@ -71,7 +68,9 @@ export default defineNuxtConfig({
     app: {
         head: {
             link: [{ rel: "icon", type: "image/ico", href: "/p2m2.ico" }]
-        }
+        },
+        pageTransition: false,
+        layoutTransition: false
     },
     build: {
         transpile: ["vuetify"],

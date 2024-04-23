@@ -10,42 +10,44 @@ SPDX-License-Identifier: MIT
   metabolomic engines.
 
  -->
-<script lang="ts">
-import extract from "~/components/ExtractInfo.vue";
-import login from "~/components/LoginForm.vue";
+<script setup lang="ts">
 import { useCookie } from "nuxt/app";
+import type { LayoutKey } from "#build/types/layouts";
 
-export default{
-    components:{
-        login,
-        extract,
-    },
-    data(){
-        return {checkSession: false};
-    },
-    created:async function() {
-        const token = useCookie("token",{sameSite:"strict"});
-        const team = useCookie("team",{sameSite:"strict"});
- 
-        if (!token.value || !team.value){
-            this.checkSession = false;
-            return null;
-        }
+definePageMeta({
+  layout: false,
+});
+const nameLayout = ref<LayoutKey>('default');
+const checkSession = ref(false);
+const token = useCookie("token",{sameSite:"strict"});
+const team = useCookie("team",{sameSite:"strict"});
 
-        this.checkSession = await $fetch("/api/checkToken", {
-            method: "POST",
-            headers:{
-                "Content-Type":"text/plain"
-            },
-            body: token.value.toString()
-        });
-    },
-};
+if (!token.value || !team.value){
+    checkSession.value = false;
+}
+else{
+  const data  = await $fetch("/api/checkToken", {
+      method: "POST",
+      headers:{
+          "Content-Type":"text/plain"
+      },
+      body: token.value.toString()
+  });
+
+  if (data){
+    checkSession.value = true;
+    nameLayout.value ='navigate-layout';
+  }
+  
+}
+
 </script>
 
 <template>
-  <extract v-if="checkSession" />
-  <login v-else />
+  <NuxtLayout :name="nameLayout">
+    <extract-info v-if="checkSession" />
+    <login-form v-else />
+  </NuxtLayout>
 </template>
 
 <style>

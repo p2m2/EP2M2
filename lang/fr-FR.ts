@@ -89,6 +89,10 @@ export default {
         updateProject:"est mise à jour",
         waitCreateProject: "Projet en cours de création"
     },
+    page:{
+        'index': 'Projet',
+        'serie': 'Gamme',
+    },
     tabs:{
         reference: "Témoin",
         machine: "Matériel",
