@@ -36,3 +36,12 @@ Il se décompose en deux parties:
  4. Le bouton logout
     - En cliquant dessus, on se déloggue du site.
 
+## Layout de navigation
+### Description
+Ce layout s'intégre dans le layout par défaut.
+Il se compose de deux onglets, projet et gamme.
+### Fonctionnalités
+1. Le layout n'est accessible qu'une fois l'utilisateur identifié.
+2. Les onglets sont cliquables
+3. L'onglet projet donne accès au tableau de projet de l'équipe de l'utilisateur.
+4. L'onglet gamme donne accès à l'espace de gestion des gammes.
