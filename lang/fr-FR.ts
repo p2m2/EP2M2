@@ -93,10 +93,15 @@ export default {
         'index': 'Projet',
         'serie': 'Gamme',
     },
-    tabs:{
+    tab:{
+        base: "Bases",
+        fitting: "Ajustement",
+        machine: "Machines (Configuration)",
+        mix:"Solutions mixes",
+        molecule: "Molécules",
+        mother: "Solutions mères",
         reference: "Témoin",
-        machine: "Matériel",
-        fitting: "Ajustement"
+        serie: "Gammes"
     },
     title: {
         compoundName:"Nom du témoin",

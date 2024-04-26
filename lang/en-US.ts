@@ -95,10 +95,15 @@ export default {
         'index': 'Project',
         'serie': 'Serie',
     },
-    tabs:{
+    tab:{
+        base: "Bases",
+        fitting: "Fitting",
+        machine: "Machine (Configuration)",
+        mix:"Mix solutions",
+        molecule: "Molecules",
+        mother: "Mother solutions",
         reference: "Reference",
-        machine: "Machine",
-        fitting: "Fitting"
+        serie: "Gammes"
     },
     title:{
         compoundName:"Reference name",
