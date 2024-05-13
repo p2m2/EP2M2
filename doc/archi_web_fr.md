@@ -96,3 +96,17 @@ Répertorie les solutions formulées à partir de plusieurs solutions mères
 
 Gére les gammes utilisées dans les projets.
 #### Fonctionnalités
+1. Bouton d'ajout d'une gamme (ouvre une overlay)
+   1. Remplir le nom de la gamme
+   2. Choisir la configuration de la machine
+   3. Choix de la ou des solutions mixes utilisées. Pour le choix un champ recherche est mis à disposition. Une liste de solutions mixtes s'affiche. Il est possible de sélectionner une ou plusieurs solutions.
+   4. Téléverser les fichiers machine de chaque solution fille (dilution de solution miste).
+   5. Indiquer la dilution de chaque solution fille.
+   6. Possibilité d'indiquer l'utilisation d'un témoin interne. Un champ de recherche est mis à disposition pour trouver le nom du témoin. 
+   
+2. Un tableau de liste des gammes composé:  
+   1. Un nom
+   2. Une liste des métabolites
+   3. Une Date de création 
+   4. Une Date d'archive
+   5. Les actions (consultation \ modification \ archivage \ suppression) 
