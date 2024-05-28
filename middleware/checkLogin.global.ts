@@ -6,9 +6,6 @@
 
 export default defineNuxtRouteMiddleware(async (to, from) => {
 
-  // skip middleware on server
-  if (import.meta.server) return
- 
   // when we open login page we do nothing
   if (from.path == '/login'){
     abortNavigation()
