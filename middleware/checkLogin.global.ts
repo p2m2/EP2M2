@@ -1,3 +1,9 @@
+// SPDX-FileCopyrightText: 2024 Marcellino Palerme <marcellino.palerme@inrae.fr>
+//
+// SPDX-License-Identifier: MIT
+
+//  This middleware verify if use logged
+
 export default defineNuxtRouteMiddleware(async (to, from) => {
 
   // skip middleware on server
@@ -11,9 +17,11 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
     return
   }
   
+  // get cookies
   const token = useCookie("token",{sameSite:"strict"});
   const team = useCookie("team",{sameSite:"strict"});
   
+  // if we have cookie, we check if we have the token
   if (token.value && team.value){
     
     const data  = await $fetch("/api/checkToken", {
