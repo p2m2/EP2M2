@@ -11,6 +11,13 @@ import { string, object, email, minLength, type Input } from "valibot";
 import type { FormSubmitEvent } from "@nuxt/ui/dist/runtime/types";
 // import createSession from "~/composables/createSession";
 import {useCookie } from "nuxt/app";
+
+const props = defineProps <{
+  redirectPage?: string
+}>();
+
+
+
 // import { useI18n } from "#imports";
 const { t } = useI18n();
 
@@ -50,9 +57,14 @@ async function submit (event: FormSubmitEvent<Schema>) {
 
       const team = useCookie("team", {expires:expire, sameSite: true});
       team.value = result;
-
+      console.log(props.redirectPage, "coucou");
+      
+      await navigateTo(props.redirectPage || '/')
+      return
     }
-    window.location.reload();   
+    console.log("non");
+    
+    window.location.reload();
 }
 
 </script>
