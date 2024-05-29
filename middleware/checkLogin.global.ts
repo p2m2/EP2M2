@@ -5,10 +5,10 @@
 //  This middleware verify if use logged
 
 export default defineNuxtRouteMiddleware(async (to, from) => {
-
+  
   // when we open login page we do nothing
   if (from.path == '/login'){
-    abortNavigation()
+    return abortNavigation();
   }
   if (to.path == '/login') {
     return
@@ -17,7 +17,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
   // get cookies
   const token = useCookie("token",{sameSite:"strict"});
   const team = useCookie("team",{sameSite:"strict"});
-  
+
   // if we have cookie, we check if we have the token
   if (token.value && team.value){
     
@@ -28,7 +28,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
       },
       body: token.value.toString()
     });
-  
+    
     // user is log yet
     if (data){
       // Go to page ask
