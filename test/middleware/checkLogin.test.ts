@@ -34,12 +34,12 @@ describe('CheckLogin', () => {
       vi.clearAllMocks();
   });
 
-  it('should abort navigation if coming from /login', async () => {
+  it('should do nothing if coming from /login', async () => {
     await checkLoginGlobal({ path: '/some-path' } as RouteLocationNormalized,
                            { path: '/login' } as RouteLocationNormalized);
     expect($fetch).not.toHaveBeenCalled();
     expect(navigateTo).not.toHaveBeenCalled();
-    expect(abortNavigation).toHaveBeenCalled();
+    expect(abortNavigation).not.toHaveBeenCalled();
   });
 
   it('should do nothing if navigating to /login', async () => {

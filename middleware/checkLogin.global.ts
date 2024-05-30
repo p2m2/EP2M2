@@ -2,15 +2,12 @@
 //
 // SPDX-License-Identifier: MIT
 
-//  This middleware verify if use logged
+//  This middleware verify if user logged
 
 export default defineNuxtRouteMiddleware(async (to, from) => {
   
   // when we open login page we do nothing
-  if (from.path == '/login'){
-    return abortNavigation();
-  }
-  if (to.path == '/login') {
+  if (from.path == '/login' || to.path == '/login') {
     return
   }
   
