@@ -12,8 +12,11 @@ SPDX-License-Identifier: MIT
 // Get translate
 const {t} = useI18n();
 const router = useRouter();
-// Get name of all pages
-const listPages = router.getRoutes().map(x => x.name).sort() as string[];
+// Get name of all pages without login
+const listPages = router.getRoutes().map(x => x.name as string)
+      .filter(x=> !x.startsWith('login'))
+      .sort() as string[];
+
 //  Get name of current page
 const currentPage = router.currentRoute.value.name;
 //  Get index of page to indicate to tabs which tab highlining

@@ -9,40 +9,17 @@ SPDX-License-Identifier: MIT
  -->
 
 <script setup lang="ts">
-import { useCookie } from "nuxt/app";
-import type { LayoutKey } from "#build/types/layouts";
+import type { LayoutKey } from '#build/types/layouts';
+
 import type { ConcreteComponent } from "vue";
 
+// use naviage layout whose call default layout
 definePageMeta({
-  layout: false,
+  layout: false ,
 });
+const nameLayout = ref<LayoutKey>('navigate-layout');
 
 const {t} = useI18n();
-
-/*####Part to manage layouts display########*/
-const nameLayout = ref<LayoutKey>('default');
-const checkSession = ref(false);
-const token = useCookie("token",{sameSite:"strict"});
-const team = useCookie("team",{sameSite:"strict"});
-
-if (!token.value || !team.value){
-    checkSession.value = false;
-}
-else{
-  const data  = await $fetch("/api/checkToken", {
-      method: "POST",
-      headers:{
-          "Content-Type":"text/plain"
-      },
-      body: token.value.toString()
-  });
-
-  if (data){
-    checkSession.value = true;
-    nameLayout.value ='navigate-layout';
-  }
-  
-}
 const tab = ref();
 // define list of tabs
 const listTab = ['machine', 'molecule', 'base', 'mother','mix','serie'];
