@@ -57,12 +57,10 @@ async function submit (event: FormSubmitEvent<Schema>) {
 
       const team = useCookie("team", {expires:expire, sameSite: true});
       team.value = result;
-      console.log(props.redirectPage, "coucou");
-      
+     
       await navigateTo(props.redirectPage || '/')
       return
     }
-    console.log("non");
     
     window.location.reload();
 }
