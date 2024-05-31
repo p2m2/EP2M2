@@ -20,7 +20,7 @@ definePageMeta({
 const nameLayout = ref<LayoutKey>('navigate-layout');
 
 const {t} = useI18n();
-const tab = ref();
+const tab = ref("serie");
 // define list of tabs
 const listTab = ['machine', 'molecule', 'base', 'mother','mix','serie'];
 // define list of components of tabs
@@ -30,7 +30,7 @@ const ListComp : {[key:string]: string | ConcreteComponent} = {
   base:resolveComponent('lazy-ManageBaseAsync'),
   mother:resolveComponent('lazy-ManageMotherAsync'),
   mix:resolveComponent('lazy-ManageMixAsync'),
-  serie:resolveComponent('lazy-ManageSerieAsync')
+  serie:resolveComponent('lazy-ManageSerieAsync'),
 };
 </script>
 
