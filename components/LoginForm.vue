@@ -5,12 +5,19 @@ SPDX-License-Identifier: MIT
 -->
 
 <script setup lang="ts">
-import lang from "~/components/LangButton.vue";
+// import lang from "~/components/LangButton.vue";
 import { ref } from "vue";
 import { string, object, email, minLength, type Input } from "valibot";
 import type { FormSubmitEvent } from "@nuxt/ui/dist/runtime/types";
 // import createSession from "~/composables/createSession";
 import {useCookie } from "nuxt/app";
+
+const props = defineProps <{
+  redirectPage?: string
+}>();
+
+
+
 // import { useI18n } from "#imports";
 const { t } = useI18n();
 
@@ -28,10 +35,10 @@ const state = ref({
 
 async function submit (event: FormSubmitEvent<Schema>) {
    
-    const result = <number|string> await $fetch("/api/checkLogin", {
+    const result = await $fetch("/api/checkLogin", {
         method:"POST",
         body:{email:event.data.email, password:event.data.password}
-    });
+    }) as number | string;
 
     if(typeof result == "string"){
       const today = new Date(Date.now());
@@ -50,9 +57,12 @@ async function submit (event: FormSubmitEvent<Schema>) {
 
       const team = useCookie("team", {expires:expire, sameSite: true});
       team.value = result;
-
+     
+      await navigateTo(props.redirectPage || '/')
+      return
     }
-    window.location.reload();   
+    
+    window.location.reload();
 }
 
 </script>
@@ -62,7 +72,7 @@ async function submit (event: FormSubmitEvent<Schema>) {
   <UContainer 
     class="flex justify-end w-1/2" 
   >
-    <lang />
+    <!-- <lang /> -->
   </UContainer>
   <UContainer class="flex justify-around items-center">
     <UForm 

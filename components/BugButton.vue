@@ -5,12 +5,12 @@ SPDX-License-Identifier: MIT
 -->
 
 <template>
-  <UButton
-    to="mailto:p2m2-it@inrae.fr?subject=retour tamama (ep2m2)"
+  <v-btn
+    href="mailto:p2m2-it@inrae.fr?subject=retour ep2m2"
     target="_blank"
-    icon="i-heroicons-bug-ant-solid"
+    prepend-icon="mdi-ladybug"
     color="purple"
   >
     {{ $t('message.addIssue') }}
-  </UButton>
+  </v-btn>
 </template>

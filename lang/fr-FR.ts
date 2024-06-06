@@ -21,6 +21,7 @@ export default {
         home: "Accueil",
         lang: "Changer de langue",
         modify: "Modifier",
+        logout: "Déconnexion",
         no: "Non",
         submit: "Valider",
         topProfOut: "Accéder au sous-menu profile et déconnection",
@@ -49,6 +50,7 @@ export default {
         banner: {
             alt: "icône P2M2",
             src: "/logoP2M2_fr.png",
+            title: "Accueil",
         }
     },
     label: {
@@ -92,10 +94,19 @@ export default {
         updateProject:"est mise à jour",
         waitCreateProject: "Projet en cours de création"
     },
-    tabs:{
+    page:{
+        'index': 'Projet',
+        'serie': 'Gamme',
+    },
+    tab:{
+        base: "Bases",
+        fitting: "Ajustement",
+        machine: "Machines (Configuration)",
+        mix:"Solutions mixes",
+        molecule: "Molécules",
+        mother: "Solutions mères",
         reference: "Témoin",
-        machine: "Matériel",
-        fitting: "Ajustement"
+        serie: "Gammes"
     },
     title: {
         compoundName:"Nom du témoin",

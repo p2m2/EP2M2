@@ -21,6 +21,7 @@ export default {
         home: "Home",
         lang: "Change langage",
         modify: "Modify",
+        logout: "Logout",
         no: "No",
         submit: "Submit",
         topProfOut: "Profile under menu and logout",
@@ -51,6 +52,7 @@ export default {
         banner:{
             alt:"P2M2 icon",
             src:"/logoP2M2_en.png",
+            title: "Home",
         }
     },
     label:{
@@ -94,10 +96,19 @@ export default {
         updateProject:"updated",
         waitCreateProject: "Hold on please, we're creating your project"
     },
-    tabs:{
+    page:{
+        'index': 'Project',
+        'serie': 'Serie',
+    },
+    tab:{
+        base: "Bases",
+        fitting: "Fitting",
+        machine: "Machine (Configuration)",
+        mix:"Mix solutions",
+        molecule: "Molecules",
+        mother: "Mother solutions",
         reference: "Reference",
-        machine: "Machine",
-        fitting: "Fitting"
+        serie: "Gammes"
     },
     title:{
         compoundName:"Reference name",

@@ -10,120 +10,20 @@ SPDX-License-Identifier: MIT
   metabolomic engines.
 
  -->
-<script lang="ts">
-import banner from "~/components/BannerMain.vue";
-import extras from "~/components/ExtrasNav.vue";
-import extract from "~/components/ExtractInfo.vue";
-import login from "~/components/LoginForm.vue";
-import bug from "~/components/BugButton.vue";
-import { useCookie } from "nuxt/app";
+<script setup lang="ts">
+import type { LayoutKey } from '#build/types/layouts';
 
-export default{
-    components:{
-        login,
-        banner,
-        extras,
-        extract,
-        bug
-    },
-    data(){
-        return {checkSession: false};
-    },
-    created:async function() {
-        const token = useCookie("token",{sameSite:"strict"});
-        const team = useCookie("team",{sameSite:"strict"});
- 
-        if (!token.value || !team.value){
-            this.checkSession = false;
-            return null;
-        }
+// use naviage layout whose call default layout
+definePageMeta({
+  layout: false ,
+});
+const nameLayout = ref<LayoutKey>('navigate-layout');
 
-        this.checkSession = await $fetch("/api/checkToken", {
-            method: "POST",
-            headers:{
-                "Content-Type":"text/plain"
-            },
-            body: token.value.toString()
-        });
-    },
-};
 </script>
 
 <template>
-  <UCard> 
-    <UNotifications />
-    <template
-      v-if="checkSession" 
-      #header
-    >
-      <UContainer class="flex justify-between">
-        <banner />
-        <extras link-to="control" />
-      </UContainer>
-    </template>
-
-    <template
-      v-else
-      #header
-    >
-      <UContainer class="flex justify-between">
-        <banner />
-      </UContainer>
-      <login />
-    </template>
-    
-    <extract v-if="checkSession" />
-
-    <bug v-else />
-    <template 
-      v-if="checkSession"
-      #footer
-    >
-      <bug />
-    </template>
-  </UCard>
+  <NuxtLayout :name="nameLayout">
+    <extract-info />
+  </NuxtLayout>
 </template>
 
-<style>
-  :root{
-    --greenP2M2: #B3D870;
-    --blueP2M2: #243271;
-    --orangeP2M2: #E17F21;
-  }
-  /* html {
-    box-sizing: border-box;
-  }
-
-  body {
-    margin: 0;
-    padding: 2%;
-    overflow-x: hidden;
-    min-height: 100vh;
-    align-items: flex-start;
-  }
-
-  * {
-    box-sizing: inherit;
-  }
-
-  img {
-    max-width: 100%;
-    height: auto;
-  } */
-
-  /* .header {
-    display: flex;
-    justify-content: space-between;
-  }
-
-  header {
-    float: left;
-    display:block;
-  }
-
-  nav {
-    float: right;
-    display: block;
-  } */
-
-</style>

@@ -7,7 +7,6 @@ import { defineNuxtConfig } from "nuxt/config";
 import vuetify, { transformAssetUrls } from "vite-plugin-vuetify";
 
 export default defineNuxtConfig({
-    devtools: { enabled: true },
     $production: {
         routeRules: {
             "/**": { isr: true }
@@ -20,23 +19,23 @@ export default defineNuxtConfig({
     },
     modules: [
         "@nuxt/ui",
+        "@nuxt/test-utils/module",
+        "@nuxtjs/eslint-module",
         "@nuxtjs/i18n",
         (_options, nuxt) => {
             nuxt.hooks.hook("vite:extendConfig", (config) => {
-            // @ts-expect-error because internet say that
+                // @ts-expect-error : directly from  vuetify
                 config.plugins.push(vuetify({ autoImport: true }));
             });
         },
-        "@nuxt/test-utils/module",
+        "@nuxt/test-utils/module"
     ],
     typescript: {
         typeCheck: false
     },
-    colorMode: {
-        preference: "light"
-    },
     i18n: {
-        // strategy: "no_prefix",
+        defaultLocale: "fr-FR",
+        strategy: "no_prefix",
         locales: [
             {
                 code: "en-US",
@@ -52,15 +51,15 @@ export default defineNuxtConfig({
         ],
         lazy: false,
         langDir: "lang",
-        customRoutes: "config",   // disable custom route with page components
+        // customRoutes: "config",   // disable custom route with page components
         pages: {
             index: {
-                en: "/",
-                fr: "/",
+                "en-US": "/",
+                "fr-FR": "/",
             },
-            control: {
-                en: "/control",
-                fr: "/control",
+            serie: {
+                "en-US": "/serie",
+                "fr-FR": "/serie",
             }
         }
     },
@@ -69,7 +68,9 @@ export default defineNuxtConfig({
     app: {
         head: {
             link: [{ rel: "icon", type: "image/ico", href: "/p2m2.ico" }]
-        }
+        },
+        pageTransition: false,
+        layoutTransition: false
     },
     build: {
         transpile: ["vuetify"],

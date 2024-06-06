@@ -160,7 +160,7 @@ client.connect()
 
 
         `)
-            .then(res => {
+            .then(() => {
                 client.end();
             });
     })
