@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2024 Marcellino Palerme <marcellino.palerme@inrae.fr>
+//
+// SPDX-License-Identifier: MIT
 import { config } from "@vue/test-utils";
 import { createI18n,  } from "vue-i18n";
 import en from "@/lang/en-US";

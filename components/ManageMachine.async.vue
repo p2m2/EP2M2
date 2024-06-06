@@ -1,3 +1,8 @@
+<!--
+SPDX-FileCopyrightText: 2024 Marcellino Palerme <marcellino.palerme@inrae.fr>
+
+SPDX-License-Identifier: MIT
+-->
 <template>
   <v-card
     class="w-50 justify-center d-flex mx-auto"

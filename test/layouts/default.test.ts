@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2024 Marcellino Palerme <marcellino.palerme@inrae.fr>
+//
+// SPDX-License-Identifier: MIT
 import { mount } from '@vue/test-utils';
 import { expect, test, describe } from 'vitest';
 import { createVuetify } from 'vuetify';
