@@ -13,31 +13,31 @@
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore --ignore-pattern 'wireframe' "
   },
   "devDependencies": {
-    "@nuxt/eslint-config": "^0.2.0",
-    "@nuxt/test-utils": "^3.12.0",
+    "@nuxt/eslint-config": ">=0.2.0",
+    "@nuxt/test-utils": ">=3.13.1",
     "@nuxt/ui": "npm:@nuxt/ui-edge@latest",
-    "@nuxtjs/eslint-module": "^4.1.0",
+    "@nuxtjs/eslint-module": ">=4.1.0",
     "@nuxtjs/i18n": "npm:@nuxtjs/i18n-edge",
-    "@vue/test-utils": "^2.4.5",
-    "eslint": "^8.57.0",
-    "eslint-plugin-vitest": "^0.4.2-beta.3",
-    "happy-dom": "^13.10.1",
-    "playwright-core": "^1.42.1",
-    "resize-observer-polyfill": "^1.5.1",
-    "typescript": "^5.4.0",
-    "vite-plugin-vuetify": "^2.0.3",
-    "vitest": "^1.4.0",
-    "vue-tsc": "^1.8.27",
-    "vuetify": "^3.5.14"
+    "@vue/test-utils": ">=2.4.5",
+    "eslint": ">=8.57.0",
+    "eslint-plugin-vitest": ">=0.5.4",
+    "happy-dom": ">=13.10.1",
+    "playwright-core": ">=1.42.1",
+    "resize-observer-polyfill": ">=1.5.1",
+    "typescript": ">=5.4.0",
+    "vite-plugin-vuetify": ">=2.0.3",
+    "vitest": "1.6.0",
+    "vue-tsc": ">=1.8.27",
+    "vuetify": ">=3.6.0"
   },
   "dependencies": {
-    "@mdi/font": "^7.3.67",
+    "@mdi/font": ">=7.3.67",
     "@nuxt/ui": "npm:@nuxt/ui-edge@latest",
-    "bcrypt": "^5.1.1",
-    "nuxt": "^3.11.1",
-    "pg": "^8.11.3",
-    "valibot": "^0.19.0",
-    "vue": "^3.4.21",
-    "vue-router": "^4.3.0"
+    "bcrypt": ">=5.1.1",
+    "nuxt": ">=3.11.1",
+    "pg": ">=8.11.3",
+    "valibot": ">=0.19.0",
+    "vue": ">=3.4.21",
+    "vue-router": ">=4.3.0"
   }
 }
