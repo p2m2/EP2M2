@@ -33,6 +33,15 @@ export default {
         viewProject: "Détails",
         yes: "Oui"
     },
+    empty:{
+        bug:"anomalie",
+        email:"mailto:p2m2-it{'@'}inrae.fr?subject=Erreur de tableau",
+        headline:"OUPS",
+        or:"ou",
+        refresh:"rafrâichir",
+        text:"Il semble qu'il y a problème avec la connexion serveur ou internet. Vérifiez votre connexion internet and ...",
+        title:"Something Went Wrong",
+    },
     header:{
         action: "Actions",
         archive_date: "Archivé le",

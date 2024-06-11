@@ -40,6 +40,8 @@ const props = defineProps({
 const { t } = useI18n();
 
 // global variable
+// Check if we have problem
+const rError = ref<boolean>(true);
 // add reactivity on update props
 const rfUpdate = toRef(props, "update");
 // Get Number of items in table
@@ -60,27 +62,42 @@ const rfItems = ref<object[]>([]);
 // variable to block two load data when create component
 let block:number = 0;
 
+async function initTable() {
+  // Get Number of items in table
+  $fetch("/api/manageControl/totalItems",{
+      method:"post",
+      body:{nameTable:props.nameDbTable}
+  })
+    .then((resp) => {
+      gtotalItems.value = resp;
+    })
+    .then(() => {
+      // Get struct of table 
+      return $fetch("/api/manageControl/header",{
+          method:"post",
+          body:{nameTable:props.nameDbTable}
+      })
+    })
+    .then((resp) => {
+      tableStruct.value = resp;
+
+      // Add columns in structur of table
+      if(props.addColumn.columns.length > 0 &&
+         props.addColumn?.columns.length>0){
+          for(const column of props.addColumn.columns){
+          tableStruct.value.push(column);
+        } 
+      }
+       rError.value = false;
+    })
+    .catch(() => {
+      rError.value = true;
+    });
+}
 
 onMounted(async () => {
-    // Get Number of items in table
-    gtotalItems.value = await $fetch("/api/manageControl/totalItems",{
-        method:"post",
-        body:{nameTable:props.nameDbTable}
-    });
-    // Get struct of table 
-    tableStruct.value = await $fetch("/api/manageControl/header",{
-        method:"post",
-        body:{nameTable:props.nameDbTable}
-    });
-
-    // Add columns in structur of table
-    if(props.addColumn.columns.length > 0 && props.addColumn?.columns.length>0){
-        for(const column of props.addColumn.columns){
-            tableStruct.value.push(column);
-        } 
-    }
+    await initTable();
 });
-
 
 /**
  * Get all list of items of one page and number of page
@@ -154,7 +171,26 @@ watch(
 </script>
 
 <template>
+  <v-empty-state
+    v-if="rError"
+    :headline="t('empty.headline')"
+    :title="t('empty.title')"
+    :text="t('empty.text')"
+  >
+    <template #actions>
+      <v-btn
+        text="t('empty.refresh')"
+        @click="reloadNuxtApp()"
+      />
+      {{ t("empty.or") }}
+      <v-btn
+        text="t('empty.bug')"
+        :herf="t('empty.email')"
+      />
+    </template>
+  </v-empty-state>
   <v-data-table-server
+    v-else
     :headers="tableStruct"
     :items="rfItems"
     :items-length="gtotalItems"
