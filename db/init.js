@@ -117,6 +117,13 @@ client.connect()
           used INTEGER,
           id_machine SERIAL REFERENCES machine (id)
         );
+
+        CREATE TABLE daughter
+        (
+          id_series SERIAL REFERENCES series (id) ON DELETE CASCADE,
+          id_file SERIAL REFERENCES file (id) ON DELETE CASCADE,
+          PRIMARY KEY (id_series, id_file)
+        );
       
         INSERT INTO users (name, email, hash, team)
         VALUES 
