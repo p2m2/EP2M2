@@ -14,8 +14,8 @@ import { ref, reactive, computed } from "vue";
 import type { tFile, tProject } from "../plugins/file";
 // import { useI18n, useToast } from "#imports";
 const { t } = useI18n();
-import { string, minLength, toTrimmed, object, parse } from 'valibot'
-import type { FormSubmitEvent } from "@nuxt/ui/dist/runtime/types";
+import * as v from 'valibot'
+import type {FormError, FormSubmitEvent } from "#ui/types";
 import {useCookie } from "nuxt/app";
 const toast = useToast()
 
@@ -168,16 +168,25 @@ async function actualize({page, itemsPerPage, sortBy }) {
 
 // Condition part to valid Project name in input 
 // and show button to create/modify project
-const schema = object({
-    name: string([
-        toTrimmed(),
-        minLength(3, t("message.badProjectName"))
-    ]),
-})
+const schema = v.pipe(v.string(), v.trim(),
+               v.minLength(3, t("message.badProjectName")));
+// Function to check if project name is correct
+const validate = (state: any): FormError[] => {
+    const errors = [];
+    try {
+        v.parse(schema, state.name);
+    } catch (e: unknown) {
+        errors.push({
+            path: "name",
+            message: (e as v.ValiError<typeof schema>).message
+        });
+    }
+    return errors;
+}
 
 const validProjectName = computed<boolean>(() => {
     try {
-        parse(schema, { name: currentProject.name });
+        v.parse(schema, currentProject.name);
     } catch (error) {
         return false;
     }
@@ -635,8 +644,16 @@ async function deleteProject(id:string, name:string){
     </v-progress-linear>
 
     <!-- Details / create / modification project box -->
-    <UModal v-model="isOpen" prevent-close :display="!lockProject">
-        <UForm :schema="schema" :state="currentProject" class="space-y-4" @submit="onSubmit">
+    <UModal 
+        v-model="isOpen" 
+        prevent-close 
+        :display="!lockProject">
+        <UForm
+            :validate="validate"
+            :state="currentProject"
+            class="space-y-4"
+            @submit="onSubmit"
+        >
             <UCard>
                 <template #header>
                     <div class="flex items-center justify-between">

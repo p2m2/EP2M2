@@ -9,7 +9,7 @@ SPDX-License-Identifier: MIT
 import { ref, reactive, computed } from "vue";
 import type { tFitting } from "../plugins/file";
 const { t } = useI18n();
-import { string, minLength, toTrimmed, object, parse } from "valibot";
+import { string, minLength, trim, object, parse, pipe } from "valibot";
 const toast = useToast();
 
 
@@ -152,10 +152,8 @@ async function actualize({page, itemsPerPage, sortBy }) {
 // Condition part to valid Fitting name in input 
 // and show button to create/modify fitting
 const schema = object({
-    name: string([
-        toTrimmed(),
-        minLength(3, t("message.badFittingName"))
-    ]),
+    name: pipe(string(), trim(),
+        minLength(3, t("message.badFittingName"))),
 });
 
 const validFittingName = computed<boolean>(() => {

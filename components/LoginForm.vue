@@ -5,35 +5,52 @@ SPDX-License-Identifier: MIT
 -->
 
 <script setup lang="ts">
-// import lang from "~/components/LangButton.vue";
-import { ref } from "vue";
-import { string, object, email, minLength, type Input } from "valibot";
-import type { FormSubmitEvent } from "@nuxt/ui/dist/runtime/types";
-// import createSession from "~/composables/createSession";
+
+import * as v from 'valibot'
+import type { FormError, FormSubmitEvent } from '#ui/types'
 import {useCookie } from "nuxt/app";
 
 const props = defineProps <{
   redirectPage?: string
 }>();
 
-
-
-// import { useI18n } from "#imports";
+import { reactive } from 'vue'
 const { t } = useI18n();
 
-const schema = object({
-    email: string([email("Invalid email")]),
-    password: string([minLength(8, "Must be at least 8 characters")])
-});
+const schemaEmail= v.pipe(v.string(), v.email('Invalid email'));
+const schemaPassword= v.pipe(v.string(), v.minLength(8, 'Must be at least 8 characters'));
 
-type Schema = Input<typeof schema>
+const state = reactive({
+  email: '',
+  password: ''
+})
 
-const state = ref({
-    email: undefined,
-    password: undefined
-});
+const validate = (state: any): FormError[] => {
 
-async function submit (event: FormSubmitEvent<Schema>) {
+  const errors = [];
+
+  try {
+    v.parse(schemaEmail, state.email);
+  } catch (e: unknown) {
+    errors.push({ 
+      path: "email",
+      message: (e as v.ValiError<typeof schemaEmail>).message
+    });
+  }
+
+  try {
+    v.parse(schemaPassword, state.password);
+  } catch (e: unknown) {
+    errors.push({ 
+      path: "password",
+      message: (e as v.ValiError<typeof schemaPassword>).message
+    });
+  }
+
+  return errors;
+}
+
+async function onSubmit (event: FormSubmitEvent<any>) {
    
     const result = await $fetch("/api/checkLogin", {
         method:"POST",
@@ -68,41 +85,33 @@ async function submit (event: FormSubmitEvent<Schema>) {
 </script>
 
 <template>
-  <!-- [&>div]:justify-end Add to child div justify-end class -->
-  <UContainer 
-    class="flex justify-end w-1/2" 
+  <UForm
+    :validate="validate"
+    :state="state"
+    class="space-y-4"
+    @submit="onSubmit"
   >
-    <!-- <lang /> -->
-  </UContainer>
-  <UContainer class="flex justify-around items-center">
-    <UForm 
-      class="form leading-loose"
-      :schema="schema"
-      :state="state"
-      @submit="submit"
+    <UFormGroup
+      :label="t('label.email')"
+      name="email"
     >
-      <UFormGroup 
-        :label="t('label.email')"
-        name="email" 
-      >
-        <UInput v-model="state.email" />
-      </UFormGroup>
+      <UInput v-model="state.email" />
+    </UFormGroup>
 
-      <UFormGroup
-        :label="t('label.password')"
-        name="password"
-      >
-        <UInput
-          v-model="state.password"
-          type="password"
-        />
-      </UFormGroup>
+    <UFormGroup
+      :label="t('label.password')"
+      name="password"
+    >
+      <UInput
+        v-model="state.password"
+        type="password"
+      />
+    </UFormGroup>
 
-      <UButton type="submit">
-        {{ $t('button.submit') }}
-      </UButton>
-    </UForm>
-  </UContainer>
+    <UButton type="submit">
+      {{ $t('button.submit') }}
+    </UButton>
+  </UForm>
 </template>
 
 <style>

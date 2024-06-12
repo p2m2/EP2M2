@@ -17,7 +17,7 @@ import { ref, reactive, computed } from "vue";
 import type { tCompound } from "../plugins/file";
 // import { useI18n, useToast } from "#imports";
 const { t } = useI18n();
-import { string, minLength, toTrimmed, object, parse } from "valibot";
+import { string, minLength, trim, object, parse, pipe } from "valibot";
 const toast = useToast();
 
 
@@ -138,10 +138,8 @@ async function actualize({page, itemsPerPage, sortBy }) {
 // Condition part to valid Compound name in input 
 // and show button to create/modify compound
 const schema = object({
-    name: string([
-        toTrimmed(),
-        minLength(3, t("message.badCompoundName"))
-    ]),
+    name: pipe(string(), trim(),
+        minLength(3, t("message.badCompoundName"))),
 });
 
 const validCompoundName = computed<boolean>(() => {
