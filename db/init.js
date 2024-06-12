@@ -106,16 +106,38 @@ client.connect()
         CREATE VIEW view_usable_machine AS
         SELECT *
         FROM machine
-        WHERE archive_date IS NULL;  
+        WHERE archive_date IS NULL; 
+        
+        CREATE TABLE series
+        (
+          id SERIAL PRIMARY KEY,
+          name VARCHAR(255),
+          date_create TIMESTAMPTZ NOT NULL,
+          date_achieved TIMESTAMPTZ,
+          used INTEGER,
+          id_machine SERIAL REFERENCES machine (id)
+        );
       
         INSERT INTO users (name, email, hash, team)
-        VALUES ('root_ep2m2', 'admin@ep2m2.bzh', '$2b$10$M1yCnD1pGQ6LXDh0IeR94uRcFOlikhs2uFKvqdWaJ3wbmnFPERquy', 'other'),
-        ('poire', 'poire@mail.it', '$2b$10$O0YmpmJkTPWoRI8KBYWQLOy6/LcCwM/gd/zoD1PpWl2oYLHRm3M9y', 'IFPC'),
-        ('rang', 'rang@mail.it', '$2b$10$hFQTt27G0NRDFpjEBWanzezG379TaFbY4XCEx51cQPREFSOvcAvLK', 'P2M2'),
-        ('huile', 'huile_i@mail.it', '$2b$10$t6wa72bsTJYM/CUENcMEluCv9ucDu4xd/5SvGQMfVQOfvfUb4nL4u', 'IFPC'),
-        ('huile', 'huile_p@mail.it', '$2b$10$t6wa72bsTJYM/CUENcMEluCv9ucDu4xd/5SvGQMfVQOfvfUb4nL4u', 'P2M2'),
-        ('huile', 'huile_o@mail.it', '$2b$10$t6wa72bsTJYM/CUENcMEluCv9ucDu4xd/5SvGQMfVQOfvfUb4nL4u', 'other'),
-        ('alors', 'alors@mail.it', '$2b$10$lykg9yaKuuuEAybe4bSimebtuxQS6zkIpBlO8dG47pIbVzjbrNzIO', 'P2M2');
+        VALUES 
+        ('root_ep2m2', 'admin@ep2m2.bzh', 
+        '$2b$10$M1yCnD1pGQ6LXDh0IeR94uRcFOlikhs2uFKvqdWaJ3wbmnFPERquy', 'other'),
+        ('poire', 'poire@mail.it',
+        '$2b$10$O0YmpmJkTPWoRI8KBYWQLOy6/LcCwM/gd/zoD1PpWl2oYLHRm3M9y', 'IFPC'),
+        ('rang', 'rang@mail.it', 
+        '$2b$10$hFQTt27G0NRDFpjEBWanzezG379TaFbY4XCEx51cQPREFSOvcAvLK', 'P2M2'),
+        ('huile', 'huile_i@mail.it',
+        '$2b$10$t6wa72bsTJYM/CUENcMEluCv9ucDu4xd/5SvGQMfVQOfvfUb4nL4u', 'IFPC'),
+        ('huile', 'huile_p@mail.it',
+        '$2b$10$t6wa72bsTJYM/CUENcMEluCv9ucDu4xd/5SvGQMfVQOfvfUb4nL4u', 'P2M2'),
+        ('huile', 'huile_o@mail.it',
+        '$2b$10$t6wa72bsTJYM/CUENcMEluCv9ucDu4xd/5SvGQMfVQOfvfUb4nL4u', 'other'),
+        ('alors', 'alors@mail.it',
+        '$2b$10$lykg9yaKuuuEAybe4bSimebtuxQS6zkIpBlO8dG47pIbVzjbrNzIO', 'P2M2'),
+        ('art', 'art@mail.it',
+        '$2b$10$bHdSEKlQ.emIxs.EoWRSHOo2Kv7ah1iNuVq.j0rn09nDefDkZS.my', 'P2M2'),
+        ('tshirt', 'tshirt@mail.it',
+        '$2b$10$bHUWHvZA4jUWg9.MNAae3uMHR2kpk0c6nErgs/Fce1ZTCLUUqD/sO', 'P2M2');
         
 
 
