@@ -85,15 +85,6 @@ CREATE TABLE file
 CREATE TRIGGER t_content BEFORE UPDATE OR DELETE ON file
     FOR EACH ROW EXECUTE FUNCTION lo_manage(content);
 
-CREATE TABLE compound
-(
-  id SERIAL PRIMARY KEY,
-  name VARCHAR(255) UNIQUE,
-  url VARCHAR(255),
-  description TEXT,
-  archive_date TIMESTAMPTZ
-);
-
 CREATE TYPE m_type AS ENUM ('UV', 'FID', 'MZ');
 
 CREATE TABLE machine
@@ -104,38 +95,6 @@ CREATE TABLE machine
   description TEXT,
   archive_date TIMESTAMPTZ
 );
-
-CREATE TABLE fitting
-(
-  id SERIAL UNIQUE,
-  id_compound SERIAL REFERENCES compound (id),
-  id_machine SERIAL REFERENCES machine (id),
-  date_create TIMESTAMPTZ NOT NULL,
-  url_provider VARCHAR(255),
-  lot VARCHAR(255),
-  rt numeric,
-  archive_date TIMESTAMPTZ,
-  PRIMARY KEY (id)
-);
-
-CREATE TABLE used_fitting
-(
-  id_fitting SERIAL REFERENCES fitting (id),
-  id_project SERIAL REFERENCES project (id),
-  used_date TIMESTAMPTZ NOT NULL,
-  PRIMARY KEY (id_fitting, id_project)
-);
-
-CREATE VIEW view_fitting AS
-SELECT fitting.*, compound.name as name_compound, machine.name as name_machine
-FROM fitting, compound, machine
-WHERE id_compound = compound.id 
-AND id_machine = machine.id; 
-
-CREATE VIEW view_usable_compound AS
-SELECT *
-FROM compound
-WHERE archive_date IS NULL;
 
 CREATE VIEW view_usable_machine AS
 SELECT *
