@@ -93,20 +93,20 @@ CREATE TABLE machine
   name VARCHAR(255) UNIQUE,
   m_type m_type,
   description TEXT,
-  archive_date TIMESTAMPTZ
+  date_achieve TIMESTAMPTZ
 );
 
 CREATE VIEW view_usable_machine AS
 SELECT *
 FROM machine
-WHERE archive_date IS NULL;
+WHERE date_achieve IS NULL;
 
 CREATE TABLE series
 (
   id SERIAL PRIMARY KEY,
   name VARCHAR(255),
   date_create TIMESTAMPTZ NOT NULL,
-  date_achieved TIMESTAMPTZ,
+  date_achieve TIMESTAMPTZ,
   used INTEGER,
   id_machine SERIAL REFERENCES machine (id)
 );
@@ -125,6 +125,13 @@ CREATE TABLE ratio
   ratio FLOAT,
   PRIMARY KEY (id_mol, id_series)
 );
+
+CREATE VIEW view_serie AS
+SELECT series.id AS id, series.name, array_agg(ratio.id_mol) AS metabolite,     
+       series.date_create, series.date_achieve
+FROM series, daughter, ratio
+WHERE series.id = daughter.id_series AND series.id = ratio.id_series
+GROUP BY series.id;
 
 INSERT INTO users (name, email, hash, team)
 VALUES 

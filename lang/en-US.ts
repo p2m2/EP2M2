@@ -44,10 +44,11 @@ export default {
     },
     header:{
         action: "Actions",
-        archive_date: "Archived",
+        date_achieve: "Archived",
         date_create: "Created ",
         description: "Description",
         lot: "Séries number",
+        metabolite: "Metabolite",
         m_type: "Type",
         name: "Name",
         name_compound: "Reference",

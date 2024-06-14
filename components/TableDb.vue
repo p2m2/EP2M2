@@ -79,6 +79,8 @@ async function initTable() {
       })
     })
     .then((resp) => {
+      console.log(resp);
+      
       tableStruct.value = resp;
 
       // Add columns in structur of table
@@ -96,7 +98,7 @@ async function initTable() {
 }
 
 onMounted(async () => {
-    await initTable();
+    await initTable();    
 });
 
 /**

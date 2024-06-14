@@ -12,11 +12,13 @@ export default class Table {
         // thx: https://stackoverflow.com/a/50885340
         return (async():Promise<Table> => {
             await client.connect();
-            // TODO work with wiew SQL
+            // Get all columns of table in database in order write headers
+            // thx: https://stackoverflow.com/a/68959975
             const resp:{rows:{column_name:string, data_type:string}[]} = await client.query(`
                               SELECT column_name, data_type
                               FROM information_schema.columns
-                              WHERE table_name='${nameTable}';
+                              WHERE table_name='${nameTable}'
+                              ORDER BY ordinal_position;
                         `);
             
             if (resp.rows.length == 0){
