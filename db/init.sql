@@ -118,6 +118,14 @@ CREATE TABLE daughter
   PRIMARY KEY (id_series, id_file)
 );
 
+CREATE TABLE ratio
+(
+  id_mol VARCHAR(52) UNIQUE,
+  id_series SERIAL REFERENCES series (id) ON DELETE CASCADE,
+  ratio FLOAT,
+  PRIMARY KEY (id_mol, id_series)
+);
+
 INSERT INTO users (name, email, hash, team)
 VALUES 
 ('root_ep2m2', 'admin@ep2m2.bzh', 
