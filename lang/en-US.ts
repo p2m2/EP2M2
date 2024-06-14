@@ -7,6 +7,7 @@ export default {
         addcompound: "Add reference",
         addfitting: "Add fitting",
         addmachine: "Add machine",
+        addview_serie: "Add serie",
         archive: "Archive",
         control: "Manage control samples",
         create: "Create",

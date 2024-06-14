@@ -7,6 +7,7 @@ export default {
         addcompound: "Ajout d'un témoin",
         addfitting: "Ajout d'un ajustement",
         addmachine: "Ajout d'une machine",
+        addview_serie: "Ajouter une gamme",
         archive: "Archiver",
         control: "Gestion témoins",
         create: "Créer",

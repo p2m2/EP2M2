@@ -79,7 +79,6 @@ async function initTable() {
       })
     })
     .then((resp) => {
-      console.log(resp);
       
       tableStruct.value = resp;
 
