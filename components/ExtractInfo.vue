@@ -542,40 +542,10 @@ async function deleteProject(id:string, name:string){
 }
 </script>
     
-<style>
-.extractButton {
-    background-color: var(--greenP2M2);
-    margin: 2px;
-    padding: 1rem 2rem 1rem 2rem;
-    border: 2px solid var(--blueP2M2);
-    color: var(--blueP2M2);
-    font-weight: bold;
-    transition: all 0.5s ease-out;
-    cursor: pointer;
-    text-align: center;
-    justify-content: center;
-}
-
-.sizeBy3 {
-    width: 33%;
-}
-
-.sizeAlone {
-    width: 10%;
-}
-
-.extractButton:hover,
-.extractButton:focus {
-    background-color: var(--blueP2M2);
-    color: var(--greenP2M2);
-    border: 2px solid var(--greenP2M2);
-}
-</style>
-
 <template>
     <UContainer class="flex justify-start items-left">
         <UTooltip :text="t('label.addProject')" :popper="{ placement: 'right' }">
-            <UButton class="extractButton w-1/3" @click="openProject('')" icon="i-heroicons-folder-plus" />
+            <UButton @click="openProject('')" icon="i-heroicons-folder-plus" />
         </UTooltip>
     </UContainer>
     <UContainer>
@@ -658,8 +628,7 @@ async function deleteProject(id:string, name:string){
                 <template #header>
                     <div class="flex items-center justify-between">
                         <h3 class="text-base font-semibold
-                                leading-6 text-gray-900 
-                                dark:text-white">
+                                leading-6 text-gray-900">
                             {{ t("title.projectName") }}
                         </h3>
                         <UButton color="gray" variant="link" icon="i-heroicons-x-mark-20-solid" class="-my-1"
@@ -671,7 +640,7 @@ async function deleteProject(id:string, name:string){
                 </template>
                 <UTabs :items="containProject">
                     <template #default="{ item }">
-                        <span class="truncate">
+                        <span class="truncate dark:text-primary">
                             {{ t(item.label) }}
                         </span>
                     </template>
@@ -679,7 +648,7 @@ async function deleteProject(id:string, name:string){
                         <UTooltip v-if="item.label === 'label.files'" :text="t('label.addFile')"
                             :popper="{ placement: 'right' }">
                             <input type="file" id="inFilesSelect" multiple style="display: none;" />
-                            <UButton color="white" variant="outline" :title="t('label.addFile')"
+                            <UButton variant="outline" :title="t('label.addFile')"
                                 @click="simulateClick('inFilesSelect')" icon="i-heroicons-document-plus" />
 
                         </UTooltip>
