@@ -75,6 +75,7 @@ export default {
         files: "Files",
         logout: "Logout",
         m_type: "type",
+        nameSerie: "Serie's name",
         nbFile: "File's number",
         noFile: "No file",
         noProject: "No projet",
@@ -101,6 +102,7 @@ export default {
         fitting: "The fitting ",
         koDelProject: "We didn't delete, the named project",
         loading: "Loading",
+        noEmpty: "Can't be empty",
         okDelProject: "We deleted, the named project",
         updateFail: "Update fail",
         updateInProgress: "Update of project in progress",
@@ -123,6 +125,9 @@ export default {
     },
     title:{
         compoundName:"Reference name",
+        daughter:"Daughter solution",
+        machine:"Machine",
+        mother:"Mother solution",
         projectName: "Projet name"
     }
 };

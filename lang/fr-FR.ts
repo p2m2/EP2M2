@@ -73,6 +73,7 @@ export default {
         files: "Fichiers",
         logout: "Déconnexion",
         m_type: "type",
+        nameSerie: "Nom de la gamme",
         nbFile: "Nb de fichiers",
         noFile: "Pas de fichier",
         noProject: "Aucun projet",
@@ -99,7 +100,9 @@ export default {
         fitting: "L'ajustement ",
         koDelProject: "Nous n'avons pas supprimé le projet",
         loading: "chargement",
+        noEmpty:"ne peut pas être vide",
         okDelProject: "Nous avons supprimé le projet",
+        required: "Champ obligatoire",
         updateFail: "Échec de la mise à jour",
         updateInProgress: "Le project est en cours de mise à jour",
         updateProject:"est mise à jour",
@@ -120,8 +123,12 @@ export default {
         serie: "Gammes"
     },
     title: {
+        addSerie: "Ajout d'une gamme",
         compoundName:"Nom du témoin",
-        projectName: "Nom du projet"
+        daughter:"Solution fille",
+        machine:"Machine",
+        mother:"Solution mère",
+        projectName: "Nom du projet",
     }
 
 };
