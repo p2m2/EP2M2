@@ -45,12 +45,15 @@ async function sendFile() {
   // send file to the server
   // - TODO: show loading spinner
 
+  // - Put file in a FormData object to send all format file 
+  //   (ex: csv, xls, xlsx, ...)
+  const formData = new FormData();
+  formData.append('file', daughterFile.value);
+  
   await $fetch('/api/extractFromFile', {
     method: 'POST',
-    body: daughterFile.value,
+    body: formData,
   });
-  console.log("sendFile");
-  console.log(daughterFile.value?.name);
   
 }
 </script>
