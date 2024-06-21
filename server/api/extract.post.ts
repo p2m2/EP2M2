@@ -32,7 +32,7 @@ export default defineEventHandler(async (event) => {
         .then(() => readBody(event))
         .then((idProject: string) => {
             return client.query(`SELECT content, f_size, f_type
-                                 FROM file
+                                 FROM view_proj_file
                                  WHERE id_project = '${idProject}'`);
         })
         .then((respQuery: {

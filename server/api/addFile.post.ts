@@ -8,6 +8,7 @@ import {join} from "path";
 
 function addFile(file: tFile, folder: string, client: any, id_project: string) {
 
+    let oid: string;
     return readFile(join("/shareFile", folder, file.id), { encoding: "hex" })
         .then(buffer => {
             // thx: https://stackoverflow.com/a/14408194
@@ -17,14 +18,38 @@ function addFile(file: tFile, folder: string, client: any, id_project: string) {
             if (respQuery.rows.length === 0) {
                 throw new Error("OID not create");
             }
-            const oid = respQuery.rows[0].oid;
+            oid = respQuery.rows[0].oid;
             return client.query(`INSERT INTO file(name, date_create, f_type,
-                                                  f_size, content,id_project)
+                                                  f_size, content)
                                  VALUES ('${file.name}', NOW(),
                                          '${file.type}', '${file.size}',
-                                         '${oid}', '${id_project}')`);
+                                         '${oid}')`);
+        })
+        .then(() => {
+            // Break the promise chain when we haven't project
+            if (id_project === "NULL") {
+                throw new Error("Just add file in the database");
+            }
+            // get id of the new file
+            return client.query(`
+                SELECT id FROM file 
+                WHERE name = '${file.name}'
+                AND content = '${oid}'`);
+        })
+        .then((respQuery) => {
+            if (respQuery.rows.length === 0) {
+                throw new Error("File not create");
+            }
+            // associate the file with the project
+            return client.query(`
+                INSERT INTO proj_file(id_project, id_file)
+                VALUES ('${id_project}', '${respQuery.rows[0].id}')`);
         })
         .catch((err) => {
+            // File add without project
+            if (id_project === "NULL") {
+                return;
+            }
             console.error("Add file fail : ", file.name, err);
             throw new Error("Add file fail");
         });

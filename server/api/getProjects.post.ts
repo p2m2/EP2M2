@@ -42,18 +42,19 @@ export default defineEventHandler(async (event): Promise<{
     const offset = (askProject.page - 1) * limit;
 
     // Get Project about filter
-    const getProjectsSQL = `SELECT project.id as p_id, project.name as p_name,
-                                   project.date_create, file.name as f_name,
-                                   file.f_type, file.f_size, file.id as f_id  
-                            FROM project
-                            FULL JOIN file on file.id_project = project.id
-                            WHERE project.id IN (
-                                SELECT id
-                                FROM project
-                                WHERE team = '${team}'
-                                ORDER BY ${orderBy} ${sort}
-                                LIMIT ${limit} OFFSET ${offset})
-                            ORDER BY ${orderBy} ${sort}`;
+    const getProjectsSQL = `
+        SELECT project.id as p_id, project.name as p_name, project.date_create,
+               view_proj_file.name as f_name, view_proj_file.f_type,
+               view_proj_file.f_size, view_proj_file.id as f_id  
+        FROM project
+        FULL JOIN view_proj_file on view_proj_file.id_project = project.id
+        WHERE project.id IN (
+            SELECT id
+            FROM project
+            WHERE team = '${team}'
+            ORDER BY ${orderBy} ${sort}
+            LIMIT ${limit} OFFSET ${offset})
+        ORDER BY ${orderBy} ${sort}`;
     
     const resultProject = await client.query(getProjectsSQL);
 

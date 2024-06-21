@@ -78,9 +78,22 @@ CREATE TABLE file
   date_create TIMESTAMPTZ NOT NULL,
   f_type VARCHAR(15),
   f_size INT,
-  content oid NOT NULL,
-  id_project SERIAL REFERENCES project (id)
+  content oid NOT NULL
 );
+
+CREATE TABLE proj_file
+(
+  id_project SERIAL REFERENCES project (id) ON DELETE CASCADE,
+  id_file SERIAL REFERENCES file (id) ON DELETE CASCADE,
+  PRIMARY KEY (id_project, id_file)
+);
+
+CREATE VIEW view_proj_file AS
+SELECT file.id AS id, file.name AS name, file.date_create AS date_create, 
+       file.f_type AS f_type, file.f_size AS f_size, file.content AS content,
+       proj_file.id_project AS id_project
+FROM file, proj_file
+WHERE file.id = proj_file.id_file;
 
 CREATE TRIGGER t_content BEFORE UPDATE OR DELETE ON file
     FOR EACH ROW EXECUTE FUNCTION lo_manage(content);

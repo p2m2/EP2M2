@@ -15,7 +15,11 @@ export default defineEventHandler((event) => {
             return client.connect()
                 // thx https://stackoverflow.com/a/11691651
                 .then(() => client.query(`DELETE FROM file
-                                          WHERE id_project ='${idProject}'`))
+                                          WHERE id IN (
+                                            SELECT id 
+                                            FROM view_proj_file
+                                            WHERE id_project = '${idProject}');
+                                        `))
                 .then(() => client.query(`DELETE FROM project
                                           WHERE id ='${idProject}'`))
                 .finally(() => client.end());
