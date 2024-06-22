@@ -17,6 +17,12 @@ const nameRules = ref([
 
 const daughterFile = ref<File | null>(null);
 const nameSerie = ref<string>("");
+const rDaughterTable = ref<{
+    nameFile: string;
+    nameMeta: string;
+    area: number;
+    expectedArea: number}[]>([]);
+
 
 /**
  * Add a new serie
@@ -31,6 +37,7 @@ function add() {
  * We update table of metabolites of the serie
  */
 async function sendFile() {
+
   // Check if we have a file
   if (!daughterFile.value) {
     return;
@@ -50,12 +57,29 @@ async function sendFile() {
   const formData = new FormData();
   formData.append('file', daughterFile.value);
   
-  await $fetch('/api/extractFromFile', {
+  const result =await $fetch('/api/extractFromFile', {
     method: 'POST',
     body: formData,
   });
+
+  console.log(result);
+  
+  if (typeof result === 'number' || result.length === 0) {
+    console.log("error");
+    
+    return;
+  }
+
+  rDaughterTable.value.push(
+    ...result.map((r) => ({
+      nameFile: daughterFile.value.name,
+      nameMeta: r[0],
+      area: r[1],
+      expectedArea: 0,
+  })));
   
 }
+
 </script>
 
 <template>
@@ -65,7 +89,7 @@ async function sendFile() {
   />
   <v-dialog
     v-model="dialog"
-    max-width="600"
+    max-width="700"
   >
     <v-form
       v-model="validateForm"
@@ -85,7 +109,6 @@ async function sendFile() {
             required
           />
         </v-card-text>
-
         <v-expansion-panels>
           <v-expansion-panel
             :title="t('title.machine')"
@@ -111,6 +134,9 @@ async function sendFile() {
                 v-model="daughterFile"
                 :label="t('label.daughterFile')"
                 :click:append="sendFile()"
+              />
+              <daughter-table
+                v-model="rDaughterTable"
               />
             </v-expansion-panel-text>
           </v-expansion-panel>
