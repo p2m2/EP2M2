@@ -18,17 +18,21 @@ const nameRules = ref([
 const daughterFile = ref<File | null>(null);
 const nameSerie = ref<string>("");
 const rDaughterTable = ref<{
+    idFile: string;
     nameFile: string;
     nameMeta: string;
     area: number;
     expectedArea: number}[]>([]);
-
+const rDaughterLoading = ref<boolean>(false);
 
 /**
  * Add a new serie
  */
 function add() {
-  console.log("add");
+  // reset form
+  rDaughterTable.value = [];
+  nameSerie.value = "";
+  // Open dialog to add a new serie
   dialog.value = true;
 }
 
@@ -51,35 +55,34 @@ async function sendFile() {
   
   // send file to the server
   // - TODO: show loading spinner
-
+  rDaughterLoading.value = true;
   // - Put file in a FormData object to send all format file 
   //   (ex: csv, xls, xlsx, ...)
   const formData = new FormData();
   formData.append('file', daughterFile.value);
-  
+  // - send file to the server
   const result =await $fetch('/api/extractFromFile', {
     method: 'POST',
     body: formData,
   });
 
-  console.log(result);
-  
   if (typeof result === 'number' || result.length === 0) {
-    console.log("error");
-    
     return;
   }
-
+  // Update table of metabolites of the serie
   rDaughterTable.value.push(
-    ...result.map((r) => ({
+    ...result[1].map((r: [string, number]) => ({
+      id: result[0],
       nameFile: daughterFile.value.name,
       nameMeta: r[0],
       area: r[1],
       expectedArea: 0,
   })));
   
+  // reset file input
+  daughterFile.value = null;
+  rDaughterLoading.value = false;
 }
-
 </script>
 
 <template>
@@ -130,11 +133,23 @@ async function sendFile() {
             :title="t('title.daughter')"
           >
             <v-expansion-panel-text>
+              <!-- waiting end loading file -->
+              <v-progress-circular
+                v-if="rDaughterLoading"
+                color="primary"
+                indeterminate
+              />
+              <!-- part to add daughter file -->
               <v-file-input
+                v-else
                 v-model="daughterFile"
                 :label="t('label.daughterFile')"
                 :click:append="sendFile()"
+                prepend-icon="mdi-water-plus"
+                hide-input
               />
+              <!-- show metabolite of daughter solution and enter area expected
+              -->
               <daughter-table
                 v-model="rDaughterTable"
               />

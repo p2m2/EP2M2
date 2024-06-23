@@ -6,7 +6,7 @@ import pg from "pg";
 import {readFile, rm} from "fs/promises";
 import {join} from "path";
 
-function addFile(file: tFile, folder: string, client: any, id_project: string) {
+async function addFile(file: tFile, folder: string, client: any, id_project: string) {
 
     let oid: string;
     return readFile(join("/shareFile", folder, file.id), { encoding: "hex" })
@@ -26,10 +26,6 @@ function addFile(file: tFile, folder: string, client: any, id_project: string) {
                                          '${oid}')`);
         })
         .then(() => {
-            // Break the promise chain when we haven't project
-            if (id_project === "NULL") {
-                throw new Error("Just add file in the database");
-            }
             // get id of the new file
             return client.query(`
                 SELECT id FROM file 
@@ -40,16 +36,16 @@ function addFile(file: tFile, folder: string, client: any, id_project: string) {
             if (respQuery.rows.length === 0) {
                 throw new Error("File not create");
             }
+            // Break the promise chain when we haven't project
+            if (id_project === "NULL") {
+                return respQuery.rows[0].id;
+            }
             // associate the file with the project
             return client.query(`
                 INSERT INTO proj_file(id_project, id_file)
                 VALUES ('${id_project}', '${respQuery.rows[0].id}')`);
         })
         .catch((err) => {
-            // File add without project
-            if (id_project === "NULL") {
-                return;
-            }
             console.error("Add file fail : ", file.name, err);
             throw new Error("Add file fail");
         });
@@ -63,8 +59,12 @@ export default defineEventHandler(async (event) => {
             return Promise.all(body.files.map((file: tFile) => 
                 addFile(file, body.folder, client, body.id_project)));
         })
-        .then(() => rm(join("/shareFile", body.folder),
-            { recursive: true, force: true }))
+        .then((resp:number[] | []) => {          
+            rm(join("/shareFile", body.folder),{
+                 recursive: true, force: true 
+                });
+            if (body.id_project === "NULL") return resp[0];
+            })
         .catch((err: Error) => {
             console.error(err);
             throw err;

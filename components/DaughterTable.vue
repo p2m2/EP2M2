@@ -15,7 +15,12 @@ const { t } = useI18n();
 
 // Define daughter solution metabolites table
 // -- inputs information
-const model = defineModel<{nameFile:string, nameMeta:string, area:number, expectedArea:number}[]>({ required: true });
+const model = defineModel<{
+  idFile:string,
+  nameFile:string,
+  nameMeta:string,
+  area:number,
+  expectedArea:number}[]>({ required: true });
 // -- headers of the table
 const headers = ref([
     { title: t('nameMeta'), sortable:true, key: 'nameMeta' },
@@ -32,7 +37,6 @@ const groupBy = ref([{ title: t('nameFile'), sortable:true, key: 'nameFile' }]);
  * @param nameFile name of the daughter file to delete
  */
 function delDaughterFile(nameFile: string) {
-    console.log("delete daughter file", nameFile);
     model.value = model.value.filter((item) => item.nameFile !== nameFile);
 }
 

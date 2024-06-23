@@ -22,10 +22,16 @@ export default defineEventHandler(async(event) => {
     }
 
     const rFile = formData[0].data;
+    const rFileName = formData[0].filename || "unknown";
 
     // wrtie the file on disk
-    const id = crypto.randomUUID();
-    const filePath = path.join("/shareFile", id);
+    const folder = crypto.randomUUID();
+    const dirPath = path.join("/shareFile", folder);
+    const filePath = path.join(dirPath, rFileName);
+    // thx : https://stackoverflow.com/a/26815894
+    if(!fs.existsSync(dirPath)){
+        fs.mkdirSync(dirPath,{recursive:true});
+    }
     fs.writeFileSync(filePath, rFile);
 
 
@@ -44,18 +50,54 @@ export default defineEventHandler(async(event) => {
         .then((jsonResp) => {
             // If the file is unknown, delete it
             if(JSON.stringify(jsonResp) === JSON.stringify({})){
+                const err = new Error("Unknown file");
+                err.name = "UnknownFile";
+                throw err;
+            }
+
+            // Extract the metabolites from the response
+            const proExtract = new Promise<[string, number][]>((resolve) => 
+                resolve(extractMetabolites(jsonResp as P2M2ToolsApiFill)));
+            
+            const proSaveFile = $fetch("/api/addFile" , {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: {
+                    files: [{
+                        id: rFileName,
+                        name: rFileName,
+                        type: "unknown",
+                        size: fs.statSync(filePath).size
+                    
+                    }],
+                    folder: folder,
+                    id_project: "NULL"
+                }
+            });
+
+            return Promise.all([proExtract, proSaveFile]);
+        })
+        .then(([metaArea, idFile]) => {
+            // Return the id of the file and the list of metabolites
+            return [idFile, metaArea];
+        })
+        .catch((err)=>{
+            // If the file is unknown, return 1
+            if(err.name === "UnknownFile"){
                 return 1;
             }
-            return extractMetabolites(jsonResp as P2M2ToolsApiFill);
-        })
-        .catch(()=>{
             // If an error occurs, delete the file
             return 2
         })
         .finally(()=>{
             // Delete the file
-            fs.rmSync(filePath);
-            
+            try{
+                fs.rmSync(dirPath, {recursive: true});
+            }
+            catch(err){ /* empty */ }
+                        
         });
    
 })
