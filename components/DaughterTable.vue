@@ -26,18 +26,21 @@ const headers = ref([
     { title: t('nameMeta'), sortable:true, key: 'nameMeta' },
     { title: t('area'), sortable:true, key: 'area' },
     { title: t('expectedArea'), sortable:true, key: 'expectedArea' },
-    { title: t('delete'), key: 'del' },
 ]);
 // -- group by daughter solution
-const groupBy = ref([{ title: t('nameFile'), sortable:true, key: 'nameFile' }]);
+const groupBy = ref([{ sortable:true, key: 'idFile' }]);
 
 
 /**
  * Delete a daughter file
  * @param nameFile name of the daughter file to delete
  */
-function delDaughterFile(nameFile: string) {
-    model.value = model.value.filter((item) => item.nameFile !== nameFile);
+function delDaughterFile(idFile: string) {
+    model.value = model.value.filter((item) => item.idFile !== idFile);
+    $fetch('/api/delFile', {
+        method: 'POST',
+        body: [idFile],
+    });
 }
 
 </script>
@@ -60,7 +63,8 @@ function delDaughterFile(nameFile: string) {
             variant="text"
             @click="toggleGroup(item)"
           />
-          {{ item.value }}
+          <!-- show name file about ifFile -->
+          {{ item.items[0].raw.nameFile }}
           <!-- button to delete the group -->
           <v-icon @click="delDaughterFile(item.value)">
             mdi-delete

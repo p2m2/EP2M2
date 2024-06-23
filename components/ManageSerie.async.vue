@@ -72,7 +72,7 @@ async function sendFile() {
   // Update table of metabolites of the serie
   rDaughterTable.value.push(
     ...result[1].map((r: [string, number]) => ({
-      id: result[0],
+      idFile: result[0],
       nameFile: daughterFile.value.name,
       nameMeta: r[0],
       area: r[1],
