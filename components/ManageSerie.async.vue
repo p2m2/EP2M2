@@ -84,7 +84,8 @@ async function sendFile() {
   rDaughterLoading.value = false;
 }
 
-async function submit (event) {
+async function submit (event) { 
+  
   // check if we have daughter solution
   if (rDaughterTable.value.length === 0) {
     // TODO: show error message
@@ -109,10 +110,11 @@ async function submit (event) {
     return acc;
   }, {});
 
+  // send serie name and all associated daughter solution 
   $fetch('/api/AddSerie', {
     method: 'POST',
     body: JSON.stringify({
-      nameSerie: nameSerie.value,
+      nameSerie: event.target.elements.nameSerie.value,
       daughterGroup,
     }),
   });
@@ -142,6 +144,7 @@ async function submit (event) {
         <v-card-text>
           <v-text-field
             v-model="nameSerie"
+            name="nameSerie"
             :counter="10"
             :rules="nameRules"
             :label="t('label.nameSerie')"

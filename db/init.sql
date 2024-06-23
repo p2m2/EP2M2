@@ -128,18 +128,11 @@ CREATE TABLE daughter
 (
   id_series SERIAL REFERENCES series (id) ON DELETE CASCADE,
   id_file SERIAL REFERENCES file (id) ON DELETE CASCADE,
-  PRIMARY KEY (id_series, id_file)
-);
-
-CREATE TABLE dau_metabo
-(
-  id_daughter SERIAL REFERENCES file (id) ON DELETE CASCADE,
-  id_metabo VARCHAR(52) UNIQUE,
+  id_mol VARCHAR(52),
   area FLOAT NOT NULL,
   expected FLOAT NOT NULL,
-  PRIMARY KEY (id_daughter, id_metabo)
+  PRIMARY KEY (id_series, id_file, id_mol)
 );
-
 
 CREATE TABLE ratio
 (

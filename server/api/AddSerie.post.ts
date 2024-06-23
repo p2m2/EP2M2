@@ -9,43 +9,35 @@ import pg from "pg";
 
 export default defineEventHandler(async (event) => {
     const body = await readBody(event);
-    console.log("body", body);
     
     const client = new pg.Client();
     return client.connect()
         .then(() => {
             return client.query(`
                 INSERT INTO series(name, date_create, id_machine)
-                VALUES ('${body.name}', NOW(), -1)
+                VALUES ('${body.nameSerie}', NOW(), -1)
                 RETURNING id`); // -1 is the default value for id_machine
         })
         .then((respQuery) => {
             if (respQuery.rows.length === 0) {
                 throw new Error("Serie not create");
             }
-            respQuery.rows[0].id;
+            // save each metabolite by daughter solution
             return Promise.all(Object.keys(body.daughterGroup).map(
-                (idFile: string) => {
-                    return client.query(`
-                        INSERT INTO daughter(id_series, id_file)
-                        VALUES (
-                            '${respQuery.rows[0].id}',
-                            '${idFile}')`
-                    )
-                    .then(() => {
-                        return Promise.all(body.daughterGroup[idFile].map(
-                            (metabo) =>
-                                client.query(`
-                                    INSERT INTO dau_metabo(
-                                        id_daughter, id_metabo, area, expected) 
-                                    VALUES (
-                                        '${idFile}',
-                                        '${metabo.nameMeta}',
-                                        '${metabo.area}',
-                                        '${metabo.expectedArea}')`
-                                )
-                        ));
-                    });
+                (idFile: string) => {     
+                    //     
+                    for(const metabo of body.daughterGroup[idFile]){
+                        client.query(`
+                            INSERT INTO daughter(
+                                id_series, id_file, id_mol, area, expected) 
+                            VALUES (
+                                '${respQuery.rows[0].id}',
+                                '${idFile}',
+                                '${metabo.nameMeta}',
+                                '${metabo.area}',
+                                '${metabo.expectedArea}')`
+                        );
+                    }
                 }
             ));
         })
