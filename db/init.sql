@@ -131,6 +131,16 @@ CREATE TABLE daughter
   PRIMARY KEY (id_series, id_file)
 );
 
+CREATE TABLE dau_metabo
+(
+  id_daughter SERIAL REFERENCES file (id) ON DELETE CASCADE,
+  id_metabo VARCHAR(52) UNIQUE,
+  area FLOAT NOT NULL,
+  expected FLOAT NOT NULL,
+  PRIMARY KEY (id_daughter, id_metabo)
+);
+
+
 CREATE TABLE ratio
 (
   id_mol VARCHAR(52) UNIQUE,
@@ -166,3 +176,6 @@ VALUES
  '$2b$10$bHdSEKlQ.emIxs.EoWRSHOo2Kv7ah1iNuVq.j0rn09nDefDkZS.my', 'P2M2'),
 ('tshirt', 'tshirt@mail.it',
  '$2b$10$bHUWHvZA4jUWg9.MNAae3uMHR2kpk0c6nErgs/Fce1ZTCLUUqD/sO', 'P2M2');
+
+
+INSERT INTO machine (name, m_type, id) VALUES ('unexist', 'UV', -1);

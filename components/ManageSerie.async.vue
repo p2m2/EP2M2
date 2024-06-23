@@ -83,6 +83,42 @@ async function sendFile() {
   daughterFile.value = null;
   rDaughterLoading.value = false;
 }
+
+async function submit (event) {
+  // check if we have daughter solution
+  if (rDaughterTable.value.length === 0) {
+    // TODO: show error message
+    return;
+  }
+  // Group value by file (daughter solution)
+  const daughterGroup = rDaughterTable.value.reduce(
+    (acc: {[key:string]:{}[]}, cur:{
+        idFile: string;
+        nameMeta: string;
+        area: number;
+        expectedArea: number;
+  }) => {
+    if (!acc[cur.idFile]) {
+      acc[cur.idFile] = [];
+    }
+    acc[cur.idFile].push({
+      nameMeta:cur.nameMeta,
+      area:cur.area,
+      expectedArea:cur.expectedArea
+    });
+    return acc;
+  }, {});
+
+  $fetch('/api/AddSerie', {
+    method: 'POST',
+    body: JSON.stringify({
+      nameSerie: nameSerie.value,
+      daughterGroup,
+    }),
+  });
+  
+}
+
 </script>
 
 <template>
@@ -97,7 +133,7 @@ async function sendFile() {
     <v-form
       v-model="validateForm"
       validate-on="lazy blur"
-      @submit.prevent
+      @submit.prevent="submit"
     >
       <v-card>
         <v-card-title>
@@ -159,6 +195,7 @@ async function sendFile() {
         <v-btn
           color="primary"
           text="Save"
+          type="submit"
           :disabled="!(validateForm === true)"
           @click="dialog = false"
         />
