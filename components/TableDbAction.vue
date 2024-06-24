@@ -34,6 +34,12 @@ const props = defineProps({
         default: 10,
         required: false
     },
+    // ask update table: just toggle update variable in parent component
+    update:{
+        type:Boolean,
+        default:false,
+        required:false
+    },
     // define actions
     // thx: https://github.com/vuejs/rfcs/discussions/397#discussioncomment-7745658
     // add
@@ -78,7 +84,7 @@ type typePropsAction = typeof props.add
 // define type to use string as index of action props
 type keyPropsAction = keyof typeof props
 
-const rfUpdate = ref<boolean>(false);
+const rfUpdate = toRef(props, "update");
 // For internationalization
 const { t } = useI18n();
 

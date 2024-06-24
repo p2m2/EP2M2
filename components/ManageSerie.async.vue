@@ -8,7 +8,7 @@ import * as v from 'valibot';
 const { t } = useI18n();
 const dialog = ref<boolean>(false);
 const validateForm = ref(false);
-
+const rUpload = ref(false);
 
 const nameRules = ref([
   (value: string) => 
@@ -28,7 +28,7 @@ const rDaughterLoading = ref<boolean>(false);
 /**
  * Add a new serie
  */
-function add() {
+async function add() {
   // reset form
   rDaughterTable.value = [];
   nameSerie.value = "";
@@ -117,8 +117,13 @@ async function submit (event) {
       nameSerie: event.target.elements.nameSerie.value,
       daughterGroup,
     }),
+  })
+  .then(() => {
+    rUpload.value = !rUpload.value;
+  })
+  .catch((error) => {
+    // TODO: show error message
   });
-  
 }
 
 </script>
@@ -127,6 +132,7 @@ async function submit (event) {
   <table-db-action 
     name-db-table="view_serie" 
     :add="add"
+    :update="rUpload"
   />
   <v-dialog
     v-model="dialog"
