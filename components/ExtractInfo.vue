@@ -453,6 +453,33 @@ async function updateProject(){
             }
         }));
     }
+    // update series
+    if(currentProject.series != oldProject.series){
+        // delete series
+        const lDelSeries = oldProject.series.filter(x => !currentProject.series.includes(x));
+        // verify we have series to disassociate
+        if(lDelSeries.length > 0){
+            holdOn.push($fetch("/api/DisassociateSeries",{
+                method:"POST",
+                body: {
+                    id_project: currentProject.id,
+                    series: lDelSeries
+                }
+            }));
+        }
+        // add series
+        const lAddSeries = currentProject.series.filter(x => !oldProject.series.includes(x));
+        // verify we have series to associate
+        if(lAddSeries.length > 0){
+            holdOn.push($fetch("/api/AssociateSeries",{
+                method:"POST",
+                body: {
+                    id_project: currentProject.id,
+                    series: lAddSeries
+                }
+            }));
+        }
+    }
 
     Promise.all(holdOn)
     .then(() => processOk(currentProject.name + " " + 

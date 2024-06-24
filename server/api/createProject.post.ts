@@ -54,6 +54,10 @@ export default defineEventHandler((event) => {
 
                 })
                 .then(() => {
+                    // verify we have series to associate
+                    if (project.series.length == 0) {
+                        return;
+                    }
                     return $fetch("/api/AssociateSeries",{
                         method:"POST",
                         body: {
