@@ -136,7 +136,7 @@ CREATE TABLE daughter
 
 CREATE TABLE ratio
 (
-  id_mol VARCHAR(52) UNIQUE,
+  id_mol VARCHAR(52),
   id_series SERIAL REFERENCES series (id) ON DELETE CASCADE,
   ratio FLOAT,
   PRIMARY KEY (id_mol, id_series)
@@ -145,8 +145,8 @@ CREATE TABLE ratio
 CREATE VIEW view_serie AS
 SELECT series.id AS id, series.name, array_agg(ratio.id_mol) AS metabolite,     
        series.date_create, series.date_achieve
-FROM series, daughter, ratio
-WHERE series.id = daughter.id_series AND series.id = ratio.id_series
+FROM series, ratio
+WHERE series.id = ratio.id_series
 GROUP BY series.id;
 
 INSERT INTO users (name, email, hash, team)
