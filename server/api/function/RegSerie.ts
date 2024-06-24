@@ -23,11 +23,8 @@ export async function calculateRatioSerie(idSerie:string):Promise<number | {[key
         .then((res) => {
             // create array area/expected for each metabolite
             const metaAreaExpected: {[key:string]:[number,number][]} = {}
-            console.log("rows", res);
             
             for(const row of res.rows){
-                console.log(row);
-                
                 // if the metabolite is not in the array, create it
                 if(metaAreaExpected[row.id_mol]===undefined){
                     // initialize first element to position 0,0
@@ -36,14 +33,12 @@ export async function calculateRatioSerie(idSerie:string):Promise<number | {[key
                 }
                 metaAreaExpected[row.id_mol].push([row.area,row.expected]);
             }
-            console.log(metaAreaExpected);
             
             // caclulate director coefficient of each metabolite
             const metaRatio: {[key:string]:number}= {}
             for(const key in metaAreaExpected){
                 // calculate the linear regression
-                const {m, b} = linearRegression(metaAreaExpected[key]);
-                console.log(`Metabolite ${key} : m=${m} b=${b}`);
+                const {m} = linearRegression(metaAreaExpected[key]);
                 metaRatio[key] = m;
             }
             return metaRatio

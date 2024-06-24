@@ -19,19 +19,14 @@ export default defineEventHandler(async (event) => {
                 VALUES ('${body.nameSerie}', NOW(), -1)
                 RETURNING id`); // -1 is the default value for id_machine
         })
-        .then((respQuery) => {
+        .then((respQuery:{rows:any[]}) => {
             if (respQuery.rows.length === 0) {
                 throw new Error("Serie not create");
             }
             idSerie = respQuery.rows[0].id;
-            console.log(`Serie ${idSerie} created`);
             const lPromises = [];
-            // save each metabolite by daughter solution
-            console.log("body.daughterGroup", body.daughterGroup);
-            
+            // save each metabolite by daughter solution           
             for (const idFile of Object.keys(body.daughterGroup)){  
-                console.log("idFile", idFile);
-                console.log("body.daughterGroup[idFile]", body.daughterGroup[idFile]);
                 for(const metabo of body.daughterGroup[idFile]){
                     lPromises.push(  
                         client.query(`
@@ -53,9 +48,9 @@ export default defineEventHandler(async (event) => {
             // calculate the ratio for each metabolite
             return calculateRatioSerie(idSerie);
         })
-        .then((metaRatio) => {
+        .then((metaRatio:{[key:string]:number}) => {
             const lPromises = [];
-            // save the ratio in the database
+            // save the ratio in the database            
             for(const key in metaRatio){
                 lPromises.push(
                     client.query(`
@@ -66,9 +61,8 @@ export default defineEventHandler(async (event) => {
             }
             return Promise.allSettled(lPromises);
         })
-        .catch((err) => {
-            console.error("Add serie fail : ", body.name, err);
-            throw new Error("Add serie fail");
+        .catch((err:Error) => {
+            return new Error("Add serie fail", err);
         })
         .finally(() => {
             // close the connection
