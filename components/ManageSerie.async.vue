@@ -73,7 +73,7 @@ async function sendFile() {
   rDaughterTable.value.push(
     ...result[1].map((r: [string, number]) => ({
       idFile: result[0],
-      nameFile: daughterFile.value.name,
+      nameFile: daughterFile.value?.name || "error",
       nameMeta: r[0],
       area: r[1],
       expectedArea: 0,
@@ -84,7 +84,7 @@ async function sendFile() {
   rDaughterLoading.value = false;
 }
 
-async function submit (event) { 
+async function submit (event:SubmitEvent) { 
   
   // check if we have daughter solution
   if (rDaughterTable.value.length === 0) {
@@ -114,14 +114,14 @@ async function submit (event) {
   $fetch('/api/AddSerie', {
     method: 'POST',
     body: JSON.stringify({
-      nameSerie: event.target.elements.nameSerie.value,
+      nameSerie: event?.target?.elements?.nameSerie.value,
       daughterGroup,
     }),
   })
   .then(() => {
     rUpload.value = !rUpload.value;
   })
-  .catch((error) => {
+  .catch(() => {
     // TODO: show error message
   });
 }

@@ -20,7 +20,7 @@ export async function calculateRatioSerie(idSerie:string):Promise<number | {[key
                 WHERE id_series='${idSerie}'
             `)
         })
-        .then((res) => {
+        .then((res:{rows:any[]}) => {
             // create array area/expected for each metabolite
             const metaAreaExpected: {[key:string]:[number,number][]} = {}
             
@@ -43,8 +43,7 @@ export async function calculateRatioSerie(idSerie:string):Promise<number | {[key
             }
             return metaRatio
         })
-        .catch((err) => {
-            console.error(err);
+        .catch(() => {
             return 1;
         })
         .finally(() => {
