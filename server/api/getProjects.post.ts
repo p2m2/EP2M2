@@ -58,8 +58,6 @@ export default defineEventHandler(async (event): Promise<{
     
     const resultProject = await client.query(getProjectsSQL);
 
-    await client.end();
-
     // Create list of project
     const listProjects: tProject[] = [];
     let currentId: string = "";
@@ -75,7 +73,8 @@ export default defineEventHandler(async (event): Promise<{
                     p_id: string,
                     f_id: string
                 }) => (x.p_id == row.p_id) && x.f_id).length,
-                files: []
+                files: [],
+                series: []
             });
             currentId = row.p_id;
         }
@@ -91,6 +90,21 @@ export default defineEventHandler(async (event): Promise<{
         }
 
     }
+
+    // Add associated series of project
+    for (const project of listProjects) {
+        const getSeriesSQL = `SELECT id_series
+                              FROM proj_series
+                              WHERE id_project = '${project.id}'`;
+
+        const resultSeries = await client.query(getSeriesSQL);
+
+        for (const row of resultSeries.rows) {
+            project.series.push(row.id_series);
+        }
+    }
+
+    await client.end();
 
     return {
         projects: listProjects,
