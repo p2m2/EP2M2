@@ -11,16 +11,14 @@ export default defineEventHandler(async (event) => {
         .then(() => {
             console.log(body);
             
-            const lPromises = [];
+            const lValues = [];
             for(const idSerie of body.series){               
-                lPromises.push(
-                    client.query(`
-                        INSERT INTO proj_series(id_project, id_series)
-                        VALUES ('${body.id_project}', '${idSerie}')`
-                    )
-                );
+                lValues.push(`(${body.id_project},${idSerie})`);                
             }
-            return Promise.allSettled(lPromises);
+            return client.query(`
+                INSERT INTO proj_series(id_project, id_series)
+                VALUES ${lValues.join(",")}`
+            )
         })
         .catch((err: Error) => {
             throw err;
