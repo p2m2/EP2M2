@@ -91,6 +91,7 @@ function emptyProject(project: tProject) {
     project.createDate = "";
     project.nbFile = 0;
     project.files = [] as tFile[];
+    project.series = [];
 }
 
 // The project consulted
@@ -366,11 +367,13 @@ function openProject(id: string) {
         currentProject.createDate = tempProject[0].createDate;
         currentProject.nbFile = tempProject[0].nbFile;
         Object.assign(currentProject.files, tempProject[0].files);
+        Object.assign(currentProject.series, tempProject[0].series);
         oldProject.id = id;
         oldProject.name = tempProject[0].name;
         oldProject.createDate = tempProject[0].createDate;
         oldProject.nbFile = tempProject[0].nbFile;
         Object.assign(oldProject.files, tempProject[0].files);
+        Object.assign(oldProject.series, tempProject[0].series);
     }
     isOpen.value = true;
 }
@@ -402,6 +405,7 @@ function processFail(msg: string) {
 }
 function createProject() {
     const body = new FormData();
+    
     body.append("folder", currentFolder);
     body.append("project", JSON.stringify(currentProject));
     // todo get team name
@@ -726,6 +730,7 @@ async function deleteProject(id:string, name:string){
                                 item-title="name"
                                 item-value="id"
                                 label="t('label.selectSerie')"
+                                multiple
                             />
                         </div>
                     </template>

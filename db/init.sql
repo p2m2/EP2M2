@@ -149,6 +149,13 @@ FROM series, ratio
 WHERE series.id = ratio.id_series
 GROUP BY series.id;
 
+CREATE TABLE proj_series
+(
+  id_project SERIAL REFERENCES project (id) ON DELETE CASCADE,
+  id_series SERIAL REFERENCES series (id) ON DELETE CASCADE,
+  PRIMARY KEY (id_project, id_series)
+);
+
 INSERT INTO users (name, email, hash, team)
 VALUES 
 ('root_ep2m2', 'admin@ep2m2.bzh', 

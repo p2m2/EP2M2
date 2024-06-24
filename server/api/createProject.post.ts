@@ -28,33 +28,39 @@ export default defineEventHandler((event) => {
                                     project (name, date_create, team)
                                    VALUES ('${project.name}', 
                                            NOW(),
-                                           '${team}')`;
+                                           '${team}')
+                                    RETURNING id`;
 
-
+            let idProject: string;
             const client = new pg.Client();
             return client.connect()
                 .then(() => {
                     return client.query(addProjectSql);
                 })
-                .then(() => {
-                    return client.query(`SELECT id
-                                         FROM project
-                                         WHERE name = '${project.name}'`);
-                })
                 .then((respQuery:{rows:{id:string}[]}) => {
+                    
                     if (respQuery.rows.length === 0) {
                         throw new Error("project not create");
                     }
-
+                    idProject = respQuery.rows[0].id;
                     return $fetch("/api/addFile",{
                         method:"POST",
                         body: {
                             files: project.files,
                             folder: folder,
-                            id_project: respQuery.rows[0].id
+                            id_project: idProject
                         }
                     });
 
+                })
+                .then(() => {
+                    return $fetch("/api/AssociateSeries",{
+                        method:"POST",
+                        body: {
+                            series: project.series,
+                            id_project: idProject
+                        }
+                    });
                 })
                 .then(() => rm(join("/shareFile", folder),
                     { recursive: true, force: true }))
