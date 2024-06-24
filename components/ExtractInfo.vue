@@ -25,6 +25,8 @@ const loading = ref<number>(0);
 const stateConfBox = ref<string>("");
 const openConfBox = ref<boolean>(false);
 
+const rfAllSeries = ref<{id:string, name:string}[]>([]);
+
 // Define struct of table of file
 // 3 columns (name, type, size in KB, delete actions)
 const tabFilesStruct = [{
@@ -97,7 +99,8 @@ const currentProject = reactive<tProject>({
     name: "",
     createDate: "",
     nbFile: 0,
-    files: [] as tFile[]
+    files: [] as tFile[],
+    series: []
 });
 // old version of consulted project
 const oldProject = reactive<tProject>({
@@ -105,7 +108,8 @@ const oldProject = reactive<tProject>({
     name: "",
     createDate: "",
     nbFile: 0,
-    files: [] as tFile[]
+    files: [] as tFile[],
+    series: []
 });
 // Where new files of project save
 let currentFolder: string = "";
@@ -133,14 +137,31 @@ const currentPage = ref<number>(1);
 async function getProjects(page: number = 1): Promise<{
     projects: tProject[], count: number
 }> {
-    return await $fetch("/api/getProjects", {
+    return await $fetch("/api/manageControl/rows",{
         method: "POST",
-        body: {
-            team: useCookie("team", { sameSite: "strict" }).value,
-            orderBy: sortProject.value.column,
-            sort: sortProject.value.direction,
-            page: page
+        body:{
+            nameTable: "series",
+            wheres:{1:1}
         }
+    })
+    .then((rowsSeries)=>{
+        // return id and name of series
+        let series = [];
+        for (const row of rowsSeries){
+            series.push({id: row.id, name: row.name});
+        }
+        rfAllSeries.value = series;
+    })
+    .then(() =>{
+        return $fetch("/api/getProjects", {
+            method: "POST",
+            body: {
+                team: useCookie("team", { sameSite: "strict" }).value,
+                orderBy: sortProject.value.column,
+                sort: sortProject.value.direction,
+                page: page
+            }
+        })
     });
 }
 
@@ -199,7 +220,7 @@ const containProject = [{
     label: "label.files",
     icon: "i-heroicons-document-duplicate"
 }, {
-    label: "label.templateOperation",
+    label: "label.Series",
     icon: "i-heroicons-variable"
 }
 ]
@@ -540,6 +561,7 @@ async function deleteProject(id:string, name:string){
                     }]});
     })
 }
+
 </script>
     
 <template>
@@ -698,7 +720,13 @@ async function deleteProject(id:string, name:string){
                             </template>
                         </v-data-table>
                         <div v-else>
-                            <p>couxcou</p>
+                            <v-select
+                                v-model="currentProject.series"
+                                :items="rfAllSeries"
+                                item-title="name"
+                                item-value="id"
+                                label="t('label.selectSerie')"
+                            />
                         </div>
                     </template>
                 </UTabs>

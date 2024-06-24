@@ -17,6 +17,7 @@ declare global {
         createDate:string,
         nbFile:number,
         files:tFile[],
+        series:{name:string,id:string}[],
         // TODO: add operation post export
     }
     interface tCompound{
