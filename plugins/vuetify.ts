@@ -14,12 +14,12 @@ const myCustomLightTheme: ThemeDefinition = {
   dark: false,
   colors: {
     primary: '#8bc34a',
-    secondary: '#cddc39',
-    accent: '#f44336',
-    error: '#ff9800',
-    warning: '#607d8b',
+    secondary: '#607d8b',
+    accent: '#cddc39',
+    error: '#f44336',
+    warning: '#ff9800',
     info: '#00bcd4',
-    success: '#2196f3'
+    success: '#8bc34a'
     }
 };
 export default defineNuxtPlugin((app) => {

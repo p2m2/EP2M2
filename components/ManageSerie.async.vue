@@ -9,6 +9,9 @@ const { t } = useI18n();
 const dialog = ref<boolean>(false);
 const validateForm = ref(false);
 const rUpload = ref(false);
+const stateMessage = useState<{actif:boolean,
+                               message:string,
+                               type:string}>("stateMessage")
 
 const nameRules = ref([
   (value: string) => 
@@ -86,14 +89,7 @@ async function sendFile() {
 
 async function submit (event:SubmitEvent) { 
   
-  // check if we have daughter solution
-  // if (rDaughterTable.value.length === 0) {
-  //   // TODO: show error message
-  //   return;
-  // }
-  // Group value by file (daughter solution)
-  console.log("plouf");
-  
+  // Group value by file (daughter solution) 
   const daughterGroup = rDaughterTable.value.reduce(
     (acc: {[key:string]:{}[]}, cur:{
         idFile: string;
@@ -110,9 +106,7 @@ async function submit (event:SubmitEvent) {
       expectedArea:cur.expectedArea
     });
     return acc;
-  }, {});
-  console.log("0");
-  
+  }, {});  
   // send serie name and all associated daughter solution 
   $fetch('/api/AddSerie', {
     method: 'POST',
@@ -123,11 +117,15 @@ async function submit (event:SubmitEvent) {
   })
   .then(() => {
     rUpload.value = !rUpload.value;
-    console.log(1);
+    stateMessage.value.type="success"
+    stateMessage.value.message=t("message.success.createSerie")
+    stateMessage.value.actif=true
     
   })
   .catch(() => {
-    console.log("error");
+    stateMessage.value.type="error"
+    stateMessage.value.message=t("message.error.createSerie")
+    stateMessage.value.actif=true
     // TODO: show error message
   });
 }

@@ -97,12 +97,18 @@ export default {
         confQuestion: "Êtes-vous sûr de vouloir continuer ?",
         created: "a été créé",
         createdFail: "La création du projet a échoué",
+        error:{
+            createSerie: "Echech de la création de la gamme"
+        },
         fitting: "L'ajustement ",
         koDelProject: "Nous n'avons pas supprimé le projet",
         loading: "chargement",
         noEmpty:"ne peut pas être vide",
         okDelProject: "Nous avons supprimé le projet",
         required: "Champ obligatoire",
+        success:{
+            createSerie: "La gamme a été créée"
+        },
         updateFail: "Échec de la mise à jour",
         updateInProgress: "Le project est en cours de mise à jour",
         updateProject:"est mise à jour",

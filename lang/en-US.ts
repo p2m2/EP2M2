@@ -99,11 +99,17 @@ export default {
         confQuestion: "Are you sure to continue?",
         created: "created",
         createdFail: "Project's creation failed",
+        error:{
+            createSerie: "Failed to create serie"
+        },
         fitting: "The fitting ",
         koDelProject: "We didn't delete, the named project",
         loading: "Loading",
         noEmpty: "Can't be empty",
         okDelProject: "We deleted, the named project",
+        success:{
+            createSerie: "La gamme a été créée"
+        },
         updateFail: "Update fail",
         updateInProgress: "Update of project in progress",
         updateProject:"updated",

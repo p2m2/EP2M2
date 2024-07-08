@@ -68,5 +68,6 @@ const ListComp : {[key:string]: string | ConcreteComponent} = {
         </v-window>
       </v-col>
     </v-row>
+    <state-message />
   </NuxtLayout>
 </template>
