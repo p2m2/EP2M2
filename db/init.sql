@@ -149,6 +149,13 @@ FROM series, ratio
 WHERE series.id = ratio.id_series
 GROUP BY series.id;
 
+CREATE VIEW view_show_serie AS
+SELECT series.id AS id, series.name, array_agg(ratio.id_mol) AS metabolite,     
+       series.date_create, series.date_achieve
+FROM series
+LEFT JOIN ratio ON series.id = ratio.id_series
+GROUP BY series.id;
+
 CREATE TABLE proj_series
 (
   id_project SERIAL REFERENCES project (id) ON DELETE CASCADE,

@@ -87,11 +87,13 @@ async function sendFile() {
 async function submit (event:SubmitEvent) { 
   
   // check if we have daughter solution
-  if (rDaughterTable.value.length === 0) {
-    // TODO: show error message
-    return;
-  }
+  // if (rDaughterTable.value.length === 0) {
+  //   // TODO: show error message
+  //   return;
+  // }
   // Group value by file (daughter solution)
+  console.log("plouf");
+  
   const daughterGroup = rDaughterTable.value.reduce(
     (acc: {[key:string]:{}[]}, cur:{
         idFile: string;
@@ -109,7 +111,8 @@ async function submit (event:SubmitEvent) {
     });
     return acc;
   }, {});
-
+  console.log("0");
+  
   // send serie name and all associated daughter solution 
   $fetch('/api/AddSerie', {
     method: 'POST',
@@ -120,8 +123,11 @@ async function submit (event:SubmitEvent) {
   })
   .then(() => {
     rUpload.value = !rUpload.value;
+    console.log(1);
+    
   })
   .catch(() => {
+    console.log("error");
     // TODO: show error message
   });
 }
@@ -130,7 +136,7 @@ async function submit (event:SubmitEvent) {
 
 <template>
   <table-db-action 
-    name-db-table="view_serie" 
+    name-db-table="view_show_serie" 
     :add="add"
     :update="rUpload"
   />

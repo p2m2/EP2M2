@@ -141,7 +141,7 @@ async function getProjects(page: number = 1): Promise<{
     return await $fetch("/api/manageControl/rows",{
         method: "POST",
         body:{
-            nameTable: "series",
+            nameTable: "view_serie",
             wheres:{1:1}
         }
     })
