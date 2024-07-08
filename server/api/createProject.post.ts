@@ -66,7 +66,7 @@ export default defineEventHandler((event) => {
                         }
                     });
                 })
-                .then(() => rm(join("/shareFile", folder),
+                .then(() => rm(join(useRuntimeConfig().pathShare, folder),
                     { recursive: true, force: true }))
                 .catch((err: Error) => {
                     console.error(err);

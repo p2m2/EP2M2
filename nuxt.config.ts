@@ -7,6 +7,15 @@ import { defineNuxtConfig } from "nuxt/config";
 import vuetify, { transformAssetUrls } from "vite-plugin-vuetify";
 
 export default defineNuxtConfig({
+    runtimeConfig: {
+        // in dev
+        // be overridden by NUXT_URL_P2M2_API_PARSE environment variable
+        urlP2m2ApiParse: "http://p2m2ToolsApi:8080/p2m2tools/api/format/parse/",
+         // be overridden by NUXT_URL_P2M2_API_SNIF environment variable
+        urlP2m2ApiSnif: "http://p2m2ToolsApi:8080/p2m2tools/api/format/sniffer",
+        // be overridden by NUXT_PATH_SHARE  environment variable
+        pathShare: "/shareFile",
+      },
     $production: {
         routeRules: {
             "/**": { isr: true }

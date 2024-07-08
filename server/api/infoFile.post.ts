@@ -6,7 +6,7 @@
 import { readFileSync, existsSync, mkdirSync} from "fs";
 import { writeFile, rm} from "fs/promises";
 import path from "path";
-
+const runtimeConfig = useRuntimeConfig()
 
 function getInfoFiles(
     myFile:{filename:string, data: Buffer, type:string},
@@ -19,7 +19,7 @@ function getInfoFiles(
     return writeFile(filePath, myFile.data)
         .then(()=>{            
             return fetch(
-                "http://p2m2ToolsApi:8080/p2m2tools/api/format/sniffer",{
+                runtimeConfig.urlP2m2ApiSnif,{
                     method: "POST",
                     headers: {
                         "Content-Type": "application/x-www-form-urlencoded"
@@ -64,7 +64,7 @@ export default defineEventHandler(async(event):
     if(!files && !folder){
         return [];
     }
-    const dirPath = path.join("/shareFile", folder as string);
+    const dirPath = path.join(runtimeConfig.pathShare, folder as string);
     // thx : https://stackoverflow.com/a/26815894
     if(!existsSync(dirPath)){
         mkdirSync(dirPath,{recursive:true});

@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: MIT
 
 import pg from "pg";
-
+const runtimeConfig = useRuntimeConfig()
 async function exportFile(addressFile: {
     content: string,
     f_size: number,
@@ -11,8 +11,8 @@ async function exportFile(addressFile: {
 }, client: unknown): Promise<JSON> {
     return client.query(`SELECT lo_get(${addressFile.content}, 0, 
                                        ${addressFile.f_size}) as file`)
-        .then((respQuery: { rows: { file: string }[] }) => {
-            return fetch("http://p2m2ToolsApi:8080/p2m2tools/api/format/parse/",
+        .then((respQuery: { rows: { file: string }[] }) => {           
+            return fetch(runtimeConfig.urlP2m2ApiParse,
                 {
                     method: "POST",
                     headers: {

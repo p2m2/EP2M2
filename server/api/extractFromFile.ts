@@ -11,6 +11,7 @@
 import fs from "fs";
 import path from "path";
 import { P2M2ToolsApi, P2M2ToolsApiFill } from "@/types/p2m2Api";
+const runtimeConfig = useRuntimeConfig()
 
 export default defineEventHandler(async(event) => {
     // Read the form data from the event
@@ -26,7 +27,7 @@ export default defineEventHandler(async(event) => {
 
     // wrtie the file on disk
     const folder = crypto.randomUUID();
-    const dirPath = path.join("/shareFile", folder);
+    const dirPath = path.join(runtimeConfig.pathShare, folder);
     const filePath = path.join(dirPath, rFileName);
     // thx : https://stackoverflow.com/a/26815894
     if(!fs.existsSync(dirPath)){
@@ -37,7 +38,7 @@ export default defineEventHandler(async(event) => {
 
     // Send the file to the parser
     return await fetch(
-        "http://p2m2ToolsApi:8080/p2m2tools/api/format/parse",{
+        runtimeConfig.urlP2m2ApiParse,{
             method: "POST",
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded"

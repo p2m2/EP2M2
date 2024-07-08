@@ -6,10 +6,13 @@ import pg from "pg";
 import {readFile, rm} from "fs/promises";
 import {join} from "path";
 
+const runtimeConfig = useRuntimeConfig()
+
 async function addFile(file: tFile, folder: string, client: any, id_project: string) {
 
     let oid: string;
-    return readFile(join("/shareFile", folder, file.id), { encoding: "hex" })
+    return readFile(join(runtimeConfig.pathShare, folder, file.id),
+                    {encoding: "hex" })
         .then(buffer => {
             // thx: https://stackoverflow.com/a/14408194
             return client.query(`SELECT lo_from_bytea(0, '${"\\x" + buffer}') as oid`);
@@ -60,7 +63,7 @@ export default defineEventHandler(async (event) => {
                 addFile(file, body.folder, client, body.id_project)));
         })
         .then((resp:number[] | []) => {          
-            rm(join("/shareFile", body.folder),{
+            rm(join(runtimeConfig.pathShare, body.folder),{
                  recursive: true, force: true 
                 });
             if (body.id_project === "NULL") return resp[0];
