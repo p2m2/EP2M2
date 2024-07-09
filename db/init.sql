@@ -142,6 +142,32 @@ CREATE TABLE ratio
   PRIMARY KEY (id_mol, id_series)
 );
 
+CREATE OR REPLACE FUNCTION delete_ratio_if_unused()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Check if the order_id from the deleted row in orders is used in order_details
+    IF NOT EXISTS (
+        SELECT 1
+        FROM daughter
+        WHERE id_series = OLD.id_series
+        AND id_mol = OLD.id_mol
+    ) THEN
+        -- Delete the row from order_details if it's not used elsewhere
+        DELETE FROM ratio
+        WHERE id_series = OLD.id_series
+        AND id_mol = OLD.id_mol;
+    END IF;
+
+    RETURN OLD;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_delete_ratio
+AFTER DELETE ON daughter
+FOR EACH ROW
+EXECUTE FUNCTION delete_ratio_if_unused();
+
+
 CREATE VIEW view_serie AS
 SELECT series.id AS id, series.name, array_agg(ratio.id_mol) AS metabolite,     
        series.date_create, series.date_achieve
@@ -155,6 +181,13 @@ SELECT series.id AS id, series.name, array_agg(ratio.id_mol) AS metabolite,
 FROM series
 LEFT JOIN ratio ON series.id = ratio.id_series
 GROUP BY series.id;
+
+CREATE VIEW view_daughter_file AS
+SELECT file.id AS id,  file.name AS name,
+       daughter.id_mol AS mol, area, expected, id_series 
+FROM daughter, file
+WHERE daughter.id_file = file.id;
+
 
 CREATE TABLE proj_series
 (

@@ -13,6 +13,13 @@ SPDX-License-Identifier: MIT
 // to manage translation
 const { t } = useI18n();
 
+const props = defineProps({
+  viewMode: {
+    type: Boolean,
+    default: false,
+  },
+});
+
 // Define daughter solution metabolites table
 // -- inputs information
 const model = defineModel<{
@@ -66,7 +73,10 @@ function delDaughterFile(idFile: string) {
           <!-- show name file about ifFile -->
           {{ item.items[0].raw.nameFile }}
           <!-- button to delete the group -->
-          <v-icon @click="delDaughterFile(item.value)">
+          <v-icon 
+            :disabled="props.viewMode"
+            @click="delDaughterFile(item.value)"
+          >
             mdi-delete
           </v-icon>
         </td>

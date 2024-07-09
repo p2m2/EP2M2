@@ -7,6 +7,7 @@ SPDX-License-Identifier: MIT
 import * as v from 'valibot';
 const { t } = useI18n();
 const dialog = ref<boolean>(false);
+const dialogView = ref<boolean>(false);
 const validateForm = ref(false);
 const rUpload = ref(false);
 const stateMessage = useState<{actif:boolean,
@@ -37,6 +38,7 @@ async function add() {
   nameSerie.value = "";
   // Open dialog to add a new serie
   dialog.value = true;
+  dialogView.value = false;
 }
 
 /**
@@ -126,7 +128,41 @@ async function submit (event:SubmitEvent) {
     stateMessage.value.type="error"
     stateMessage.value.message=t("message.error.createSerie")
     stateMessage.value.actif=true
-    // TODO: show error message
+  });
+}
+
+/**
+ * 
+ */
+function view(item){
+  nameSerie.value = item.name;
+  dialog.value = true;
+  rDaughterLoading.value = true;
+  dialogView.value = true;
+  
+  $fetch("/api/manageControl/rows",{
+    method: 'POST',
+    body: {
+      nameTable: "view_daughter_file",        
+      wheres:{
+        id_series:item.id}
+    }
+  
+  })
+  .then((result) => {
+    rDaughterTable.value = result.map((row: [string, number]) => ({
+      idFile: row.id,
+      nameFile: row.name,
+      nameMeta: row.mol,
+      area: row.area,
+      expectedArea: row.expected,
+    }));
+    rDaughterLoading.value = false;
+  })
+  .catch(() => {
+    rDaughterLoading.value = false;
+    dialog.value = false;
+    dialogView.value = false;
   });
 }
 
@@ -136,6 +172,7 @@ async function submit (event:SubmitEvent) {
   <table-db-action 
     name-db-table="view_show_serie" 
     :add="add"
+    :view="view"
     :update="rUpload"
   />
   <v-dialog
@@ -145,6 +182,7 @@ async function submit (event:SubmitEvent) {
     <v-form
       v-model="validateForm"
       validate-on="lazy blur"
+      :disabled="dialogView"
       @submit.prevent="submit"
     >
       <v-card>
@@ -201,11 +239,13 @@ async function submit (event:SubmitEvent) {
               -->
               <daughter-table
                 v-model="rDaughterTable"
+                :view-mode="dialogView"
               />
             </v-expansion-panel-text>
           </v-expansion-panel>
         </v-expansion-panels>
         <v-btn
+          v-if="!dialogView"
           color="primary"
           text="Save"
           type="submit"
