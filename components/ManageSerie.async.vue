@@ -3,24 +3,33 @@ SPDX-FileCopyrightText: 2024 Marcellino Palerme <marcellino.palerme@inrae.fr>
 
 SPDX-License-Identifier: MIT
 -->
+<!-- This module manage series add / view / delete / archive / modify -->
 <script setup lang="ts">
 import * as v from 'valibot';
 const { t } = useI18n();
+// manage display of dialog box 
 const dialog = ref<boolean>(false);
+// manage display of dialog box in view mode (no modification possible)
 const dialogView = ref<boolean>(false);
+// manage possibility to add or modify a serie in dialog box
 const validateForm = ref(false);
+// toggle to update table of serie
 const rUpload = ref(false);
+// manage display of message
 const stateMessage = useState<{actif:boolean,
                                message:string,
                                type:string}>("stateMessage")
-
+// Rules for valid name serie
 const nameRules = ref([
   (value: string) => 
     useValibot(v.pipe(v.string(), v.nonEmpty(t('message.noEmpty'))),value),
 ]);
 
+// Variable get file upload by user
 const daughterFile = ref<File | null>(null);
+// Variable to store name of the serie
 const nameSerie = ref<string>("");
+// List of metabolite's info by daughter solution of the serie
 const rDaughterTable = ref<{
     idFile: string;
     nameFile: string;
@@ -59,7 +68,6 @@ async function sendFile() {
   }
   
   // send file to the server
-  // - TODO: show loading spinner
   rDaughterLoading.value = true;
   // - Put file in a FormData object to send all format file 
   //   (ex: csv, xls, xlsx, ...)
@@ -70,7 +78,8 @@ async function sendFile() {
     method: 'POST',
     body: formData,
   });
-
+  
+  // check if the file is empty or not a valid file
   if (typeof result === 'number' || result.length === 0) {
     return;
   }
@@ -89,6 +98,10 @@ async function sendFile() {
   rDaughterLoading.value = false;
 }
 
+/**
+ * Submit the form to create a new serie
+ * @param event 
+ */
 async function submit (event:SubmitEvent) { 
   
   // Group value by file (daughter solution) 
@@ -118,13 +131,16 @@ async function submit (event:SubmitEvent) {
     }),
   })
   .then(() => {
+    // We update the daughter table
     rUpload.value = !rUpload.value;
+    // show message whose say the creation of serie is a success
     stateMessage.value.type="success"
     stateMessage.value.message=t("message.success.createSerie")
     stateMessage.value.actif=true
     
   })
   .catch(() => {
+    // show message whose say the creation of serie is a failure
     stateMessage.value.type="error"
     stateMessage.value.message=t("message.error.createSerie")
     stateMessage.value.actif=true
@@ -132,14 +148,21 @@ async function submit (event:SubmitEvent) {
 }
 
 /**
- * 
+ * we show the serie in view mode
+ * @param item {id:String, name:String} series information
  */
-function view(item){
+function view(item: {id: string, name: string}){
+  
+  // Add the name of series
   nameSerie.value = item.name;
+  // Open dialog to view the serie
   dialog.value = true;
+  // Show loader to wait get all daughter solution
   rDaughterLoading.value = true;
+  // Indicate that we are in view mode
   dialogView.value = true;
   
+  // Get all daughter solution of the serie
   $fetch("/api/manageControl/rows",{
     method: 'POST',
     body: {
@@ -150,31 +173,38 @@ function view(item){
   
   })
   .then((result) => {
-    rDaughterTable.value = result.map((row: [string, number]) => ({
+    // Update table of daughter solution of the serie
+    rDaughterTable.value = result.map((row: {[key:string]:string|number}) => ({
       idFile: row.id,
       nameFile: row.name,
       nameMeta: row.mol,
       area: row.area,
       expectedArea: row.expected,
     }));
+    // End loading
     rDaughterLoading.value = false;
   })
   .catch(() => {
+    // End loading
     rDaughterLoading.value = false;
+    // close dialog box
     dialog.value = false;
     dialogView.value = false;
+    // TODO: show message whose say the view of serie is a failure
   });
 }
 
 </script>
 
 <template>
+  <!-- Table display all series -->
   <table-db-action 
     name-db-table="view_show_serie" 
     :add="add"
     :view="view"
     :update="rUpload"
   />
+  <!-- Dialog Box to add / view and modify serie -->
   <v-dialog
     v-model="dialog"
     max-width="700"
@@ -186,10 +216,12 @@ function view(item){
       @submit.prevent="submit"
     >
       <v-card>
+        <!-- TODO: modify title of dialog box about action -->
         <v-card-title>
           <span class="headline">{{ t('title.addSerie') }}</span>
         </v-card-title>
         <v-card-text>
+          <!-- Name of serie field -->
           <v-text-field
             v-model="nameSerie"
             name="nameSerie"
@@ -200,6 +232,7 @@ function view(item){
           />
         </v-card-text>
         <v-expansion-panels>
+          <!-- Tab where define on whose machine apply serie -->
           <v-expansion-panel
             :title="t('title.machine')"
             disabled
@@ -208,6 +241,7 @@ function view(item){
               helle 
             </v-expansion-panel-text>
           </v-expansion-panel>
+          <!-- Tab where define mothers solution -->
           <v-expansion-panel
             :title="t('title.mother')"
             disabled
@@ -216,6 +250,7 @@ function view(item){
               helle 
             </v-expansion-panel-text>
           </v-expansion-panel>
+          <!-- Tab where define daughter solution -->
           <v-expansion-panel
             :title="t('title.daughter')"
           >
@@ -244,6 +279,8 @@ function view(item){
             </v-expansion-panel-text>
           </v-expansion-panel>
         </v-expansion-panels>
+        <!-- TODO: modifty name and action of button about action -->
+        <!-- Button to save/close dialog box -->
         <v-btn
           v-if="!dialogView"
           color="primary"

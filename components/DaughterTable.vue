@@ -12,7 +12,7 @@ SPDX-License-Identifier: MIT
 <script setup lang="ts">
 // to manage translation
 const { t } = useI18n();
-
+// Give possibility to pass in view mode
 const props = defineProps({
   viewMode: {
     type: Boolean,
@@ -43,7 +43,9 @@ const groupBy = ref([{ sortable:true, key: 'idFile' }]);
  * @param nameFile name of the daughter file to delete
  */
 function delDaughterFile(idFile: string) {
+    // Delete daughter file from list
     model.value = model.value.filter((item) => item.idFile !== idFile);
+    // Delete daughter file from server
     $fetch('/api/delFile', {
         method: 'POST',
         body: [idFile],
@@ -53,6 +55,7 @@ function delDaughterFile(idFile: string) {
 </script>
 
 <template>
+  <!-- Display the table of metabolites group by daughter solution -->
   <v-data-table-virtual
     v-model:items="model"
     :headers="headers"
