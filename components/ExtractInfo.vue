@@ -25,7 +25,7 @@ const loading = ref<number>(0);
 const stateConfBox = ref<string>("");
 const openConfBox = ref<boolean>(false);
 
-const rfAllSeries = ref<{id:string, name:string}[]>([]);
+const rfAllCalibCurves = ref<{id:string, name:string}[]>([]);
 
 // Define struct of table of file
 // 3 columns (name, type, size in KB, delete actions)
@@ -91,7 +91,7 @@ function emptyProject(project: tProject) {
     project.createDate = "";
     project.nbFile = 0;
     project.files = [] as tFile[];
-    project.series = [];
+    project.calibCurves = [];
 }
 
 // The project consulted
@@ -101,7 +101,7 @@ const currentProject = reactive<tProject>({
     createDate: "",
     nbFile: 0,
     files: [] as tFile[],
-    series: []
+    calibCurves: []
 });
 // old version of consulted project
 const oldProject = reactive<tProject>({
@@ -110,7 +110,7 @@ const oldProject = reactive<tProject>({
     createDate: "",
     nbFile: 0,
     files: [] as tFile[],
-    series: []
+    calibCurves: []
 });
 // Where new files of project save
 let currentFolder: string = "";
@@ -141,17 +141,17 @@ async function getProjects(page: number = 1): Promise<{
     return await $fetch("/api/manageControl/rows",{
         method: "POST",
         body:{
-            nameTable: "view_serie",
+            nameTable: "view_calib_curve",
             wheres:{1:1}
         }
     })
-    .then((rowsSeries)=>{
-        // return id and name of series
-        let series = [];
-        for (const row of rowsSeries){
-            series.push({id: row.id, name: row.name});
+    .then((rowsCalibCurves)=>{
+        // return id and name of calibration curves
+        let calibCurves = [];
+        for (const row of rowsCalibCurves){
+            calibCurves.push({id: row.id, name: row.name});
         }
-        rfAllSeries.value = series;
+        rfAllCalibCurves.value = calibCurves;
     })
     .then(() =>{
         return $fetch("/api/getProjects", {
@@ -221,7 +221,7 @@ const containProject = [{
     label: "label.files",
     icon: "i-heroicons-document-duplicate"
 }, {
-    label: "label.Series",
+    label: "label.CalibCurves",
     icon: "i-heroicons-variable"
 }
 ]
@@ -367,13 +367,13 @@ function openProject(id: string) {
         currentProject.createDate = tempProject[0].createDate;
         currentProject.nbFile = tempProject[0].nbFile;
         Object.assign(currentProject.files, tempProject[0].files);
-        Object.assign(currentProject.series, tempProject[0].series);
+        Object.assign(currentProject.calibCurves, tempProject[0].calibCurves);
         oldProject.id = id;
         oldProject.name = tempProject[0].name;
         oldProject.createDate = tempProject[0].createDate;
         oldProject.nbFile = tempProject[0].nbFile;
         Object.assign(oldProject.files, tempProject[0].files);
-        Object.assign(oldProject.series, tempProject[0].series);
+        Object.assign(oldProject.calibCurves, tempProject[0].calibCurves);
     }
     isOpen.value = true;
 }
@@ -453,29 +453,29 @@ async function updateProject(){
             }
         }));
     }
-    // update series
-    if(currentProject.series != oldProject.series){
-        // delete series
-        const lDelSeries = oldProject.series.filter(x => !currentProject.series.includes(x));
-        // verify we have series to disassociate
-        if(lDelSeries.length > 0){
-            holdOn.push($fetch("/api/DisassociateSeries",{
+    // update calibration curves
+    if(currentProject.calibCurves != oldProject.calibCurves){
+        // delete calibration curves
+        const lDelCalibCurves = oldProject.calibCurves.filter(x => !currentProject.calibCurves.includes(x));
+        // verify we have calibration curves to disassociate
+        if(lDelCalibCurves.length > 0){
+            holdOn.push($fetch("/api/DisassociateCalibCurves",{
                 method:"POST",
                 body: {
                     id_project: currentProject.id,
-                    series: lDelSeries
+                    calibCurves: lDelCalibCurves
                 }
             }));
         }
-        // add series
-        const lAddSeries = currentProject.series.filter(x => !oldProject.series.includes(x));
-        // verify we have series to associate
-        if(lAddSeries.length > 0){
-            holdOn.push($fetch("/api/AssociateSeries",{
+        // add calibration curves
+        const lAddCalibCurves = currentProject.calibCurves.filter(x => !oldProject.calibCurves.includes(x));
+        // verify we have calibration curves to associate
+        if(lAddCalibCurves.length > 0){
+            holdOn.push($fetch("/api/AssociateCalibCurves",{
                 method:"POST",
                 body: {
                     id_project: currentProject.id,
-                    series: lAddSeries
+                    calibCurves: lAddCalibCurves
                 }
             }));
         }
@@ -752,11 +752,11 @@ async function deleteProject(id:string, name:string){
                         </v-data-table>
                         <div v-else>
                             <v-select
-                                v-model="currentProject.series"
-                                :items="rfAllSeries"
+                                v-model="currentProject.calibCurves"
+                                :items="rfAllCalibCurves"
                                 item-title="name"
                                 item-value="id"
-                                label="t('label.selectSerie')"
+                                label="t('label.selectCalibCurve')"
                                 multiple
                             />
                         </div>

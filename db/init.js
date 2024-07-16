@@ -108,7 +108,7 @@ client.connect()
         FROM machine
         WHERE date_achieve IS NULL; 
         
-        CREATE TABLE series
+        CREATE TABLE calib_curves
         (
           id SERIAL PRIMARY KEY,
           name VARCHAR(255),
@@ -120,25 +120,25 @@ client.connect()
 
         CREATE TABLE daughter
         (
-          id_series SERIAL REFERENCES series (id) ON DELETE CASCADE,
+          id_calib_curves SERIAL REFERENCES calib_curves (id) ON DELETE CASCADE,
           id_file SERIAL REFERENCES file (id) ON DELETE CASCADE,
-          PRIMARY KEY (id_series, id_file)
+          PRIMARY KEY (id_calib_curves, id_file)
         );
 
         CREATE TABLE ratio
         (
           id_mol VARCHAR(52) UNIQUE,
-          id_series SERIAL REFERENCES series (id) ON DELETE CASCADE,
+          id_calib_curves SERIAL REFERENCES calib_curves (id) ON DELETE CASCADE,
           ratio FLOAT,
-          PRIMARY KEY (id_mol, id_series)
+          PRIMARY KEY (id_mol, id_calib_curves)
         );
 
-        CREATE VIEW view_serie AS
-        SELECT series.id AS id, series.name, array_agg(ratio.id_mol) AS metabolite,     
-              series.date_create, series.date_achieve
-        FROM series, daughter, ratio
-        WHERE series.id = daughter.id_series AND series.id = ratio.id_series
-        GROUP BY series.id;
+        CREATE VIEW view_calib_curve AS
+        SELECT calib_curves.id AS id, calib_curves.name, array_agg(ratio.id_mol) AS metabolite,     
+              calib_curves.date_create, calib_curves.date_achieve
+        FROM calib_curves, daughter, ratio
+        WHERE calib_curves.id = daughter.id_calib_curves AND calib_curves.id = ratio.id_calib_curves
+        GROUP BY calib_curves.id;
 
       
         INSERT INTO users (name, email, hash, team)

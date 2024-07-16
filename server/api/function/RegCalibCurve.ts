@@ -3,21 +3,21 @@
 // SPDX-License-Identifier: MIT
 
 // This file provide function to calclate the ratio to applied to the area of 
-// each the metabolite of one serie.
+// each the metabolite of one calibration curve.
 
 import pg from "pg";
 import { linearRegression } from "simple-statistics";
 
-export async function calculateRatioSerie(idSerie:string):Promise<number | {[key:string]:number}>{
+export async function calculateRatioCalibCurve(idCalibCurve:string):Promise<number | {[key:string]:number}>{
 
     const client = new pg.Client();
 
     return client.connect()
         .then(() => {
-            // Get the area and expected area of the metabolite of the serie
+            // Get the area and expected area of the metabolite of the calibration curve
             return client.query(`
                 SELECT id_mol,area, expected FROM daughter
-                WHERE id_series='${idSerie}'
+                WHERE id_calib_curves='${idCalibCurve}'
             `)
         })
         .then((res:{rows:any[]}) => {

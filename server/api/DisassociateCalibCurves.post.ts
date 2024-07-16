@@ -11,9 +11,9 @@ export default defineEventHandler((event) => {
             const client = new pg.Client();
             return client.connect()
 
-                .then(() => client.query(`DELETE FROM proj_series
-                                          WHERE id_series IN 
-                                          (${body.series.join(",")})
+                .then(() => client.query(`DELETE FROM proj_calib_curves
+                                          WHERE id_calib_curves IN 
+                                          (${body.calibCurves.join(",")})
                                           AND id_project = ${body.id_project}`))
                 .finally(() => client.end());
         });

@@ -5,7 +5,7 @@ SPDX-License-Identifier: MIT
 -->
 
 <!--
-    This page provide manage of series
+    This page provide manage of calibration curves
  -->
 
 <script setup lang="ts">
@@ -20,9 +20,9 @@ definePageMeta({
 const nameLayout = ref<LayoutKey>('navigate-layout');
 
 const {t} = useI18n();
-const tab = ref("serie");
+const tab = ref("calibCurve");
 // define list of tabs
-const listTab = ['machine', 'molecule', 'base', 'mother','mix','serie'];
+const listTab = ['machine', 'molecule', 'base', 'mother','mix','calibCurve'];
 // define list of components of tabs
 const ListComp : {[key:string]: string | ConcreteComponent} = {
   machine:resolveComponent('lazy-ManageMachineAsync'),
@@ -30,7 +30,7 @@ const ListComp : {[key:string]: string | ConcreteComponent} = {
   base:resolveComponent('lazy-ManageBaseAsync'),
   mother:resolveComponent('lazy-ManageMotherAsync'),
   mix:resolveComponent('lazy-ManageMixAsync'),
-  serie:resolveComponent('lazy-ManageSerieAsync'),
+  calibCurve:resolveComponent('lazy-ManageCalibCurveAsync'),
 };
 </script>
 

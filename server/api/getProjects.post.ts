@@ -74,7 +74,7 @@ export default defineEventHandler(async (event): Promise<{
                     f_id: string
                 }) => (x.p_id == row.p_id) && x.f_id).length,
                 files: [],
-                series: []
+                calibCurves: []
             });
             currentId = row.p_id;
         }
@@ -91,16 +91,16 @@ export default defineEventHandler(async (event): Promise<{
 
     }
 
-    // Add associated series of project
+    // Add associated calibration curves of project
     for (const project of listProjects) {
-        const getSeriesSQL = `SELECT id_series
-                              FROM proj_series
+        const getCalibCurvesSQL = `SELECT id_calib_curves
+                              FROM proj_calib_curves
                               WHERE id_project = '${project.id}'`;
 
-        const resultSeries = await client.query(getSeriesSQL);
+        const resultCalibCurves = await client.query(getCalibCurvesSQL);
 
-        for (const row of resultSeries.rows) {
-            project.series.push(row.id_series);
+        for (const row of resultCalibCurves.rows) {
+            project.calibCurves.push(row.id_calib_curves);
         }
     }
 

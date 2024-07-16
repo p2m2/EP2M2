@@ -7,7 +7,7 @@ export default {
         addcompound: "Ajout d'un témoin",
         addfitting: "Ajout d'un ajustement",
         addmachine: "Ajout d'une machine",
-        addview_serie: "Ajouter une gamme",
+        addview_calibCurve: "Ajouter une gamme",
         archive: "Archiver",
         control: "Gestion témoins",
         create: "Créer",
@@ -73,7 +73,7 @@ export default {
         files: "Fichiers",
         logout: "Déconnexion",
         m_type: "type",
-        nameSerie: "Nom de la gamme",
+        nameCalibCurve: "Nom de la gamme",
         nbFile: "Nb de fichiers",
         noFile: "Pas de fichier",
         noProject: "Aucun projet",
@@ -98,7 +98,7 @@ export default {
         created: "a été créé",
         createdFail: "La création du projet a échoué",
         error:{
-            createSerie: "Echech de la création de la gamme"
+            createCalibCurve: "Echech de la création de la gamme"
         },
         fitting: "L'ajustement ",
         koDelProject: "Nous n'avons pas supprimé le projet",
@@ -107,7 +107,7 @@ export default {
         okDelProject: "Nous avons supprimé le projet",
         required: "Champ obligatoire",
         success:{
-            createSerie: "La gamme a été créée"
+            createCalibCurve: "La gamme a été créée"
         },
         updateFail: "Échec de la mise à jour",
         updateInProgress: "Le project est en cours de mise à jour",
@@ -116,7 +116,7 @@ export default {
     },
     page:{
         'index': 'Projet',
-        'serie': 'Gamme',
+        'calibCurve': 'Gamme',
     },
     tab:{
         base: "Bases",
@@ -126,10 +126,10 @@ export default {
         molecule: "Molécules",
         mother: "Solutions mères",
         reference: "Témoin",
-        serie: "Gammes"
+        calibCurve: "Gammes"
     },
     title: {
-        addSerie: "Ajout d'une gamme",
+        addCalibCurve: "Ajout d'une gamme",
         compoundName:"Nom du témoin",
         daughter:"Solution fille",
         machine:"Machine",

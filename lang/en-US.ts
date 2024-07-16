@@ -7,7 +7,7 @@ export default {
         addcompound: "Add reference",
         addfitting: "Add fitting",
         addmachine: "Add machine",
-        addview_serie: "Add serie",
+        addview_calibCurve: "Add calibration curve",
         archive: "Archive",
         control: "Manage control samples",
         create: "Create",
@@ -75,7 +75,7 @@ export default {
         files: "Files",
         logout: "Logout",
         m_type: "type",
-        nameSerie: "Serie's name",
+        nameCalibCurve: "Serie's name",
         nbFile: "File's number",
         noFile: "No file",
         noProject: "No projet",
@@ -100,7 +100,7 @@ export default {
         created: "created",
         createdFail: "Project's creation failed",
         error:{
-            createSerie: "Failed to create serie"
+            createCalibCurve: "Failed to create calibration curve"
         },
         fitting: "The fitting ",
         koDelProject: "We didn't delete, the named project",
@@ -108,7 +108,7 @@ export default {
         noEmpty: "Can't be empty",
         okDelProject: "We deleted, the named project",
         success:{
-            createSerie: "La gamme a été créée"
+            createCalibCurve: "La gamme a été créée"
         },
         updateFail: "Update fail",
         updateInProgress: "Update of project in progress",
@@ -117,7 +117,7 @@ export default {
     },
     page:{
         'index': 'Project',
-        'serie': 'Serie',
+        'calibCurve': 'Serie',
     },
     tab:{
         base: "Bases",
@@ -127,7 +127,7 @@ export default {
         molecule: "Molecules",
         mother: "Mother solutions",
         reference: "Reference",
-        serie: "Gammes"
+        calibCurve: "Gammes"
     },
     title:{
         compoundName:"Reference name",

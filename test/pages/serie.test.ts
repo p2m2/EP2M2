@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: MIT
 
 import { describe, test } from "vitest";
-import serie from "~/pages/serie.vue";
+import calibCurve from "~/pages/calibCurve.vue";
 import { mockComponent,mountSuspended } from '@nuxt/test-utils/runtime';
 import { flushPromises } from "@vue/test-utils";
 
@@ -24,7 +24,7 @@ function mockComponentName(name: string) {
 // Layout is empty
 mockComponent('NuxtLayout', () => import("../extra/EmptyComponent.vue"));
 // mock the component
-mockComponent('ManageSerieAsync', () => mockComponentName('ManageSerieAsync'));
+mockComponent('ManageCalibCurveAsync', () => mockComponentName('ManageCalibCurveAsync'));
 mockComponent('ManageMachineAsync', 
               () => mockComponentName('ManageMachineAsync'));
 mockComponent('ManageBaseAsync', () => mockComponentName('ManageBaseAsync'));
@@ -69,29 +69,29 @@ function checkActivated (wrapper: any, activated: string) {
     expect(tabActivated.html()).toContain(activated);
 }
 
-describe("serie page", () =>{
-    test('showed default tab of serie page is serie tab', async() => {
+describe("calibration curve page", () =>{
+    test('showed default tab of calibration curve page is calibration curve tab', async() => {
 
-        const wrapper = await mountSuspended(serie);
-        // check if the serie tab is loaded
+        const wrapper = await mountSuspended(calibCurve);
+        // check if the calibration curve tab is loaded
         checkLoadComponent(wrapper, 
-              ["ManageSerieAsync"],
+              ["ManageCalibCurveAsync"],
               ["ManageMachineAsync", "ManageBaseAsync", "ManageMixAsync", "ManageMoleculeAsync", "ManageMotherAsync"]);
-        // check if only the serie tab is activated
-        checkActivated(wrapper, "ManageSerieAsync");
+        // check if only the calibration curve tab is activated
+        checkActivated(wrapper, "ManageCalibCurveAsync");
         
     });
 
     test('load machine tab after a click', async() => {
 
-        const wrapper = await mountSuspended(serie);
+        const wrapper = await mountSuspended(calibCurve);
         
         // check default display
         checkLoadComponent(wrapper,
-                ["ManageSerieAsync"],
+                ["ManageCalibCurveAsync"],
                 ["ManageMachineAsync", "ManageBaseAsync", "ManageMixAsync", "ManageMoleculeAsync", "ManageMotherAsync"]);
-        // check if only the serie tab is activated
-        checkActivated(wrapper, "ManageSerieAsync");
+        // check if only the calibration curve tab is activated
+        checkActivated(wrapper, "ManageCalibCurveAsync");
 
         // click on the machine tab
         await wrapper.find(`[value="machine"]`).trigger('click');
@@ -99,21 +99,21 @@ describe("serie page", () =>{
 
         // check if the machine tab is loaded
         checkLoadComponent(wrapper,
-              ["ManageSerieAsync", "ManageMachineAsync"],
+              ["ManageCalibCurveAsync", "ManageMachineAsync"],
               ["ManageBaseAsync", "ManageMixAsync", "ManageMoleculeAsync", "ManageMotherAsync"]);
-        // check if only the serie, machine tab is activated
+        // check if only the calibration curve, machine tab is activated
         checkActivated(wrapper, "ManageMachineAsync");
     });
 
     test('load machine tab after two click', async() => {
 
-        const wrapper = await mountSuspended(serie);
+        const wrapper = await mountSuspended(calibCurve);
         // check default display
         checkLoadComponent(wrapper,
-            ["ManageSerieAsync"],
+            ["ManageCalibCurveAsync"],
             ["ManageMachineAsync", "ManageBaseAsync", "ManageMixAsync", "ManageMoleculeAsync", "ManageMotherAsync"]);
-        // check if only the serie tab is activated
-        checkActivated(wrapper, "ManageSerieAsync");
+        // check if only the calibration curve tab is activated
+        checkActivated(wrapper, "ManageCalibCurveAsync");
 
         // click on the machine tab
         await wrapper.find(`[value="machine"]`).trigger('click');
@@ -124,23 +124,23 @@ describe("serie page", () =>{
 
         // check if the machine and mix tab are loaded
         checkLoadComponent(wrapper,
-            ["ManageSerieAsync", "ManageMachineAsync", "ManageMixAsync"],
+            ["ManageCalibCurveAsync", "ManageMachineAsync", "ManageMixAsync"],
             ["ManageBaseAsync", "ManageMoleculeAsync", "ManageMotherAsync"]);
 
-        // check if only the serie, mix tab is activated
+        // check if only the calibration curve, mix tab is activated
         checkActivated(wrapper, "ManageMixAsync");
 
     })
 
     test('load machine tab after three click', async() => {
 
-        const wrapper = await mountSuspended(serie);
+        const wrapper = await mountSuspended(calibCurve);
         // check default display    
         checkLoadComponent(wrapper,
-            ["ManageSerieAsync"],
+            ["ManageCalibCurveAsync"],
             ["ManageMachineAsync", "ManageBaseAsync", "ManageMixAsync", "ManageMoleculeAsync", "ManageMotherAsync"]);
-        // check if only the serie tab is activated
-        checkActivated(wrapper, "ManageSerieAsync");
+        // check if only the calibration curve tab is activated
+        checkActivated(wrapper, "ManageCalibCurveAsync");
 
         // click on the machine tab
         await wrapper.find(`[value="machine"]`).trigger('click');
@@ -152,9 +152,9 @@ describe("serie page", () =>{
         await wrapper.find(`[value="base"]`).trigger('click');
         await flushPromises();
 
-        // check if only the serie, machine, molecule and base tab are loaded
+        // check if only the calibration curve, machine, molecule and base tab are loaded
         checkLoadComponent(wrapper,
-              ["ManageSerieAsync", "ManageMachineAsync", "ManageMoleculeAsync",
+              ["ManageCalibCurveAsync", "ManageMachineAsync", "ManageMoleculeAsync",
                "ManageBaseAsync"],
               ["ManageMixAsync", "ManageMotherAsync"]);
         
@@ -165,13 +165,13 @@ describe("serie page", () =>{
 
     test('load machine tab after four click', async() => {
 
-        const wrapper = await mountSuspended(serie);
+        const wrapper = await mountSuspended(calibCurve);
         // check default display
         checkLoadComponent(wrapper,
-            ["ManageSerieAsync"],
+            ["ManageCalibCurveAsync"],
             ["ManageMachineAsync", "ManageBaseAsync", "ManageMixAsync", "ManageMoleculeAsync", "ManageMotherAsync"]);
-        // check if only the serie tab is activated
-        checkActivated(wrapper, "ManageSerieAsync");
+        // check if only the calibration curve tab is activated
+        checkActivated(wrapper, "ManageCalibCurveAsync");
 
         // click on the mother tab
         await wrapper.find(`[value="mother"]`).trigger('click');
@@ -186,10 +186,10 @@ describe("serie page", () =>{
         await wrapper.find(`[value="molecule"]`).trigger('click');
         await flushPromises();
 
-        // check if only the serie, mother, mix, base and molecule tab are
+        // check if only the calibration curve, mother, mix, base and molecule tab are
         // loaded
         checkLoadComponent(wrapper,
-              ["ManageSerieAsync", "ManageMoleculeAsync",
+              ["ManageCalibCurveAsync", "ManageMoleculeAsync",
                "ManageBaseAsync", "ManageMixAsync", "ManageMotherAsync"],
               ["ManageMachineAsync"]);
         // check if only the molecule tab is activated
@@ -198,13 +198,13 @@ describe("serie page", () =>{
 
     test('load machine tab after click all tab', async() => {
 
-        const wrapper = await mountSuspended(serie);
+        const wrapper = await mountSuspended(calibCurve);
         // check default display
         checkLoadComponent(wrapper,
-            ["ManageSerieAsync"],
+            ["ManageCalibCurveAsync"],
             ["ManageMachineAsync", "ManageBaseAsync", "ManageMixAsync", "ManageMoleculeAsync", "ManageMotherAsync"]);
-        // check if only the serie tab is activated
-        checkActivated(wrapper, "ManageSerieAsync");
+        // check if only the calibration curve tab is activated
+        checkActivated(wrapper, "ManageCalibCurveAsync");
 
         // click on the mother tab
         await wrapper.find(`[value="mother"]`).trigger('click');
@@ -223,7 +223,7 @@ describe("serie page", () =>{
         await flushPromises();
         // check if all tab are loaded
         checkLoadComponent(wrapper,
-              [ "ManageSerieAsync", "ManageMoleculeAsync","ManageMachineAsync",
+              [ "ManageCalibCurveAsync", "ManageMoleculeAsync","ManageMachineAsync",
                "ManageBaseAsync", "ManageMixAsync", "ManageMotherAsync"],
               []);
         // check if only the molecule tab is activated
@@ -233,13 +233,13 @@ describe("serie page", () =>{
 
     test('click a second time a tab', async() => {
 
-        const wrapper = await mountSuspended(serie);
+        const wrapper = await mountSuspended(calibCurve);
         // check default display
         checkLoadComponent(wrapper,
-            ["ManageSerieAsync"],
+            ["ManageCalibCurveAsync"],
             ["ManageMachineAsync", "ManageBaseAsync", "ManageMixAsync", "ManageMoleculeAsync", "ManageMotherAsync"]);
-        // check if only the serie tab is activated
-        checkActivated(wrapper, "ManageSerieAsync");
+        // check if only the calibration curve tab is activated
+        checkActivated(wrapper, "ManageCalibCurveAsync");
         
         // click on the machine tab
         await wrapper.find(`[value="machine"]`).trigger('click');
@@ -251,9 +251,9 @@ describe("serie page", () =>{
         await wrapper.find(`[value="base"]`).trigger('click');
         await flushPromises();
 
-        // check if only the serie, machine, molecule and base tab are loaded
+        // check if only the calibration curve, machine, molecule and base tab are loaded
         checkLoadComponent(wrapper,
-              ["ManageSerieAsync", "ManageMachineAsync", "ManageMoleculeAsync",
+              ["ManageCalibCurveAsync", "ManageMachineAsync", "ManageMoleculeAsync",
                "ManageBaseAsync"],
               ["ManageMixAsync", "ManageMotherAsync"]);
         // check if only the base tab is activated
@@ -261,9 +261,9 @@ describe("serie page", () =>{
         // click again on the base tab
         await wrapper.find(`[value="molecule"]`).trigger('click');
         await flushPromises();
-        // check if only the serie, machine, molecule and base tab are loaded
+        // check if only the calibration curve, machine, molecule and base tab are loaded
         checkLoadComponent(wrapper,
-            ["ManageSerieAsync", "ManageMachineAsync", "ManageMoleculeAsync",
+            ["ManageCalibCurveAsync", "ManageMachineAsync", "ManageMoleculeAsync",
              "ManageBaseAsync"],
             ["ManageMixAsync", "ManageMotherAsync"]);
         // check if only the molecule tab is activated

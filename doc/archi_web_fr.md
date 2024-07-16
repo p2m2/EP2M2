@@ -92,7 +92,7 @@ Répertorie les solutions formulées à partir de plusieurs solutions mères
 #### Fonctionnalités
 ### Gamme
 #### Description
-![Contenu de l'onglet gammes](./ressources/tab_serie.png)
+![Contenu de l'onglet gammes](./ressources/tab_calibCurve.png)
 
 Gére les gammes utilisées dans les projets.
 #### Fonctionnalités

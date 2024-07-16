@@ -4,9 +4,9 @@ SPDX-FileCopyrightText: 2024 Marcellino Palerme <marcellino.palerme@inrae.fr>
 SPDX-License-Identifier: MIT
 -->
 <!-- 
-    This component display in light version the table of metabolites of a serie
+    This component display in light version the table of metabolites of a calibration curve
     of each daughter solution. It provide a input to indicate the expected area.
-    It is used in ManageSerie.async.vue
+    It is used in ManageCalibCurve.async.vue
  -->
 
 <script setup lang="ts">

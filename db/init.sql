@@ -114,7 +114,7 @@ SELECT *
 FROM machine
 WHERE date_achieve IS NULL;
 
-CREATE TABLE series
+CREATE TABLE calib_curves
 (
   id SERIAL PRIMARY KEY,
   name VARCHAR(255),
@@ -126,20 +126,20 @@ CREATE TABLE series
 
 CREATE TABLE daughter
 (
-  id_series SERIAL REFERENCES series (id) ON DELETE CASCADE,
+  id_calib_curves SERIAL REFERENCES calib_curves (id) ON DELETE CASCADE,
   id_file SERIAL REFERENCES file (id) ON DELETE CASCADE,
   id_mol VARCHAR(52),
   area FLOAT NOT NULL,
   expected FLOAT NOT NULL,
-  PRIMARY KEY (id_series, id_file, id_mol)
+  PRIMARY KEY (id_calib_curves, id_file, id_mol)
 );
 
 CREATE TABLE ratio
 (
   id_mol VARCHAR(52),
-  id_series SERIAL REFERENCES series (id) ON DELETE CASCADE,
+  id_calib_curves SERIAL REFERENCES calib_curves (id) ON DELETE CASCADE,
   ratio FLOAT,
-  PRIMARY KEY (id_mol, id_series)
+  PRIMARY KEY (id_mol, id_calib_curves)
 );
 
 CREATE OR REPLACE FUNCTION delete_ratio_if_unused()
@@ -149,12 +149,12 @@ BEGIN
     IF NOT EXISTS (
         SELECT 1
         FROM daughter
-        WHERE id_series = OLD.id_series
+        WHERE id_calib_curves = OLD.id_calib_curves
         AND id_mol = OLD.id_mol
     ) THEN
         -- Delete the row from order_details if it's not used elsewhere
         DELETE FROM ratio
-        WHERE id_series = OLD.id_series
+        WHERE id_calib_curves = OLD.id_calib_curves
         AND id_mol = OLD.id_mol;
     END IF;
 
@@ -168,32 +168,32 @@ FOR EACH ROW
 EXECUTE FUNCTION delete_ratio_if_unused();
 
 
-CREATE VIEW view_serie AS
-SELECT series.id AS id, series.name, array_agg(ratio.id_mol) AS metabolite,     
-       series.date_create, series.date_achieve
-FROM series, ratio
-WHERE series.id = ratio.id_series
-GROUP BY series.id;
+CREATE VIEW view_calib_curve AS
+SELECT calib_curves.id AS id, calib_curves.name, array_agg(ratio.id_mol) AS metabolite,     
+       calib_curves.date_create, calib_curves.date_achieve
+FROM calib_curves, ratio
+WHERE calib_curves.id = ratio.id_calib_curves
+GROUP BY calib_curves.id;
 
-CREATE VIEW view_show_serie AS
-SELECT series.id AS id, series.name, array_agg(ratio.id_mol) AS metabolite,     
-       series.date_create, series.date_achieve
-FROM series
-LEFT JOIN ratio ON series.id = ratio.id_series
-GROUP BY series.id;
+CREATE VIEW view_show_calib_curve AS
+SELECT calib_curves.id AS id, calib_curves.name, array_agg(ratio.id_mol) AS metabolite,     
+       calib_curves.date_create, calib_curves.date_achieve
+FROM calib_curves
+LEFT JOIN ratio ON calib_curves.id = ratio.id_calib_curves
+GROUP BY calib_curves.id;
 
 CREATE VIEW view_daughter_file AS
 SELECT file.id AS id,  file.name AS name,
-       daughter.id_mol AS mol, area, expected, id_series 
+       daughter.id_mol AS mol, area, expected, id_calib_curves 
 FROM daughter, file
 WHERE daughter.id_file = file.id;
 
 
-CREATE TABLE proj_series
+CREATE TABLE proj_calib_curves
 (
   id_project SERIAL REFERENCES project (id) ON DELETE CASCADE,
-  id_series SERIAL REFERENCES series (id) ON DELETE CASCADE,
-  PRIMARY KEY (id_project, id_series)
+  id_calib_curves SERIAL REFERENCES calib_curves (id) ON DELETE CASCADE,
+  PRIMARY KEY (id_project, id_calib_curves)
 );
 
 INSERT INTO users (name, email, hash, team)

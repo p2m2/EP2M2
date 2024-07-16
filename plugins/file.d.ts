@@ -17,7 +17,7 @@ declare global {
         createDate:string,
         nbFile:number,
         files:tFile[],
-        series:number[],
+        calibCurves:number[],
         // TODO: add operation post export
     }
     interface tCompound{

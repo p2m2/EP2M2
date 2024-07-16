@@ -3,7 +3,7 @@ SPDX-FileCopyrightText: 2024 Marcellino Palerme <marcellino.palerme@inrae.fr>
 
 SPDX-License-Identifier: MIT
 -->
-<!-- This module manage series add / view / delete / archive / modify -->
+<!-- This module manage calibration curves add / view / delete / archive / modify -->
 <script setup lang="ts">
 import * as v from 'valibot';
 const { t } = useI18n();
@@ -11,15 +11,15 @@ const { t } = useI18n();
 const dialog = ref<boolean>(false);
 // manage display of dialog box in view mode (no modification possible)
 const dialogView = ref<boolean>(false);
-// manage possibility to add or modify a serie in dialog box
+// manage possibility to add or modify a calibration curve in dialog box
 const validateForm = ref(false);
-// toggle to update table of serie
+// toggle to update table of calibration curve
 const rUpload = ref(false);
 // manage display of message
 const stateMessage = useState<{actif:boolean,
                                message:string,
                                type:string}>("stateMessage")
-// Rules for valid name serie
+// Rules for valid name calibration curve
 const nameRules = ref([
   (value: string) => 
     useValibot(v.pipe(v.string(), v.nonEmpty(t('message.noEmpty'))),value),
@@ -27,9 +27,9 @@ const nameRules = ref([
 
 // Variable get file upload by user
 const daughterFile = ref<File | null>(null);
-// Variable to store name of the serie
-const nameSerie = ref<string>("");
-// List of metabolite's info by daughter solution of the serie
+// Variable to store name of the calibration curve
+const nameCalibCurve = ref<string>("");
+// List of metabolite's info by daughter solution of the calibration curve
 const rDaughterTable = ref<{
     idFile: string;
     nameFile: string;
@@ -39,20 +39,20 @@ const rDaughterTable = ref<{
 const rDaughterLoading = ref<boolean>(false);
 
 /**
- * Add a new serie
+ * Add a new calibration curve
  */
 async function add() {
   // reset form
   rDaughterTable.value = [];
-  nameSerie.value = "";
-  // Open dialog to add a new serie
+  nameCalibCurve.value = "";
+  // Open dialog to add a new calibration curve
   dialog.value = true;
   dialogView.value = false;
 }
 
 /**
  * Send file to the server to validate file format and extract data
- * We update table of metabolites of the serie
+ * We update table of metabolites of the calibration curve
  */
 async function sendFile() {
 
@@ -83,7 +83,7 @@ async function sendFile() {
   if (typeof result === 'number' || result.length === 0) {
     return;
   }
-  // Update table of metabolites of the serie
+  // Update table of metabolites of the calibration curve
   rDaughterTable.value.push(
     ...result[1].map((r: [string, number]) => ({
       idFile: result[0],
@@ -99,7 +99,7 @@ async function sendFile() {
 }
 
 /**
- * Submit the form to create a new serie
+ * Submit the form to create a new calibration curve
  * @param event 
  */
 async function submit (event:SubmitEvent) { 
@@ -122,58 +122,58 @@ async function submit (event:SubmitEvent) {
     });
     return acc;
   }, {});  
-  // send serie name and all associated daughter solution 
-  $fetch('/api/AddSerie', {
+  // send calibration curve name and all associated daughter solution 
+  $fetch('/api/AddCalibCurve', {
     method: 'POST',
     body: JSON.stringify({
-      nameSerie: event?.target?.elements?.nameSerie.value,
+      nameCalibCurve: event?.target?.elements?.nameCalibCurve.value,
       daughterGroup,
     }),
   })
   .then(() => {
     // We update the daughter table
     rUpload.value = !rUpload.value;
-    // show message whose say the creation of serie is a success
+    // show message whose say the creation of calibration curve is a success
     stateMessage.value.type="success"
-    stateMessage.value.message=t("message.success.createSerie")
+    stateMessage.value.message=t("message.success.createCalibCurve")
     stateMessage.value.actif=true
     
   })
   .catch(() => {
-    // show message whose say the creation of serie is a failure
+    // show message whose say the creation of calibration curve is a failure
     stateMessage.value.type="error"
-    stateMessage.value.message=t("message.error.createSerie")
+    stateMessage.value.message=t("message.error.createCalibCurve")
     stateMessage.value.actif=true
   });
 }
 
 /**
- * we show the serie in view mode
- * @param item {id:String, name:String} series information
+ * we show the calibration curve in view mode
+ * @param item {id:String, name:String} calibration curves information
  */
 function view(item: {id: string, name: string}){
   
-  // Add the name of series
-  nameSerie.value = item.name;
-  // Open dialog to view the serie
+  // Add the name of calibration curves
+  nameCalibCurve.value = item.name;
+  // Open dialog to view the calibration curve
   dialog.value = true;
   // Show loader to wait get all daughter solution
   rDaughterLoading.value = true;
   // Indicate that we are in view mode
   dialogView.value = true;
   
-  // Get all daughter solution of the serie
+  // Get all daughter solution of the calibration curve
   $fetch("/api/manageControl/rows",{
     method: 'POST',
     body: {
       nameTable: "view_daughter_file",        
       wheres:{
-        id_series:item.id}
+        id_calib_curves:item.id}
     }
   
   })
   .then((result) => {
-    // Update table of daughter solution of the serie
+    // Update table of daughter solution of the calibration curve
     rDaughterTable.value = result.map((row: {[key:string]:string|number}) => ({
       idFile: row.id,
       nameFile: row.name,
@@ -190,21 +190,21 @@ function view(item: {id: string, name: string}){
     // close dialog box
     dialog.value = false;
     dialogView.value = false;
-    // TODO: show message whose say the view of serie is a failure
+    // TODO: show message whose say the view of calibration curve is a failure
   });
 }
 
 </script>
 
 <template>
-  <!-- Table display all series -->
+  <!-- Table display all calibration curves -->
   <table-db-action 
-    name-db-table="view_show_serie" 
+    name-db-table="view_show_calib_curve" 
     :add="add"
     :view="view"
     :update="rUpload"
   />
-  <!-- Dialog Box to add / view and modify serie -->
+  <!-- Dialog Box to add / view and modify calibration curve -->
   <v-dialog
     v-model="dialog"
     max-width="700"
@@ -218,21 +218,21 @@ function view(item: {id: string, name: string}){
       <v-card>
         <!-- TODO: modify title of dialog box about action -->
         <v-card-title>
-          <span class="headline">{{ t('title.addSerie') }}</span>
+          <span class="headline">{{ t('title.addCalibCurve') }}</span>
         </v-card-title>
         <v-card-text>
-          <!-- Name of serie field -->
+          <!-- Name of calibration curve field -->
           <v-text-field
-            v-model="nameSerie"
-            name="nameSerie"
+            v-model="nameCalibCurve"
+            name="nameCalibCurve"
             :counter="10"
             :rules="nameRules"
-            :label="t('label.nameSerie')"
+            :label="t('label.nameCalibCurve')"
             required
           />
         </v-card-text>
         <v-expansion-panels>
-          <!-- Tab where define on whose machine apply serie -->
+          <!-- Tab where define on whose machine apply calibration curve -->
           <v-expansion-panel
             :title="t('title.machine')"
             disabled

@@ -27,7 +27,7 @@ async function exportFile(addressFile: {
 }
 
 /**
- * Calculate area of metabolite about series
+ * Calculate area of metabolite about calibration curves
  * 
  * @param sample one sample
  * @param lMolRatio list of ratio of metabolite associate to project
@@ -36,7 +36,7 @@ async function exportFile(addressFile: {
  */
 function CalculateArea(sample: string[], lMolRatio: { [key: string]: number }, indexMeta:number, indexArea:number): string[] {    
     const tempSample = sample;
-    // no metabolites in series associate of project 
+    // no metabolites in calibration curves associate of project 
     if(lMolRatio[tempSample[indexMeta]] === undefined){
         return [...tempSample, "0"];
     }
@@ -48,21 +48,21 @@ function CalculateArea(sample: string[], lMolRatio: { [key: string]: number }, i
 
 async function GetRatio(client: unknown, idProject: string): 
     Promise<{[key:string]:number}> {
-    // get all series of project
-    return client.query(`SELECT id_series
-                         FROM proj_series
+    // get all calibration curves of project
+    return client.query(`SELECT id_calib_curves
+                         FROM proj_calib_curves
                          WHERE id_project = ${idProject}`)
-        .then((respQuery: { rows: { id_series: string }[] }) => {
+        .then((respQuery: { rows: { id_calib_curves: string }[] }) => {
             if (respQuery.rows.length === 0) {
                 throw new Error("No associated series");
             }           
             
-            const idSeries = respQuery.rows.map(x => x.id_series);
-            // get all metabolite of series
+            const idCalibCurves = respQuery.rows.map(x => x.id_calib_curves);
+            // get all metabolite of calibration curves
             return client.query(`
                 SELECT id_mol, ratio
                 FROM ratio
-                WHERE id_series IN (${idSeries.join(",")})`
+                WHERE id_calib_curves IN (${idCalibCurves.join(",")})`
             );
         })
         .then((respQuery: { rows: { id_mol: string, ratio: number }[] }) => {
@@ -109,7 +109,7 @@ export default defineEventHandler(async (event) => {
             let funcCalcul = (x: any) => x;
             let temp = [resps[0].header];
             const lMolRatio = await GetRatio(client, idProject);
-            // verify if we have series
+            // verify if we have calibration curves
             if (Object.keys(lMolRatio).length != 0) {
                 // affect function to calculate area
                 funcCalcul = (x: any) => CalculateArea(x, 

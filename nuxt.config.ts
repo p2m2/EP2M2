@@ -66,9 +66,9 @@ export default defineNuxtConfig({
                 "en-US": "/",
                 "fr-FR": "/",
             },
-            serie: {
-                "en-US": "/serie",
-                "fr-FR": "/serie",
+            calibCurve: {
+                "en-US": "/calibration_curve",
+                "fr-FR": "/gammes",
             }
         }
     },

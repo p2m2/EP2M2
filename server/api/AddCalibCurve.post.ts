@@ -2,28 +2,28 @@
 //
 // SPDX-License-Identifier: MIT
 
-// This API is used to add a new serie to the database.
+// This API is used to add a new calibration curve to the database.
 
 import pg from "pg";
-import { calculateRatioSerie } from "./function/RegSerie";
+import { calculateRatioCalibCurve } from "./function/RegCalibCurve";
 
 
 export default defineEventHandler(async (event) => {
     const body = await readBody(event);
-    let idSerie: string;
+    let idCalibCurve: string;
     const client = new pg.Client();
     return client.connect()
         .then(() => {
             return client.query(`
-                INSERT INTO series(name, date_create, id_machine)
-                VALUES ('${body.nameSerie}', NOW(), -1)
+                INSERT INTO calib_curves(name, date_create, id_machine)
+                VALUES ('${body.nameCalibCurve}', NOW(), -1)
                 RETURNING id`); // -1 is the default value for id_machine
         })
         .then((respQuery:{rows:any[]}) => {
             if (respQuery.rows.length === 0) {
-                throw new Error("Serie not create");
+                throw new Error("CalibCurve not create");
             }
-            idSerie = respQuery.rows[0].id;
+            idCalibCurve = respQuery.rows[0].id;
             const lPromises = [];
             // save each metabolite by daughter solution           
             for (const idFile of Object.keys(body.daughterGroup)){  
@@ -31,9 +31,9 @@ export default defineEventHandler(async (event) => {
                     lPromises.push(  
                         client.query(`
                             INSERT INTO daughter(
-                                id_series, id_file, id_mol, area, expected) 
+                                id_calib_curves, id_file, id_mol, area, expected) 
                             VALUES (
-                            '${idSerie}',
+                            '${idCalibCurve}',
                             '${idFile}',
                             '${metabo.nameMeta}',
                             '${metabo.area}',
@@ -46,7 +46,7 @@ export default defineEventHandler(async (event) => {
         })
         .then(() => {
             // calculate the ratio for each metabolite
-            return calculateRatioSerie(idSerie);
+            return calculateRatioCalibCurve(idCalibCurve);
         })
         .then((metaRatio:{[key:string]:number}) => {
             const lPromises = [];
@@ -54,15 +54,15 @@ export default defineEventHandler(async (event) => {
             for(const key in metaRatio){
                 lPromises.push(
                     client.query(`
-                        INSERT INTO ratio(id_series, id_mol, ratio) 
-                        VALUES ('${idSerie}', '${key}', '${metaRatio[key]}')`
+                        INSERT INTO ratio(id_calib_curves, id_mol, ratio) 
+                        VALUES ('${idCalibCurve}', '${key}', '${metaRatio[key]}')`
                     )
                 );
             }
             return Promise.allSettled(lPromises);
         })
         .catch((err:Error) => {
-            return new Error("Add serie fail", err);
+            return new Error("Add calibration curve fail", err);
         })
         .finally(() => {
             // close the connection

@@ -12,11 +12,11 @@ export default defineEventHandler(async (event) => {
             console.log(body);
             
             const lValues = [];
-            for(const idSerie of body.series){               
-                lValues.push(`(${body.id_project},${idSerie})`);                
+            for(const idCalibCurve of body.calibCurves){               
+                lValues.push(`(${body.id_project},${idCalibCurve})`);                
             }
             return client.query(`
-                INSERT INTO proj_series(id_project, id_series)
+                INSERT INTO proj_calib_curves(id_project, id_calib_curves)
                 VALUES ${lValues.join(",")}`
             )
         })

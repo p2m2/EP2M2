@@ -19,7 +19,7 @@ metabolomic target analyzes manager.
 - Data base of:
   - External compound
   - Devices
-  - Associated series
+  - Associated calibration curves
 
 ## Installation
 ### Docker compose (Recommended)

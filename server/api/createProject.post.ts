@@ -54,14 +54,14 @@ export default defineEventHandler((event) => {
 
                 })
                 .then(() => {
-                    // verify we have series to associate
-                    if (project.series.length == 0) {
+                    // verify we have calibration curves to associate
+                    if (project.calibCurves.length == 0) {
                         return;
                     }
-                    return $fetch("/api/AssociateSeries",{
+                    return $fetch("/api/AssociateCalibCurves",{
                         method:"POST",
                         body: {
-                            series: project.series,
+                            calibCurves: project.calibCurves,
                             id_project: idProject
                         }
                     });
