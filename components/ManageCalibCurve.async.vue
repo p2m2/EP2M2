@@ -6,6 +6,9 @@ SPDX-License-Identifier: MIT
 <!-- This module manage calibration curves add / view / delete / archive / modify -->
 <script setup lang="ts">
 import * as v from 'valibot';
+import { useMessage } from '~/composables/useMessage';
+
+
 const { t } = useI18n();
 // manage display of dialog box 
 const dialog = ref<boolean>(false);
@@ -16,9 +19,7 @@ const validateForm = ref(false);
 // toggle to update table of calibration curve
 const rUpload = ref(false);
 // manage display of message
-const stateMessage = useState<{actif:boolean,
-                               message:string,
-                               type:string}>("stateMessage")
+const {success, error} = useMessage();
 // Rules for valid name calibration curve
 const nameRules = ref([
   (value: string) => 
@@ -29,6 +30,8 @@ const nameRules = ref([
 const daughterFile = ref<File | null>(null);
 // Variable to store name of the calibration curve
 const nameCalibCurve = ref<string>("");
+// Variable to store id of the calibration curve
+const idCalibCurve = ref<string>("");
 // List of metabolite's info by daughter solution of the calibration curve
 const rDaughterTable = ref<{
     idFile: string;
@@ -98,14 +101,8 @@ async function sendFile() {
   rDaughterLoading.value = false;
 }
 
-/**
- * Submit the form to create a new calibration curve
- * @param event 
- */
-async function submit (event:SubmitEvent) { 
-  
-  // Group value by file (daughter solution) 
-  const daughterGroup = rDaughterTable.value.reduce(
+function createDaughterGroup() {
+  return rDaughterTable.value.reduce(
     (acc: {[key:string]:{}[]}, cur:{
         idFile: string;
         nameMeta: string;
@@ -121,7 +118,17 @@ async function submit (event:SubmitEvent) {
       expectedArea:cur.expectedArea
     });
     return acc;
-  }, {});  
+  }, {});
+}
+
+/**
+ * Submit the form to create a new calibration curve
+ * @param event 
+ */
+async function submit (event:SubmitEvent) { 
+  
+  // Group value by file (daughter solution) 
+  const daughterGroup = createDaughterGroup();  
   // send calibration curve name and all associated daughter solution 
   $fetch('/api/AddCalibCurve', {
     method: 'POST',
@@ -134,33 +141,23 @@ async function submit (event:SubmitEvent) {
     // We update the daughter table
     rUpload.value = !rUpload.value;
     // show message whose say the creation of calibration curve is a success
-    stateMessage.value.type="success"
-    stateMessage.value.message=t("message.success.createCalibCurve")
-    stateMessage.value.actif=true
-    
+    success(t("message.success.createCalibCurve"));  
+    dialog.value = false 
   })
   .catch(() => {
     // show message whose say the creation of calibration curve is a failure
-    stateMessage.value.type="error"
-    stateMessage.value.message=t("message.error.createCalibCurve")
-    stateMessage.value.actif=true
+    error(t("message.error.createCalibCurve"))
   });
 }
 
-/**
- * we show the calibration curve in view mode
- * @param item {id:String, name:String} calibration curves information
- */
-function view(item: {id: string, name: string}){
-  
+function openCalibCurve(item: {id: string, name: string}) {
+
   // Add the name of calibration curves
   nameCalibCurve.value = item.name;
   // Open dialog to view the calibration curve
   dialog.value = true;
   // Show loader to wait get all daughter solution
   rDaughterLoading.value = true;
-  // Indicate that we are in view mode
-  dialogView.value = true;
   
   // Get all daughter solution of the calibration curve
   $fetch("/api/manageControl/rows",{
@@ -192,6 +189,40 @@ function view(item: {id: string, name: string}){
     dialogView.value = false;
     // TODO: show message whose say the view of calibration curve is a failure
   });
+
+}
+
+/**
+ * we show the calibration curve in view mode
+ * @param item {id:String, name:String} calibration curves information
+ */
+function view(item: {id: string, name: string}){
+  // Indicate that we are in view mode
+  dialogView.value = true;
+  // Open dialog to view the calibration curve
+  openCalibCurve(item);
+}
+
+/**
+ * Open dialog box to modify calibration curve
+ * @param item {id:String, name:String} calibration curves information
+ */
+function modify(item: {id: string, name: string}) {
+  // Indicate that we are not in view mode
+  dialogView.value = false;
+  // Add the id of calibration curves. Indicate that we are in modify mode
+  idCalibCurve.value = item.id;
+  // Open dialog to modify the calibration curve
+  openCalibCurve(item);
+}
+
+/**
+ * Update calibration curve
+ */
+function updateCalibCurve(){
+  // Group value by file (daughter solution) 
+  const daughterGroup = createDaughterGroup();  
+  dialog.value = false;
 }
 
 </script>
@@ -202,6 +233,7 @@ function view(item: {id: string, name: string}){
     name-db-table="view_show_calib_curve" 
     :add="add"
     :view="view"
+    :modify="modify"
     :update="rUpload"
   />
   <!-- Dialog Box to add / view and modify calibration curve -->
@@ -211,7 +243,7 @@ function view(item: {id: string, name: string}){
   >
     <v-form
       v-model="validateForm"
-      validate-on="lazy blur"
+      validate-on="blur"
       :disabled="dialogView"
       @submit.prevent="submit"
     >
@@ -282,12 +314,24 @@ function view(item: {id: string, name: string}){
         <!-- TODO: modifty name and action of button about action -->
         <!-- Button to save/close dialog box -->
         <v-btn
-          v-if="!dialogView"
+          v-if="dialogView"
           color="primary"
-          text="Save"
+          :text="t('button.close')"
+          @click="dialog = false"
+        />
+        <v-btn
+          v-else-if="idCalibCurve !== ''"
+          color="primary"
+          :text="t('button.modify')"
+          :disabled="!(validateForm === true)"
+          @click="updateCalibCurve"
+        />
+        <v-btn
+          v-else
+          color="primary"
+          :text="t('button.save')"
           type="submit"
           :disabled="!(validateForm === true)"
-          @click="dialog = false"
         />
       </v-card>
     </v-form>
