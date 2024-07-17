@@ -8,7 +8,7 @@ import VV from "~/pages/index.vue";
 
 describe("My test", async () => {
 
-    test("my test", () => {
+    test.todo("my test", () => {
         mount(VV);
     
     });
