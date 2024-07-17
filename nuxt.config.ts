@@ -76,7 +76,7 @@ export default defineNuxtConfig({
     // thx: https://stackoverflow.com/a/77140279
     app: {
         head: {
-            link: [{ rel: "icon", type: "image/ico", href: "/p2m2.ico" }]
+            link: [{ rel: "icon", href: "/p2m2.ico" }]
         },
         pageTransition: false,
         layoutTransition: false

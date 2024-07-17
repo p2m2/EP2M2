@@ -19,9 +19,14 @@ const listPages = router.getRoutes().map(x => x.name as string)
 
 //  Get name of current page
 const currentPage = router.currentRoute.value.name;
+console.log(currentPage);
+
 //  Get index of page to indicate to tabs which tab highlining
 const currentIndex = ref(listPages.indexOf(currentPage as string))
-
+// manage case of index -1, when route is login page
+if(currentIndex.value == -1){
+  currentIndex.value = 0;
+}
 /**
  * Function to change page. We manage case of page project.
  * This page has Index as name but to go this page the path
