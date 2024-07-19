@@ -222,7 +222,27 @@ function modify(item: {id: string, name: string}) {
 function updateCalibCurve(){
   // Group value by file (daughter solution) 
   const daughterGroup = createDaughterGroup();  
-  dialog.value = false;
+  // send calibration curve id and all associated daughter solution to update
+  // TODO: update only changed part 
+  $fetch('/api/UpdateCalibCurve',{
+    method: 'POST',
+    body: {
+      idCalibCurve: idCalibCurve.value,
+      nameCalibCurve: nameCalibCurve.value,
+      daughters: daughterGroup,
+    },
+  })
+  .then(() => {
+    // We update the daughter table
+    rUpload.value = !rUpload.value;
+    // show message whose say the update of calibration curve is a success
+    success(t("message.success.updateCalibCurve"));
+    dialog.value = false;
+  })
+  .catch(() => {
+    // show message whose say the update of calibration curve is a failure
+    error(t("message.error.updateCalibCurve"));
+  });
 }
 
 </script>
