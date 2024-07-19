@@ -136,6 +136,31 @@ function launchAction(action:{name:string}, item:object) {
         rfUpdate.value = !rfUpdate.value;
     }
 }
+/**
+ * Disable actions
+ * Archive when item is archived
+ * Delete when item is archived or used
+ * Modify when item is archived or used
+ * @param action string name of action
+ * @param item {date_achieve?: any, used?: any} item information
+ */
+function disableAction(action:string,
+                       item:{ date_achieve?: any, used?: any }):boolean{
+    // View action is always available
+    if(action == "view"){
+        return false;
+    }
+    // Check if item is archived
+    if(item.date_achieve){
+        return true;
+    }
+    // Check if item is used
+    if(item.used){
+        return true;
+    }
+    return false;
+
+}
 </script>
 
 <template>
@@ -179,6 +204,7 @@ function launchAction(action:{name:string}, item:object) {
               density="compact"
               size="small"
               variant="text"
+              :disabled="disableAction(action.name, item)"
               @click="() => launchAction(action, item)"
             />
             <!-- </div>

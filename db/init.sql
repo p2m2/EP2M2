@@ -173,6 +173,7 @@ SELECT calib_curves.id AS id, calib_curves.name, array_agg(ratio.id_mol) AS meta
        calib_curves.date_create, calib_curves.date_achieve
 FROM calib_curves, ratio
 WHERE calib_curves.id = ratio.id_calib_curves
+AND calib_curves.date_achieve IS NULL
 GROUP BY calib_curves.id;
 
 CREATE VIEW view_show_calib_curve AS

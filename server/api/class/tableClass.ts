@@ -193,9 +193,7 @@ export default class Table {
         query = query.slice(0,-1);
 
         query +=  ` WHERE id = ${id} `;
-
-        console.log(query);
-        
+       
         const client = new pg.Client();
         await client.connect();
         await client.query(query);

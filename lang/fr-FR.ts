@@ -95,6 +95,7 @@ export default {
         badProjectName: "Le nom de project doit contenir au moins 3 caractère (hors les espaces)",
         confDelProject: "La suppresion d'un projet est irréversible!",
         confirm:{
+            archiveCalibCurve: "Voulez-vous vraiment archiver cette gamme ?",
             deleteCalibCurve: "Voulez-vous vraiment supprimer cette gamme ?",
         },
         confLoseModif: "Attention tous les modifications seront perdues.",
@@ -102,6 +103,7 @@ export default {
         created: "a été créé",
         createdFail: "La création du projet a échoué",
         error:{
+            archiveCalibCurve: "Echec de l'archivage de la gamme",
             createCalibCurve: "Echech de la création de la gamme",
             deleteCalibCurve: "Echec de la suppression de la gamme",
         },
@@ -112,6 +114,7 @@ export default {
         okDelProject: "Nous avons supprimé le projet",
         required: "Champ obligatoire",
         success:{
+            archiveCalibCurve: "La gamme a été archivée",
             createCalibCurve: "La gamme a été créée",
             deleteCalibCurve: "La gamme a été supprimée"
         },

@@ -97,6 +97,7 @@ export default {
         badProjectName: "Project's name have to contain 3 character (without count space)",
         confDelProject: "You can't back to delete a project!",
         confirm:{
+            archiveCalibCurve: "Are you sure to archive the calibration curve?",
             deleteCalibCurve: "Are you sure to delete the calibration curve?",
         },
         confLoseModif: "You'll lose all modifications.",
@@ -104,6 +105,7 @@ export default {
         created: "created",
         createdFail: "Project's creation failed",
         error:{
+            archiveCalibCurve: "Failed to archive calibration curve",
             createCalibCurve: "Failed to create calibration curve",
             deleteCalibCurve: "Failed to delete calibration curve",
         },
@@ -113,6 +115,7 @@ export default {
         noEmpty: "Can't be empty",
         okDelProject: "We deleted, the named project",
         success:{
+            archiveCalibCurve: "The calibration curve has been archived",
             createCalibCurve: "The calibration curve has been created",
             deleteCalibCurve: "The calibration curve has been deleted"
         },

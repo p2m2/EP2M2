@@ -246,7 +246,10 @@ function updateCalibCurve(){
   });
 }
 
-
+/**
+ * Confirm the delete of calibration curve
+ * @param item {id:String, name:String} calibration curves information
+ */
 function deleteCalibCurveAction(item: {id: string, name: string}){
   // ask user to confirm the delete of calibration curve
   useConfirmBox(t("message.confirm.deleteCalibCurve"))
@@ -282,6 +285,46 @@ function deleteCalibCurve(item: {id: string, name: string}){
     error(t("message.error.deleteCalibCurve"));
   });
 }
+
+function achiveCalibCurveAction(item: {id: string, name: string}){
+  // ask user to confirm the archive of calibration curve
+  useConfirmBox(t("message.confirm.archiveCalibCurve"))
+  .then((answer) => {
+    // if user confirm the archive of calibration curve
+    if (answer) {
+      // archive calibration curve
+      archiveCalibCurve(item);
+    }
+  });
+}
+
+/**
+ * Archive calibration curve
+ */
+function archiveCalibCurve(item: {id: string, name: string}){
+  // send calibration curve id to archive
+  $fetch('/api/manageControl/update',{
+    method: 'POST',
+    body: {
+      nameTable: "calib_curves",
+      id: item.id,
+      columns: {
+        date_achieve: (new Date()).toISOString(),
+      },
+    },
+  })
+  .then(() => {
+    // We update the daughter table
+    rUpload.value = !rUpload.value;
+    // show message whose say the archive of calibration curve is a success
+    success(t("message.success.archiveCalibCurve"));
+  })
+  .catch(() => {
+    // show message whose say the archive of calibration curve is a failure
+    error(t("message.error.archiveCalibCurve"));
+  });
+}
+
 </script>
 
 <template>
@@ -292,6 +335,7 @@ function deleteCalibCurve(item: {id: string, name: string}){
     :view="view"
     :modify="modify"
     :delete="deleteCalibCurveAction"
+    :archive="achiveCalibCurveAction"
     :update="rUpload"
   />
   <!-- Dialog Box to add / view and modify calibration curve -->
