@@ -6,6 +6,7 @@ SPDX-License-Identifier: MIT
 <!-- This module manage calibration curves add / view / delete / archive / modify -->
 <script setup lang="ts">
 import * as v from 'valibot';
+import { useConfirmBox } from '~/composables/useConfirmBox';
 import { useMessage } from '~/composables/useMessage';
 
 
@@ -245,6 +246,42 @@ function updateCalibCurve(){
   });
 }
 
+
+function deleteCalibCurveAction(item: {id: string, name: string}){
+  // ask user to confirm the delete of calibration curve
+  useConfirmBox(t("message.confirm.deleteCalibCurve"))
+  .then((answer) => {
+    // if user confirm the delete of calibration curve
+    if (answer) {
+      // delete calibration curve
+      deleteCalibCurve(item);
+    }
+  });
+}
+
+/**
+ * Delete calibration curve
+ */
+function deleteCalibCurve(item: {id: string, name: string}){
+  // send calibration curve id to delete
+  $fetch('/api/manageControl/delete',{
+    method: 'POST',
+    body: {
+      nameTable: "calib_curves",
+      id: item.id,
+    },
+  })
+  .then(() => {
+    // We update the daughter table
+    rUpload.value = !rUpload.value;
+    // show message whose say the delete of calibration curve is a success
+    success(t("message.success.deleteCalibCurve"));
+  })
+  .catch(() => {
+    // show message whose say the delete of calibration curve is a failure
+    error(t("message.error.deleteCalibCurve"));
+  });
+}
 </script>
 
 <template>
@@ -254,6 +291,7 @@ function updateCalibCurve(){
     :add="add"
     :view="view"
     :modify="modify"
+    :delete="deleteCalibCurveAction"
     :update="rUpload"
   />
   <!-- Dialog Box to add / view and modify calibration curve -->

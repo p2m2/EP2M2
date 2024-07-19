@@ -9,6 +9,7 @@ export default {
         addmachine: "Ajout d'une machine",
         addview_calibCurve: "Ajouter une gamme",
         archive: "Archiver",
+        cancel: "Annuler",
         control: "Gestion témoins",
         create: "Créer",
         delete: "Supprimer",
@@ -21,8 +22,8 @@ export default {
         help: "Aide",
         home: "Accueil",
         lang: "Changer de langue",
-        modify: "Modifier",
         logout: "Déconnexion",
+        modify: "Modifier",
         no: "Non",
         submit: "Valider",
         topProfOut: "Accéder au sous-menu profile et déconnection",
@@ -93,12 +94,16 @@ export default {
         addIssue: "Un problème dit le",
         badProjectName: "Le nom de project doit contenir au moins 3 caractère (hors les espaces)",
         confDelProject: "La suppresion d'un projet est irréversible!",
+        confirm:{
+            deleteCalibCurve: "Voulez-vous vraiment supprimer cette gamme ?",
+        },
         confLoseModif: "Attention tous les modifications seront perdues.",
         confQuestion: "Êtes-vous sûr de vouloir continuer ?",
         created: "a été créé",
         createdFail: "La création du projet a échoué",
         error:{
-            createCalibCurve: "Echech de la création de la gamme"
+            createCalibCurve: "Echech de la création de la gamme",
+            deleteCalibCurve: "Echec de la suppression de la gamme",
         },
         fitting: "L'ajustement ",
         koDelProject: "Nous n'avons pas supprimé le projet",
@@ -107,7 +112,8 @@ export default {
         okDelProject: "Nous avons supprimé le projet",
         required: "Champ obligatoire",
         success:{
-            createCalibCurve: "La gamme a été créée"
+            createCalibCurve: "La gamme a été créée",
+            deleteCalibCurve: "La gamme a été supprimée"
         },
         updateFail: "Échec de la mise à jour",
         updateInProgress: "Le project est en cours de mise à jour",
@@ -131,6 +137,7 @@ export default {
     title: {
         addCalibCurve: "Ajout d'une gamme",
         compoundName:"Nom du témoin",
+        confirmBox: "Confirmation",
         daughter:"Solution fille",
         machine:"Machine",
         mother:"Solution mère",

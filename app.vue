@@ -10,4 +10,6 @@ SPDX-License-Identifier: MIT
       <NuxtPage />
     </Suspense>
   </NuxtLayout>
+  <state-message />
+  <confirm-box />
 </template>

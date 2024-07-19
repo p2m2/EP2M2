@@ -9,6 +9,7 @@ export default {
         addmachine: "Add machine",
         addview_calibCurve: "Add calibration curve",
         archive: "Archive",
+        cancel: "Cancel",
         control: "Manage control samples",
         create: "Create",
         delete: "Delete",
@@ -21,8 +22,8 @@ export default {
         help: "Help",
         home: "Home",
         lang: "Change langage",
-        modify: "Modify",
         logout: "Logout",
+        modify: "Modify",
         no: "No",
         submit: "Submit",
         topProfOut: "Profile under menu and logout",
@@ -75,7 +76,7 @@ export default {
         files: "Files",
         logout: "Logout",
         m_type: "type",
-        nameCalibCurve: "Serie's name",
+        nameCalibCurve: "Calibration curve's name",
         nbFile: "File's number",
         noFile: "No file",
         noProject: "No projet",
@@ -95,12 +96,16 @@ export default {
         addIssue: "There is a bug",
         badProjectName: "Project's name have to contain 3 character (without count space)",
         confDelProject: "You can't back to delete a project!",
+        confirm:{
+            deleteCalibCurve: "Are you sure to delete the calibration curve?",
+        },
         confLoseModif: "You'll lose all modifications.",
         confQuestion: "Are you sure to continue?",
         created: "created",
         createdFail: "Project's creation failed",
         error:{
-            createCalibCurve: "Failed to create calibration curve"
+            createCalibCurve: "Failed to create calibration curve",
+            deleteCalibCurve: "Failed to delete calibration curve",
         },
         fitting: "The fitting ",
         koDelProject: "We didn't delete, the named project",
@@ -108,7 +113,8 @@ export default {
         noEmpty: "Can't be empty",
         okDelProject: "We deleted, the named project",
         success:{
-            createCalibCurve: "La gamme a été créée"
+            createCalibCurve: "The calibration curve has been created",
+            deleteCalibCurve: "The calibration curve has been deleted"
         },
         updateFail: "Update fail",
         updateInProgress: "Update of project in progress",
@@ -117,7 +123,7 @@ export default {
     },
     page:{
         'index': 'Project',
-        'calibCurve': 'Serie',
+        'calibCurve': 'Calibration curve',
     },
     tab:{
         base: "Bases",
@@ -131,6 +137,7 @@ export default {
     },
     title:{
         compoundName:"Reference name",
+        confirmBox: "Confirmation",
         daughter:"Daughter solution",
         machine:"Machine",
         mother:"Mother solution",
