@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2024 Marcellino Palerme <marcellino.palerme@inrae.fr>
 //
 // SPDX-License-Identifier: MIT
-// this file is used to update the expected concentration of the daughters
+// this file is used to update the concentration of the daughters
 // of a calibration curve
 
 import pg from "pg";
@@ -16,10 +16,10 @@ export default defineEventHandler(async (event) => {
             for(const idFile in body.daughters){
                 // for each metabolite of the daughter solution
                 for(const daughter of body.daughters[idFile]){
-                   // update expected concentration
+                   // update concentration
                    lQueryPromises.push(client.query(`
                         UPDATE daughter
-                        SET expected = ${daughter.expectedArea}
+                        SET concentration = ${daughter.concentration}
                         WHERE id_file = ${idFile}
                         AND id_mol = '${daughter.nameMeta}'
                         AND id_calib_curves = ${body.idCalibCurve}`

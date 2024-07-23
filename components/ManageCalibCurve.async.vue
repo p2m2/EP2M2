@@ -39,7 +39,7 @@ const rDaughterTable = ref<{
     nameFile: string;
     nameMeta: string;
     area: number;
-    expectedArea: number}[]>([]);
+    concentration: number}[]>([]);
 const rDaughterLoading = ref<boolean>(false);
 
 /**
@@ -94,7 +94,7 @@ async function sendFile() {
       nameFile: daughterFile.value?.name || "error",
       nameMeta: r[0],
       area: r[1],
-      expectedArea: 0,
+      concentration: 0,
   })));
   
   // reset file input
@@ -108,7 +108,7 @@ function createDaughterGroup() {
         idFile: string;
         nameMeta: string;
         area: number;
-        expectedArea: number;
+        concentration: number;
   }) => {
     if (!acc[cur.idFile]) {
       acc[cur.idFile] = [];
@@ -116,7 +116,7 @@ function createDaughterGroup() {
     acc[cur.idFile].push({
       nameMeta:cur.nameMeta,
       area:cur.area,
-      expectedArea:cur.expectedArea
+      concentration:cur.concentration
     });
     return acc;
   }, {});
@@ -177,7 +177,7 @@ function openCalibCurve(item: {id: string, name: string}) {
       nameFile: row.name,
       nameMeta: row.mol,
       area: row.area,
-      expectedArea: row.expected,
+      concentration: row.concentration,
     }));
     // End loading
     rDaughterLoading.value = false;
@@ -404,7 +404,7 @@ function archiveCalibCurve(item: {id: string, name: string}){
                 prepend-icon="mdi-water-plus"
                 hide-input
               />
-              <!-- show metabolite of daughter solution and enter area expected
+              <!-- show metabolite of daughter solution and enter concentration
               -->
               <daughter-table
                 v-model="rDaughterTable"

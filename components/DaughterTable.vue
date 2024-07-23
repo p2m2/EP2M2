@@ -5,7 +5,7 @@ SPDX-License-Identifier: MIT
 -->
 <!-- 
     This component display in light version the table of metabolites of a calibration curve
-    of each daughter solution. It provide a input to indicate the expected area.
+    of each daughter solution. It provide a input to indicate the concentration.
     It is used in ManageCalibCurve.async.vue
  -->
 
@@ -27,12 +27,12 @@ const model = defineModel<{
   nameFile:string,
   nameMeta:string,
   area:number,
-  expectedArea:number}[]>({ required: true });
+  concentration:number}[]>({ required: true });
 // -- headers of the table
 const headers = ref([
     { title: t('header.nameMeta'), sortable:true, key: 'nameMeta' },
     { title: t('header.area'), sortable:true, key: 'area' },
-    { title: t('header.expectedArea'), sortable:true, key: 'expectedArea' },
+    { title: t('header.concentration'), sortable:true, key: 'concentration' },
 ]);
 // -- group by daughter solution
 const groupBy = ref([{ sortable:true, key: 'idFile' }]);
@@ -89,10 +89,10 @@ function delDaughterFile(idFile: string) {
         </td>
       </tr>
     </template>
-    <!-- input for expected area -->
-    <template #[`item.expectedArea`]="{index}">
+    <!-- input for concentration -->
+    <template #[`item.concentration`]="{index}">
       <v-text-field
-        v-model="model[index].expectedArea"
+        v-model="model[index].concentration"
         type="number"
         variant="plain"
         :rules="[(v) => v >= 0 || t('message.positiveNumber')]"

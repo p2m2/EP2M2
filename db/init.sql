@@ -130,7 +130,7 @@ CREATE TABLE daughter
   id_file SERIAL REFERENCES file (id) ON DELETE CASCADE,
   id_mol VARCHAR(52),
   area FLOAT NOT NULL,
-  expected FLOAT NOT NULL,
+  concentration FLOAT NOT NULL,
   PRIMARY KEY (id_calib_curves, id_file, id_mol)
 );
 
@@ -185,7 +185,7 @@ GROUP BY calib_curves.id;
 
 CREATE VIEW view_daughter_file AS
 SELECT file.id AS id,  file.name AS name,
-       daughter.id_mol AS mol, area, expected, id_calib_curves 
+       daughter.id_mol AS mol, area, concentration, id_calib_curves 
 FROM daughter, file
 WHERE daughter.id_file = file.id;
 

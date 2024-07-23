@@ -27,20 +27,20 @@ async function exportFile(addressFile: {
 }
 
 /**
- * Calculate area of metabolite about calibration curves
+ * Calculate concentration of metabolite about calibration curves
  * 
  * @param sample one sample
  * @param lMolRatio list of ratio of metabolite associate to project
  * @param indexMeta index of name of metabolite in sample
  * @param indexArea index of area in sample
  */
-function CalculateArea(sample: string[], lMolRatio: { [key: string]: number }, indexMeta:number, indexArea:number): string[] {    
+function CalculateConcentration(sample: string[], lMolRatio: { [key: string]: number }, indexMeta:number, indexArea:number): string[] {    
     const tempSample = sample;
     // no metabolites in calibration curves associate of project 
     if(lMolRatio[tempSample[indexMeta]] === undefined){
         return [...tempSample, "0"];
     }
-    // calculate area
+    // calculate Concentration
     tempSample.push((parseFloat(tempSample[indexArea]) * lMolRatio[tempSample[indexMeta]]).toString());  
 
     return tempSample;
@@ -105,21 +105,21 @@ export default defineEventHandler(async (event) => {
         })
         .then((resp: any[]) => Promise.all(resp.map((x: { json: () => any; }) => x.json())))
         .then(async (resps: any) => {
-            // function to calculate area do nothing
+            // function to calculate concentration do nothing
             let funcCalcul = (x: any) => x;
             let temp = [resps[0].header];
             const lMolRatio = await GetRatio(client, idProject);
             // verify if we have calibration curves
             if (Object.keys(lMolRatio).length != 0) {
-                // affect function to calculate area
-                funcCalcul = (x: any) => CalculateArea(x, 
+                // affect function to calculate concentration
+                funcCalcul = (x: any) => CalculateConcentration(x, 
                                         lMolRatio,
                                         resps[0].header.indexOf("metabolite"),
                                         resps[0].header.indexOf("area"));
-                // add header for calculated area
-                temp = [[...resps[0].header, "CalculatedArea"]];                
+                // add header for calculated Concentration
+                temp = [[...resps[0].header, "Concentration"]];                
             }
-            // calculate area for all samples                        
+            // calculate concentration for all samples                        
             for(const sample of resps[0].samples){
                                 
                 temp.push(funcCalcul(sample));

@@ -14,31 +14,31 @@ export async function calculateRatioCalibCurve(idCalibCurve:string):Promise<numb
 
     return client.connect()
         .then(() => {
-            // Get the area and expected area of the metabolite of the calibration curve
+            // Get the area and concentration of the metabolite of the calibration curve
             return client.query(`
-                SELECT id_mol,area, expected FROM daughter
+                SELECT id_mol,area, concentration FROM daughter
                 WHERE id_calib_curves='${idCalibCurve}'
             `)
         })
         .then((res:{rows:any[]}) => {
-            // create array area/expected for each metabolite
-            const metaAreaExpected: {[key:string]:[number,number][]} = {}
+            // create array area/concentration for each metabolite
+            const metaConcentration: {[key:string]:[number,number][]} = {}
             
             for(const row of res.rows){
                 // if the metabolite is not in the array, create it
-                if(metaAreaExpected[row.id_mol]===undefined){
+                if(metaConcentration[row.id_mol]===undefined){
                     // initialize first element to position 0,0
                     // if no metabolits, machine return noting
-                    metaAreaExpected[row.id_mol] = [[0,0]]
+                    metaConcentration[row.id_mol] = [[0,0]]
                 }
-                metaAreaExpected[row.id_mol].push([row.area,row.expected]);
+                metaConcentration[row.id_mol].push([row.area,row.concentration]);
             }
             
             // caclulate director coefficient of each metabolite
             const metaRatio: {[key:string]:number}= {}
-            for(const key in metaAreaExpected){
+            for(const key in metaConcentration){
                 // calculate the linear regression
-                const {m} = linearRegression(metaAreaExpected[key]);
+                const {m} = linearRegression(metaConcentration[key]);
                 metaRatio[key] = m;
             }
             return metaRatio

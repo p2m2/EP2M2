@@ -31,13 +31,13 @@ export default defineEventHandler(async (event) => {
                     lPromises.push(  
                         client.query(`
                             INSERT INTO daughter(
-                                id_calib_curves, id_file, id_mol, area, expected) 
+                                id_calib_curves, id_file, id_mol, area, concentration) 
                             VALUES (
                             '${idCalibCurve}',
                             '${idFile}',
                             '${metabo.nameMeta}',
                             '${metabo.area}',
-                            '${metabo.expectedArea}')`
+                            '${metabo.concentration}')`
                         )
                     );
                 }
