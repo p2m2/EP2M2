@@ -30,9 +30,9 @@ const model = defineModel<{
   expectedArea:number}[]>({ required: true });
 // -- headers of the table
 const headers = ref([
-    { title: t('nameMeta'), sortable:true, key: 'nameMeta' },
-    { title: t('area'), sortable:true, key: 'area' },
-    { title: t('expectedArea'), sortable:true, key: 'expectedArea' },
+    { title: t('header.nameMeta'), sortable:true, key: 'nameMeta' },
+    { title: t('header.area'), sortable:true, key: 'area' },
+    { title: t('header.expectedArea'), sortable:true, key: 'expectedArea' },
 ]);
 // -- group by daughter solution
 const groupBy = ref([{ sortable:true, key: 'idFile' }]);
@@ -62,6 +62,10 @@ function delDaughterFile(idFile: string) {
     :group-by="groupBy"
     item-key="nameMeta"
   >
+    <!-- Redefine name of header of groupe -->
+    <template #[`header.data-table-group`]>
+      {{ t('header.nameDaughterFile') }}
+    </template>
     <!-- Redefine group header to delete a complely a daughter solution -->
     <template #group-header="{ item, columns, toggleGroup, isGroupOpen }">
       <tr>
