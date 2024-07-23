@@ -95,7 +95,7 @@ function delDaughterFile(idFile: string) {
         v-model="model[index].concentration"
         type="number"
         variant="plain"
-        :rules="[(v) => v >= 0 || t('message.positiveNumber')]"
+        :rules="[(v) => parseFloat(v) >= 0 || t('message.positiveNumber')]"
       />
     </template>
   </v-data-table-virtual>
