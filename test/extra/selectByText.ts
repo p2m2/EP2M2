@@ -1,6 +1,9 @@
-/** SPDX-FileCopyrightText: 2024 Marcellino Palerme <marcellino.palerme@inrae.fr>
+/** 
+ * SPDX-FileCopyrightText: 2024 Marcellino Palerme <marcellino.palerme@inrae.fr>
  * 
  *  SPDX-License-Identifier: MIT
+ * 
+ * This file provide functions to select a wrapper by different criteria
 */
 
 
