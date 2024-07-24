@@ -60,6 +60,7 @@ function delDaughterFile(idFile: string) {
     v-model:items="model"
     :headers="headers"
     :group-by="groupBy"
+    :no-data-text="t('message.noDaughterFile')"
     item-key="nameMeta"
   >
     <!-- Redefine name of header of groupe -->
