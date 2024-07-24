@@ -49,6 +49,7 @@ async function add() {
   // reset form
   rDaughterTable.value = [];
   nameCalibCurve.value = "";
+  idCalibCurve.value = "";
   // Open dialog to add a new calibration curve
   dialog.value = true;
   dialogView.value = false;
@@ -325,6 +326,16 @@ function archiveCalibCurve(item: {id: string, name: string}){
   });
 }
 
+/**
+ * Manage title of dialog box about action
+ */
+function titleDialogBox() {
+  if(idCalibCurve.value !== "") {
+    return t('title.modifyCalibCurve');
+  }
+  return dialogView.value ? t('title.viewCalibCurve') : t('title.addCalibCurve');
+}
+
 </script>
 
 <template>
@@ -341,18 +352,26 @@ function archiveCalibCurve(item: {id: string, name: string}){
   <!-- Dialog Box to add / view and modify calibration curve -->
   <v-dialog
     v-model="dialog"
-    max-width="700"
+    max-width="50%"
   >
     <v-form
       v-model="validateForm"
       validate-on="blur"
       :disabled="dialogView"
+      persistent
       @submit.prevent="submit"
     >
       <v-card>
-        <!-- TODO: modify title of dialog box about action -->
-        <v-card-title>
-          <span class="headline">{{ t('title.addCalibCurve') }}</span>
+        <!-- title of dialog box about action -->
+        <v-card-title class="d-flex justify-space-between">
+          <span class="headline">{{ titleDialogBox() }}</span>
+          <!-- button to close dialog box and cancel action -->
+          <!-- TODO manage when we cancel -->
+          <v-btn
+            icon="mdi-close"
+            variant="text"
+            @click="dialog = false"
+          />
         </v-card-title>
         <v-card-text>
           <!-- Name of calibration curve field -->
@@ -413,7 +432,6 @@ function archiveCalibCurve(item: {id: string, name: string}){
             </v-expansion-panel-text>
           </v-expansion-panel>
         </v-expansion-panels>
-        <!-- TODO: modifty name and action of button about action -->
         <!-- Button to save/close dialog box -->
         <v-btn
           v-if="dialogView"

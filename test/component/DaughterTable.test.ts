@@ -8,7 +8,6 @@
 import { mount, config } from '@vue/test-utils';
 import { expect, test, describe } from 'vitest';
 import { vuetify4Test } from '../extra/vuetify4Test';
-import { selectByText } from '../extra/selectByText';
 import DaughterTable from '@/components/DaughterTable.vue';
 
 const vuetify = vuetify4Test();
@@ -89,10 +88,8 @@ describe('DaughterTable', () => {
         expect(wrapper.text()).not.toContain('4788');
         expect(wrapper.text()).toContain('name_one');
         // Check group of name1 in same column with delete button
-        const tBody = wrapper.find('tbody');
-        
+        const tBody = wrapper.find('tbody');       
         const tRow= tBody.findAll('tr');
-
         expect(tRow.length).toBe(3);
         expect(tRow[1].text()).toContain('name_one');
         expect(tRow[1].find("mdi-delete")).toBeTruthy();
