@@ -7,9 +7,10 @@ export default {
         addcompound: "Add reference",
         addfitting: "Add fitting",
         addmachine: "Add machine",
-        addview_calibCurve: "Add calibration curve",
+        addview_show_calib_curve: "Add calibration curve",
         archive: "Archive",
         cancel: "Cancel",
+        close: "Close",
         control: "Manage control samples",
         create: "Create",
         delete: "Delete",
@@ -25,6 +26,7 @@ export default {
         logout: "Logout",
         modify: "Modify",
         no: "No",
+        save: "Save",
         submit: "Submit",
         topProfOut: "Profile under menu and logout",
         update: "Update",
@@ -75,6 +77,7 @@ export default {
         addFile: "Add file",
         addProject: "Add new project",
         createDate: "Creation's date",
+        daughterFile: "Add daughter solution",
         description: "description",
         email: "Email",
         files: "Files",
@@ -112,6 +115,7 @@ export default {
             archiveCalibCurve: "Failed to archive calibration curve",
             createCalibCurve: "Failed to create calibration curve",
             deleteCalibCurve: "Failed to delete calibration curve",
+            updateCalibCurve: "Failed to update calibration curve",
         },
         fitting: "The fitting ",
         koDelProject: "We didn't delete, the named project",
@@ -123,7 +127,9 @@ export default {
         success:{
             archiveCalibCurve: "The calibration curve has been archived",
             createCalibCurve: "The calibration curve has been created",
-            deleteCalibCurve: "The calibration curve has been deleted"
+            deleteCalibCurve: "The calibration curve has been deleted",
+            updateCalibCurve: "The calibration curve has been updated",
+
         },
         updateFail: "Update fail",
         updateInProgress: "Update of project in progress",
@@ -145,11 +151,14 @@ export default {
         calibCurve: "Gammes"
     },
     title:{
+        addCalibCurve: "Add a calibration curve",
         compoundName:"Reference name",
         confirmBox: "Confirmation",
         daughter:"Daughter solution",
         machine:"Machine",
+        modifyCalibCurve: "Modify calibration curve",
         mother:"Mother solution",
-        projectName: "Projet name"
+        projectName: "Projet name",
+        viewCalibCurve: "View calibration curve",
     }
 };

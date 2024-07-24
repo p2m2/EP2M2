@@ -7,9 +7,10 @@ export default {
         addcompound: "Ajout d'un témoin",
         addfitting: "Ajout d'un ajustement",
         addmachine: "Ajout d'une machine",
-        addview_calibCurve: "Ajouter une gamme",
+        addview_show_calib_curve: "Ajouter une gamme",
         archive: "Archiver",
         cancel: "Annuler",
+        close: "Fermer",
         control: "Gestion témoins",
         create: "Créer",
         delete: "Supprimer",
@@ -25,6 +26,7 @@ export default {
         logout: "Déconnexion",
         modify: "Modifier",
         no: "Non",
+        save: "Enregistrer",
         submit: "Valider",
         topProfOut: "Accéder au sous-menu profile et déconnection",
         update: "Mise à jour",
@@ -73,6 +75,7 @@ export default {
         addFile: "Ajouter un fichier",
         addProject: "Ajouter un projet",
         createDate: "Date de création",
+        daughterFile: "Ajouter une solution fille",
         description: "description",
         email: "E-mail",
         files: "Fichiers",
@@ -110,6 +113,7 @@ export default {
             archiveCalibCurve: "Echec de l'archivage de la gamme",
             createCalibCurve: "Echech de la création de la gamme",
             deleteCalibCurve: "Echec de la suppression de la gamme",
+            updateCalibCurve: "Echec de la mise à jour de la gamme",
         },
         fitting: "L'ajustement ",
         koDelProject: "Nous n'avons pas supprimé le projet",
@@ -122,7 +126,8 @@ export default {
         success:{
             archiveCalibCurve: "La gamme a été archivée",
             createCalibCurve: "La gamme a été créée",
-            deleteCalibCurve: "La gamme a été supprimée"
+            deleteCalibCurve: "La gamme a été supprimée",
+            updateCalibCurve: "La gamme a été mise à jour",
         },
         updateFail: "Échec de la mise à jour",
         updateInProgress: "Le project est en cours de mise à jour",
@@ -149,8 +154,10 @@ export default {
         confirmBox: "Confirmation",
         daughter:"Solution fille",
         machine:"Machine",
+        modifyCalibCurve: "Modifier la gamme",
         mother:"Solution mère",
         projectName: "Nom du projet",
+        viewCalibCurve: "Détails de la gamme"
     }
 
 };
