@@ -177,10 +177,10 @@ AND calib_curves.date_achieve IS NULL
 GROUP BY calib_curves.id;
 
 CREATE VIEW view_show_calib_curve AS
-SELECT calib_curves.id AS id, calib_curves.name, array_agg(ratio.id_mol) AS metabolite,     
+SELECT calib_curves.id AS id, calib_curves.name, array_agg(DISTINCT daughter.id_mol) AS metabolite,     
        calib_curves.date_create, calib_curves.date_achieve
 FROM calib_curves
-LEFT JOIN ratio ON calib_curves.id = ratio.id_calib_curves
+LEFT JOIN daughter ON calib_curves.id = daughter.id_calib_curves
 GROUP BY calib_curves.id;
 
 CREATE VIEW view_daughter_file AS

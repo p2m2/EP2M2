@@ -16,13 +16,18 @@ export default defineEventHandler(async (event) => {
             for(const idFile in body.daughters){
                 // for each metabolite of the daughter solution
                 for(const daughter of body.daughters[idFile]){
-                   // update concentration
+                   // insert or update concentration
                    lQueryPromises.push(client.query(`
-                        UPDATE daughter
-                        SET concentration = ${daughter.concentration}
-                        WHERE id_file = ${idFile}
-                        AND id_mol = '${daughter.nameMeta}'
-                        AND id_calib_curves = ${body.idCalibCurve}`
+                        INSERT INTO daughter 
+                           (id_file, id_mol, id_calib_curves, area,
+                            concentration)
+                        VALUES 
+                          (${idFile}, '${daughter.nameMeta}',
+                           ${body.idCalibCurve}, ${daughter.area},
+                           ${daughter.concentration})
+                        ON CONFLICT (id_file, id_mol, id_calib_curves) 
+                        DO UPDATE SET concentration = ${daughter.concentration},
+                                      area = ${daughter.area}`
                     ));
                 }
             }
