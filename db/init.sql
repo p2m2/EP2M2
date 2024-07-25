@@ -134,50 +134,18 @@ CREATE TABLE daughter
   PRIMARY KEY (id_calib_curves, id_file, id_mol)
 );
 
-CREATE TABLE ratio
-(
-  id_mol VARCHAR(52),
-  id_calib_curves SERIAL REFERENCES calib_curves (id) ON DELETE CASCADE,
-  ratio FLOAT,
-  PRIMARY KEY (id_mol, id_calib_curves)
-);
-
-CREATE OR REPLACE FUNCTION delete_ratio_if_unused()
-RETURNS TRIGGER AS $$
-BEGIN
-    -- Check if the order_id from the deleted row in orders is used in order_details
-    IF NOT EXISTS (
-        SELECT 1
-        FROM daughter
-        WHERE id_calib_curves = OLD.id_calib_curves
-        AND id_mol = OLD.id_mol
-    ) THEN
-        -- Delete the row from order_details if it's not used elsewhere
-        DELETE FROM ratio
-        WHERE id_calib_curves = OLD.id_calib_curves
-        AND id_mol = OLD.id_mol;
-    END IF;
-
-    RETURN OLD;
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE TRIGGER trg_delete_ratio
-AFTER DELETE ON daughter
-FOR EACH ROW
-EXECUTE FUNCTION delete_ratio_if_unused();
-
-
 CREATE VIEW view_calib_curve AS
-SELECT calib_curves.id AS id, calib_curves.name, array_agg(ratio.id_mol) AS metabolite,     
+SELECT calib_curves.id AS id, calib_curves.name,
+       array_agg(DISTINCT daughter.id_mol) AS metabolite,     
        calib_curves.date_create, calib_curves.date_achieve
-FROM calib_curves, ratio
-WHERE calib_curves.id = ratio.id_calib_curves
+FROM calib_curves, daughter
+WHERE calib_curves.id = daughter.id_calib_curves
 AND calib_curves.date_achieve IS NULL
 GROUP BY calib_curves.id;
 
 CREATE VIEW view_show_calib_curve AS
-SELECT calib_curves.id AS id, calib_curves.name, array_agg(DISTINCT daughter.id_mol) AS metabolite,     
+SELECT calib_curves.id AS id, calib_curves.name,
+       array_agg(DISTINCT daughter.id_mol) AS metabolite,     
        calib_curves.date_create, calib_curves.date_achieve
 FROM calib_curves
 LEFT JOIN daughter ON calib_curves.id = daughter.id_calib_curves

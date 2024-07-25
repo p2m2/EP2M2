@@ -4,9 +4,7 @@
 
 // This API is used to add a new calibration curve to the database.
 
-import pg from "pg";
-import { calculateRatioCalibCurve } from "./function/RegCalibCurve";
-
+import pg from "@/plugins/pg";
 
 export default defineEventHandler(async (event) => {
     const body = await readBody(event);
@@ -41,23 +39,6 @@ export default defineEventHandler(async (event) => {
                         )
                     );
                 }
-            }
-            return Promise.allSettled(lPromises);
-        })
-        .then(() => {
-            // calculate the ratio for each metabolite
-            return calculateRatioCalibCurve(idCalibCurve);
-        })
-        .then((metaRatio:{[key:string]:number}) => {
-            const lPromises = [];
-            // save the ratio in the database            
-            for(const key in metaRatio){
-                lPromises.push(
-                    client.query(`
-                        INSERT INTO ratio(id_calib_curves, id_mol, ratio) 
-                        VALUES ('${idCalibCurve}', '${key}', '${metaRatio[key]}')`
-                    )
-                );
             }
             return Promise.allSettled(lPromises);
         })

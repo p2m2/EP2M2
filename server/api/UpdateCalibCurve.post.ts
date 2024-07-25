@@ -4,7 +4,7 @@
 // this file is used to update the concentration of the daughters
 // of a calibration curve
 
-import pg from "pg";
+import pg from "@/plugins/pg";
 
 export default defineEventHandler(async (event) => {
     const body = await readBody(event);
