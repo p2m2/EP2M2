@@ -29,11 +29,11 @@ const model = defineModel<{
   area:number,
   concentration:number}[]>({ required: true });
 // -- headers of the table
-const headers = ref([
+const headers = [
     { title: t('header.nameMeta'), sortable:true, key: 'nameMeta' },
     { title: t('header.area'), sortable:true, key: 'area' },
     { title: t('header.concentration'), sortable:true, key: 'concentration' },
-]);
+];
 // -- group by daughter solution
 const groupBy = ref([{ sortable:true, key: 'idFile' }]);
 

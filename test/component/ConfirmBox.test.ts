@@ -7,7 +7,7 @@
 import { mount, config } from '@vue/test-utils';
 import { expect, test, describe } from 'vitest';
 import { vuetify4Test } from '../extra/vuetify4Test';
-import { selectByText } from '../extra/selectByText';
+import { selectByText } from '../extra/selectBy';
 import ConfirmBox from '@/components/ConfirmBox.vue';
 
 const vuetify = vuetify4Test();

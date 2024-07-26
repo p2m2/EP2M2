@@ -23,3 +23,20 @@ export function selectByText(lWrapper:any[], text:string){
     }
     return null;
 }
+
+/**
+ * Select a input by its value 
+ * @param lInput html input list
+ * @param value required value in input
+ * @returns HTML input or null
+ */
+export function selectInputByValue(lInput:any[], value:string|number){
+    // loop on wrapper list
+    for(const input of lInput){
+        // check if wrapper contains value
+        if(input.element.value.includes(value)){
+            return input;
+        }
+    }
+    return null;
+}

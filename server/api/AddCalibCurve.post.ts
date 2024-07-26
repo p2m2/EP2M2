@@ -4,7 +4,7 @@
 
 // This API is used to add a new calibration curve to the database.
 
-import pg from "@/plugins/pg";
+import pg from "pg";
 
 export default defineEventHandler(async (event) => {
     const body = await readBody(event);
