@@ -5,13 +5,12 @@
  * This file test the DaughterTable component
 */
 
-import { mount, config } from '@vue/test-utils';
+import { mount, config, flushPromises } from '@vue/test-utils';
 import { expect, test, describe, vi } from 'vitest';
 import { vuetify4Test } from '../extra/vuetify4Test';
 import DaughterTable from '@/components/DaughterTable.vue';
 import { createI18n,  } from "vue-i18n";
 import { selectInputByValue } from '../extra/selectBy';
-import { mockNuxtImport } from '@nuxt/test-utils/runtime';
 
 //  Overwrite the internalization plugin with empty one
 const i18n = createI18n({});
@@ -69,27 +68,6 @@ const daughter_twenteen = [{
 // Mock fetch
 const $fetchMock = vi.fn();
 vi.stubGlobal('$fetch',$fetchMock);
-
-
-const { useMessageMock} = vi.hoisted(() => {
-    return { useMessageMock: vi.fn()}
-});
-
-
-// Mock useMessage
-const useMessageErrorMock = vi.fn();
-mockNuxtImport('useMessage', () => {
-    return useMessageMock;
-})
-
-useMessageMock.mockImplementation(() => {
-    return {
-        error: useMessageErrorMock,
-        success: vi.fn()
-    }
-});
-  
-
 
 /**
  * Check header of table
@@ -289,7 +267,7 @@ describe('DaughterTable', () => {
         // Delete group of name_one
         const btDel = tRow[1].findComponent('.mdi-delete');
         await btDel.trigger('click');
-
+        await flushPromises();
         expect($fetchMock).toHaveBeenCalled();
         expect($fetchMock).toHaveBeenCalledWith('/api/delFile', {
             method: 'POST',
@@ -329,7 +307,14 @@ describe('DaughterTable', () => {
         // Delete group of name_one
         const btDel = tRow[1].findComponent('.mdi-delete');
         await btDel.trigger('click');
-
+        // check loading
+        expect(wrapper.text()).toContain('message.loadingDaugtherTable');
+        checkNoGroup(wrapper, daughter_one);
+        checkNoGroup(wrapper, daughter_twenteen);
+        await flushPromises();
+        // check loading is finish
+        expect(wrapper.text()).not.toContain('message.loadingDaugtherTable');
+        // check call server to delete file
         expect($fetchMock).toHaveBeenCalled();
         expect($fetchMock).toHaveBeenCalledWith('/api/delFile', {
             method: 'POST',
@@ -343,7 +328,16 @@ describe('DaughterTable', () => {
         checkCloseGroup(wrapper, daughter_twenteen);
     });
     test('DaughterTable with two daughter file delete fail', async () => {
-        $fetchMock.mockResolvedValueOnce(new Error('Error'));
+        // thx in part to https://stackoverflow.com/a/74287629
+        // Mock useMessage
+        const useMessage = await import('@/composables/useMessage');
+        const spy = vi.spyOn(useMessage, 'useMessage');
+        const useMessageErrorMock = vi.fn();
+        spy.mockReturnValueOnce({
+            success: vi.fn(),
+            error: useMessageErrorMock
+        });
+        $fetchMock.mockRejectedValueOnce(new Error('Error'));
         const wrapper = mount(DaughterTable, {
             ...globalConfig,
             props: {
@@ -369,7 +363,14 @@ describe('DaughterTable', () => {
         // Delete group of name_one
         const btDel = tRow[1].findComponent('.mdi-delete');
         await btDel.trigger('click');
-
+        // check loading
+        expect(wrapper.text()).toContain('message.loadingDaugtherTable');
+        checkNoGroup(wrapper, daughter_one);
+        checkNoGroup(wrapper, daughter_twenteen);
+        await flushPromises();
+        // check loading is finish
+        expect(wrapper.text()).not.toContain('message.loadingDaugtherTable');
+        // check call server to delete file
         expect($fetchMock).toHaveBeenCalled();
         expect($fetchMock).toHaveBeenCalledWith('/api/delFile', {
             method: 'POST',
@@ -383,6 +384,6 @@ describe('DaughterTable', () => {
         checkCloseGroup(wrapper, daughter_twenteen);
         expect(useMessageErrorMock).toHaveBeenCalled();
         expect(useMessageErrorMock).
-            toHaveBeenCalledWith('message.error.deleteDaughterFile');
+             toHaveBeenCalledWith('message.error.deleteDaughterFile');
     });
 });
