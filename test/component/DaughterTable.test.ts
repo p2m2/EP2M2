@@ -11,6 +11,7 @@ import { vuetify4Test } from '../extra/vuetify4Test';
 import DaughterTable from '@/components/DaughterTable.vue';
 import { createI18n,  } from "vue-i18n";
 import { selectInputByValue } from '../extra/selectBy';
+import { mockNuxtImport } from '@nuxt/test-utils/runtime';
 
 //  Overwrite the internalization plugin with empty one
 const i18n = createI18n({});
@@ -68,6 +69,27 @@ const daughter_twenteen = [{
 // Mock fetch
 const $fetchMock = vi.fn();
 vi.stubGlobal('$fetch',$fetchMock);
+
+
+const { useMessageMock} = vi.hoisted(() => {
+    return { useMessageMock: vi.fn()}
+});
+
+
+// Mock useMessage
+const useMessageErrorMock = vi.fn();
+mockNuxtImport('useMessage', () => {
+    return useMessageMock;
+})
+
+useMessageMock.mockImplementation(() => {
+    return {
+        error: useMessageErrorMock,
+        success: vi.fn()
+    }
+});
+  
+
 
 /**
  * Check header of table
@@ -359,5 +381,8 @@ describe('DaughterTable', () => {
         expect(tBody.findAll('input').length).toBe(0);
         checkCloseGroup(wrapper, daughter_one);
         checkCloseGroup(wrapper, daughter_twenteen);
+        expect(useMessageErrorMock).toHaveBeenCalled();
+        expect(useMessageErrorMock).
+            toHaveBeenCalledWith('message.error.deleteDaughterFile');
     });
 });
