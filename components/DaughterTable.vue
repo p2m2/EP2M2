@@ -10,8 +10,13 @@ SPDX-License-Identifier: MIT
  -->
 
 <script setup lang="ts">
+import { set } from 'valibot';
+
 // to manage translation
 const { t } = useI18n();
+
+const {error} = useMessage();
+
 // Give possibility to pass in view mode
 const props = defineProps({
   viewMode: {
@@ -37,18 +42,32 @@ const headers = [
 // -- group by daughter solution
 const groupBy = ref([{ sortable:true, key: 'idFile' }]);
 
+// variable to manage loading
+const loading = ref(false);
 
 /**
  * Delete a daughter file
  * @param nameFile name of the daughter file to delete
  */
 function delDaughterFile(idFile: string) {
-    // Delete daughter file from list
-    model.value = model.value.filter((item) => item.idFile !== idFile);
+    // Display loading
+    loading.value = true;
     // Delete daughter file from server
     $fetch('/api/delFile', {
         method: 'POST',
         body: [idFile],
+    })
+    .then(()=>{
+      // Delete daughter file from list
+      model.value = model.value.filter((item) => item.idFile !== idFile);
+    })
+    .catch(() => {
+      // Display error message
+      error(t('message.error.deleteDaughterFile'));
+    })
+    .finally(() => {
+      // Hide loading
+      loading.value = false;
     });
 }
 
@@ -58,6 +77,8 @@ function delDaughterFile(idFile: string) {
   <!-- Display the table of metabolites group by daughter solution -->
   <v-data-table-virtual
     v-model:items="model"
+    :loading="loading"
+    :loading-text="t('message.loadingDaugtherTable')"
     :headers="headers"
     :group-by="groupBy"
     :no-data-text="t('message.noDaughterFile')"
@@ -98,6 +119,13 @@ function delDaughterFile(idFile: string) {
         variant="plain"
         :rules="[(v) => parseFloat(v) >= 0 || t('message.positiveNumber')]"
       />
+    </template>
+    <template #loading>
+      <v-skeleton-loader>
+        <v-container align-self="center">
+          {{ t('message.loadingDaugtherTable') }}
+        </v-container>
+      </v-skeleton-loader>
     </template>
   </v-data-table-virtual>
 </template>
