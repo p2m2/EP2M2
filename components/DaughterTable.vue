@@ -10,7 +10,6 @@ SPDX-License-Identifier: MIT
  -->
 
 <script setup lang="ts">
-import { set } from 'valibot';
 
 // to manage translation
 const { t } = useI18n();
