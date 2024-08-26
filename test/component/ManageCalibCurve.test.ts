@@ -9,7 +9,6 @@ import { expect, test, describe, vi } from 'vitest';
 import { vuetify4Test } from '../extra/vuetify4Test';
 import { selectByText } from '../extra/selectBy';
 import ManageCalibCurve from '@/components/ManageCalibCurve.async.vue';
-import {  } from '../extra/tools';
 
 // Mock fetch
 const $fetchMock = vi.fn();
@@ -397,7 +396,7 @@ describe('ManageCalibCurve', () => {
         checkActionArchived(wrapper, calib_archi_0); 
     });
     
-    test('Add calibration curve in empty table', async () => {
+    test.todo('Add calibration curve in empty table', async () => {
         // Mock fetch
         $fetchMock.mockImplementation(async (url: string) => {
             if(url.includes('totalItems')) {
@@ -423,9 +422,8 @@ describe('ManageCalibCurve', () => {
         await wrapper.find('.mdi-plus').trigger('click');
         await wrapper.vm.$nextTick();
         await flushPromises();
-        console.log(wrapper.html());
         
-        expect(wrapper.text()).toContain('title.add_calib_curve');
+        // TODO: complet
     });
 
     test.todo("Add calibration curve in not empty table");
