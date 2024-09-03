@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: MIT
 
 import pg from "pg";
-import { i } from "vitest/dist/reporters-yx5ZTtEV.js";
 const runtimeConfig = useRuntimeConfig()
 async function exportFile(addressFile: {
     content: string,
