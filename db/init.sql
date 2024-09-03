@@ -17,6 +17,31 @@ CREATE TABLE verification_token
   PRIMARY KEY (identifier, token)
 );
 
+-- Kill all idle connections
+CREATE OR REPLACE FUNCTION kill_idle_connections()
+RETURNS trigger AS $$
+DECLARE
+    r RECORD;
+BEGIN
+    FOR r IN
+        SELECT pid, state
+        FROM pg_stat_activity
+        WHERE state = 'idle' AND pid <> pg_backend_pid()
+    LOOP
+        EXECUTE 'SELECT pg_terminate_backend(' || r.pid || ');';
+    END LOOP;
+    RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Create a trigger to kill idle connections when add a new verification token
+CREATE OR REPLACE TRIGGER kill_idle_connections_trigger
+AFTER INSERT ON verification_token
+FOR EACH STATEMENT
+EXECUTE FUNCTION kill_idle_connections();
+
+
+
 CREATE TABLE accounts
 (
   id SERIAL,
