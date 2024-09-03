@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: MIT
 
 import pg from "pg";
+import { i } from "vitest/dist/reporters-yx5ZTtEV.js";
 const runtimeConfig = useRuntimeConfig()
 async function exportFile(addressFile: {
     content: string,
@@ -80,6 +81,40 @@ async function GetRatio(client: unknown, idProject: string):
         })
         .catch(() => {return {};});
 }
+
+/**
+ * Clean data for csv file:
+ *  - Delete line without "acquisitionDate"
+ *  - Replace all empty value by "NA"
+ *  - Add "NA" in column "Concentration" if no calibration curves
+ * @param data data to clean
+ * return data cleaned
+ */
+function cleanData(data: any): any {
+    // Get index of acquisitionDate column
+    const indexAcquisitionDate = data[0].indexOf("acquisitionDate");
+    // Delete line without acquisitionDate
+    const temp  = data.filter((x: any) => x[indexAcquisitionDate] !== "");
+    // Replace all empty value by "NA"
+    for (const x of temp) {
+        for (const key in x) {
+            if (x[key] === "") {
+                x[key] = "NA";
+            }
+        }
+    }
+    // Add "NA" in column "Concentration" if no calibration curves
+    const indexConcentration = temp[0].indexOf("Concentration");
+    for (const x of temp) {
+        // if miss column "Concentration" in line x, add it
+        if (x.length === indexConcentration){
+            // add "NA" in column "Concentration"
+            x[indexConcentration] = "NA";
+        }
+    }
+    return temp;
+}
+
 export default defineEventHandler(async (event) => {
     const client = new pg.Client();
     let idProject: string;
@@ -106,7 +141,7 @@ export default defineEventHandler(async (event) => {
         .then((resp: any[]) => Promise.all(resp.map((x: { json: () => any; }) => x.json())))
         .then(async (resps: any) => {
             // create header for csv file
-            const temp = [[...resps[0].header, "Concentration"]]; 
+            let temp = [[...resps[0].header, "Concentration"]]; 
 
             for (const resp of resps) {
                 // function to calculate concentration do nothing
@@ -127,6 +162,8 @@ export default defineEventHandler(async (event) => {
                     temp.push(funcCalcul(sample));
                 }
             }
+            // clean data
+            temp = cleanData(temp);
             
             return temp.map(x => x.join(";")).join("\r\n");
         })
