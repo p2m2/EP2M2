@@ -105,24 +105,27 @@ export default defineEventHandler(async (event) => {
         })
         .then((resp: any[]) => Promise.all(resp.map((x: { json: () => any; }) => x.json())))
         .then(async (resps: any) => {
-            // function to calculate concentration do nothing
-            let funcCalcul = (x: any) => x;
-            let temp = [resps[0].header];
-            const lMolRatio = await GetRatio(client, idProject);
-            // verify if we have calibration curves
-            if (Object.keys(lMolRatio).length != 0) {
-                // affect function to calculate concentration
-                funcCalcul = (x: any) => CalculateConcentration(x, 
-                                        lMolRatio,
-                                        resps[0].header.indexOf("metabolite"),
-                                        resps[0].header.indexOf("area"));
-                // add header for calculated Concentration
-                temp = [[...resps[0].header, "Concentration"]];                
-            }
-            // calculate concentration for all samples                        
-            for(const sample of resps[0].samples){
-                                
-                temp.push(funcCalcul(sample));
+            // create header for csv file
+            const temp = [[...resps[0].header, "Concentration"]]; 
+
+            for (const resp of resps) {
+                // function to calculate concentration do nothing
+                let funcCalcul = (x: any) => x;
+                // let temp = [resps[0].header];
+                const lMolRatio = await GetRatio(client, idProject);
+                // verify if we have calibration curves
+                if (Object.keys(lMolRatio).length != 0) {
+                    // affect function to calculate concentration
+                    funcCalcul = (x: any) => CalculateConcentration(x, 
+                                            lMolRatio,
+                                            resp.header.indexOf("metabolite"),
+                                            resp.header.indexOf("area"));               
+                }
+                // calculate concentration for all samples                        
+                for(const sample of resp.samples){
+                                    
+                    temp.push(funcCalcul(sample));
+                }
             }
             
             return temp.map(x => x.join(";")).join("\r\n");
