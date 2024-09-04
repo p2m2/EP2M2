@@ -34,46 +34,41 @@ async function exportFile(addressFile: {
  * @param indexMeta index of name of metabolite in sample
  * @param indexArea index of area in sample
  */
-function CalculateConcentration(sample: string[], lMolRatio: { [key: string]: number }, indexMeta:number, indexArea:number): string[] {    
+function CalculateConcentration(sample: string[], lMolRatio: { [key: string]: number[] }, indexMeta:number, indexArea:number): string[] {    
     const tempSample = sample;
     // no metabolites in calibration curves associate of project 
     if(lMolRatio[tempSample[indexMeta]] === undefined){
         return [...tempSample, "0"];
     }
     // calculate Concentration
-    tempSample.push((parseFloat(tempSample[indexArea]) * lMolRatio[tempSample[indexMeta]]).toString());  
+    tempSample.push((
+        parseFloat(tempSample[indexArea]) * lMolRatio[tempSample[indexMeta]][0]
+        + lMolRatio[tempSample[indexMeta]][1])
+        .toString());  
 
     return tempSample;
 }
 
 async function GetRatio(client: unknown, idProject: string): 
     Promise<{[key:string]:number}> {
-    // get all calibration curves of project
-    return client.query(`SELECT id_calib_curves
-                         FROM proj_calib_curves
+    // get all ratios of project
+    return client.query(`SELECT id_mol, coef, ord
+                         FROM ratio
                          WHERE id_project = ${idProject}`)
-        .then((respQuery: { rows: { id_calib_curves: string }[] }) => {
+        .then((respQuery: { rows: { 
+                                id_mol: string,
+                                coef: string,
+                                ord: string }[] }
+                ) => {
             if (respQuery.rows.length === 0) {
                 throw new Error("No associated series");
             }           
             
-            const idCalibCurves = respQuery.rows.map(x => x.id_calib_curves);
-            // get all metabolite of calibration curves
-            return client.query(`
-                SELECT id_mol, ratio
-                FROM ratio
-                WHERE id_calib_curves IN (${idCalibCurves.join(",")})`
-            );
-        })
-        .then((respQuery: { rows: { id_mol: string, ratio: number }[] }) => {
-            
-            if (respQuery.rows.length === 0) {
-                throw new Error("No ratio");
-            }
             // associate one metabolite to one ratio
-            const lMolRatio:{[key:string]:number} = {};
+            const lMolRatio:{[key:string]:number[]} = {};
             for (const row of respQuery.rows) {
-                lMolRatio[row.id_mol] = row.ratio;
+                lMolRatio[row.id_mol] = [parseFloat(row.coef),
+                                         parseFloat(row.ord)];
             }
             
             return lMolRatio;

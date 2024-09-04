@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: MIT
 
 import pg from "pg";
+import { updateRatio } from "./function/updateRatio";
 
 export default defineEventHandler(async (event) => {
     const body = await readBody(event);
@@ -20,6 +21,8 @@ export default defineEventHandler(async (event) => {
                 VALUES ${lValues.join(",")}`
             )
         })
+        // Update the ratio of the metabolite
+        .then(() => {updateRatio(body.id_project)})
         .catch((err: Error) => {
             throw err;
         })

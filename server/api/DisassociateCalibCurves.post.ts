@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: MIT
 
 import pg from "pg";
+import { updateRatio } from "./function/updateRatio";
 
 export default defineEventHandler((event) => {
     return readBody(event)
@@ -15,6 +16,7 @@ export default defineEventHandler((event) => {
                                           WHERE id_calib_curves IN 
                                           (${body.calibCurves.join(",")})
                                           AND id_project = ${body.id_project}`))
+                .then(() => {updateRatio(body.id_project)})
                 .finally(() => client.end());
         });
 });
