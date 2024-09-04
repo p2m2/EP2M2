@@ -190,6 +190,17 @@ CREATE TABLE proj_calib_curves
   PRIMARY KEY (id_project, id_calib_curves)
 );
 
+-- Ratio table is used to store coefficient and order to calculate concentration
+-- of metabolites from the area 
+CREATE TABLE ratio
+(
+  id_mol VARCHAR(52),
+  id_project SERIAL REFERENCES project (id) ON DELETE CASCADE,
+  coef FLOAT,
+  ord FLOAT,
+  PRIMARY KEY (id_mol, id_project)
+);
+
 INSERT INTO users (name, email, hash, team)
 VALUES 
 ('root_ep2m2', 'admin@ep2m2.bzh', 
