@@ -46,7 +46,7 @@ export default class Table {
      * @returns array for structure of table of vuetify
      */
     get header(){
-        return this._headers.filter(x => x.key != "id");
+        return this._headers.filter(x => x.key != "id" && x.key != "used");
     }
 
     async totalItems(): Promise<number>{
