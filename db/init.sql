@@ -145,7 +145,7 @@ CREATE TABLE calib_curves
   name VARCHAR(255),
   date_create TIMESTAMPTZ NOT NULL,
   date_achieve TIMESTAMPTZ,
-  used INTEGER,
+  used INTEGER DEFAULT 0,
   id_machine SERIAL REFERENCES machine (id)
 );
 
@@ -171,7 +171,8 @@ GROUP BY calib_curves.id;
 CREATE VIEW view_show_calib_curve AS
 SELECT calib_curves.id AS id, calib_curves.name,
        array_agg(DISTINCT daughter.id_mol) AS metabolite,     
-       calib_curves.date_create, calib_curves.date_achieve
+       calib_curves.date_create, calib_curves.date_achieve,
+       calib_curves.used as used
 FROM calib_curves
 LEFT JOIN daughter ON calib_curves.id = daughter.id_calib_curves
 GROUP BY calib_curves.id;
@@ -189,6 +190,39 @@ CREATE TABLE proj_calib_curves
   id_calib_curves SERIAL REFERENCES calib_curves (id) ON DELETE CASCADE,
   PRIMARY KEY (id_project, id_calib_curves)
 );
+
+-- Increase the used number of calib_curves when a project use it
+CREATE OR REPLACE FUNCTION increase_used_calib_curves()
+RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE calib_curves
+    SET used = used + 1
+    WHERE calib_curves.id = NEW.id_calib_curves;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER increase_used_calib_curves_trigger
+AFTER INSERT ON proj_calib_curves
+FOR EACH ROW
+EXECUTE FUNCTION increase_used_calib_curves();
+
+-- Decrease the used number of calib_curves when dissociate a project from it
+CREATE OR REPLACE FUNCTION decrease_used_calib_curves()
+RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE calib_curves
+    SET used = used - 1
+    WHERE calib_curves.id = OLD.id_calib_curves;
+    RETURN OLD;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER decrease_used_calib_curves_trigger
+AFTER DELETE ON proj_calib_curves
+FOR EACH ROW
+EXECUTE FUNCTION decrease_used_calib_curves();
+
 
 -- Ratio table is used to store coefficient and order to calculate concentration
 -- of metabolites from the area 
