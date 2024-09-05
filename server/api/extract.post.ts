@@ -38,7 +38,7 @@ function CalculateConcentration(sample: string[], lMolRatio: { [key: string]: nu
     const tempSample = sample;
     // no metabolites in calibration curves associate of project 
     if(lMolRatio[tempSample[indexMeta]] === undefined){
-        return [...tempSample, "0"];
+        return [...tempSample, "NaN"];
     }
     // calculate Concentration
     tempSample.push((
@@ -50,7 +50,7 @@ function CalculateConcentration(sample: string[], lMolRatio: { [key: string]: nu
 }
 
 async function GetRatio(client: unknown, idProject: string): 
-    Promise<{[key:string]:number}> {
+    Promise<{[key:string]:number[]}> {
     // get all ratios of project
     return client.query(`SELECT id_mol, coef, ord
                          FROM ratio
@@ -79,8 +79,8 @@ async function GetRatio(client: unknown, idProject: string):
 /**
  * Clean data for csv file:
  *  - Delete line without "acquisitionDate"
- *  - Replace all empty value by "NA"
- *  - Add "NA" in column "Concentration" if no calibration curves
+ *  - Replace all empty value by "NaN"
+ *  - Add "NaN" in column "Concentration" if no calibration curves
  * @param data data to clean
  * return data cleaned
  */
@@ -89,21 +89,21 @@ function cleanData(data: any): any {
     const indexAcquisitionDate = data[0].indexOf("acquisitionDate");
     // Delete line without acquisitionDate
     const temp  = data.filter((x: any) => x[indexAcquisitionDate] !== "");
-    // Replace all empty value by "NA"
+    // Replace all empty value by "NaN"
     for (const x of temp) {
         for (const key in x) {
             if (x[key] === "") {
-                x[key] = "NA";
+                x[key] = "NaN";
             }
         }
     }
-    // Add "NA" in column "Concentration" if no calibration curves
+    // Add "NaN" in column "Concentration" if no calibration curves
     const indexConcentration = temp[0].indexOf("Concentration");
     for (const x of temp) {
         // if miss column "Concentration" in line x, add it
         if (x.length === indexConcentration){
-            // add "NA" in column "Concentration"
-            x[indexConcentration] = "NA";
+            // add "NaN" in column "Concentration"
+            x[indexConcentration] = "NaN";
         }
     }
     return temp;
