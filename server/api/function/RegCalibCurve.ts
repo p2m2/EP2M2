@@ -33,18 +33,8 @@ export async function calculateRatioCalibCurve(arrayIdCalibCurve: string[]): Pro
                 }
                 metaConcentration[row.id_mol].push([row.area, row.concentration]);
             });
-            console.log("metaConcentration0", metaConcentration);
-            
-            // add the first element to 0,0 if we have one point for the 
-            //   metabolite
-            for (const key in metaConcentration) {
-                // We check after the deletion of the double point
-                if (deleteDoublePoint(metaConcentration[key]).length === 1) {
-                    metaConcentration[key].push([0, 0]);
-                }
-            }
-            console.log("metaConcentration", metaConcentration);
-            
+            console.log("metaConcentration0", metaConcentration);         
+           
             // caclulate regression of each metabolite in ax + b
             const metaRatio: { [key: string]: {a: number, b: number} } = {}
             for (const key in metaConcentration) {
@@ -52,7 +42,22 @@ export async function calculateRatioCalibCurve(arrayIdCalibCurve: string[]): Pro
                 console.log(key, metaConcentration[key]);
                 
                 const { m, b } = linearRegression(metaConcentration[key]);
-                metaRatio[key] = {a: m, b: b};
+
+                // Case where we have one point in the calibration curve
+                // The regression is not possible or defined constant curve
+                // So we define a curve ax+b with 
+                //  a = concentration/area and b = 0
+                console.log("les nan","m",m, isNaN(m), isNaN(b));
+                
+                if (isNaN(m) || isNaN(b) || m === 0) {
+                    metaRatio[key] = {
+                        a: metaConcentration[key][0][1]/
+                            metaConcentration[key][0][0], 
+                        b: 0};
+                }
+                else{
+                    metaRatio[key] = {a: m, b: b};
+                }
             }
             console.log("metaRatio", metaRatio);
             return metaRatio
@@ -64,31 +69,4 @@ export async function calculateRatioCalibCurve(arrayIdCalibCurve: string[]): Pro
             // close the connection
             client.end();
         });
-}
-
-/**
- * Delete double point in the array
- * @param array
- * @returns array without double point
- */
-function deleteDoublePoint(array: [number, number][]): [number, number][] {
-    // Track Seen Strings: A Set is used to keep track of the 
-    // string representations of sub-arrays that have already been
-    // encountered.
-    const seen = new Set();
-    return array.filter(subArray => {
-        // Convert Sub-Arrays to Strings:
-        const stringified = JSON.stringify(subArray);
-        // Check if the stringified sub-array has already been 
-        // encountered:
-        if (seen.has(stringified)) {
-            // If it has been encountered, return false to remove
-            return false;
-        } else {
-            // keep the stringified sub-array in the set:
-            seen.add(stringified);
-            // keep the sub-array in the filtered array:
-            return true;
-        }
-    });
 }
