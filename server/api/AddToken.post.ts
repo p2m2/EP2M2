@@ -20,7 +20,6 @@ export default defineEventHandler(async (event) : Promise<number> => {
     const resultInsert = await client.query(insTokenSql);
                     
     if(!resultInsert){
-        console.log(10);
         await client.end();
         return -1;
     }

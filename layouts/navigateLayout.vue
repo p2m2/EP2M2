@@ -19,7 +19,6 @@ const listPages = router.getRoutes().map(x => x.name as string)
 
 //  Get name of current page
 const currentPage = router.currentRoute.value.name;
-console.log(currentPage);
 
 //  Get index of page to indicate to tabs which tab highlining
 const currentIndex = ref(listPages.indexOf(currentPage as string))

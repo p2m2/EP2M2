@@ -26,7 +26,6 @@ export default defineEventHandler(async (event): Promise<{
 
     // No Projet
     if (resultCount.rowCount == 1 && resultCount.rows[0].nb_project == 0) {
-        console.log("No project");
         return { projects: [], count: 0 };
     }
 

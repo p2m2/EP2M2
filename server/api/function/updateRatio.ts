@@ -33,15 +33,11 @@ export async function updateRatio(id_project: string): Promise<void> {
         return res.rows.map((value : {id_calib_curves:string}) => 
             value.id_calib_curves);
     })
-    .then((arrayIdCalibCurve: string[]) => {
-        console.log(arrayIdCalibCurve);
-        
+    .then((arrayIdCalibCurve: string[]) => {        
         // Get the ratio of each metabolite of the calibration curve
         return calculateRatioCalibCurve(arrayIdCalibCurve);
     })
-    .then((metaRatio: { [key: string]: {a: number, b: number} }) => {
-        console.log(metaRatio);
-        
+    .then((metaRatio: { [key: string]: {a: number, b: number} }) => {        
         // Update the ratio of each metabolite
         for (const key in metaRatio) {
             updateRatioMetabolite(key, id_project, metaRatio[key].a, metaRatio[key].b);

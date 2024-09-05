@@ -317,7 +317,6 @@ function deleteRow(id: string) {
 
 async function onSubmit(event: FormSubmitEvent<any>) {
     // Do something with data
-    // console.log(event.data)
 }
 
 async function extract(idProject: string) {
@@ -325,15 +324,12 @@ async function extract(idProject: string) {
         method: "post",
         body: idProject
     });
-    // console.log(response);
 
     if (response === "" || !response) {
         return 0
     }
 
     const data = new Blob([response], { type: 'text/csv' });
-
-    // console.log(data.value);
 
     const eleLink = document.createElement('a');
     eleLink.download = `Extration_${new Date(Date.now()).toISOString()

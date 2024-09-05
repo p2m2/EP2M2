@@ -21,9 +21,7 @@ export async function calculateRatioCalibCurve(arrayIdCalibCurve: string[]): Pro
                 WHERE id_calib_curves IN ('${idCalibCurve}')
             `)
         })
-        .then((res: { rows: any[] }) => {
-            console.log("meth", res.rows);
-            
+        .then((res: { rows: any[] }) => {            
             // create array area/concentration for each metabolite
             const metaConcentration: { [key: string]: [number, number][] } = {};
             // Group the area and concentration of each metabolite
@@ -32,23 +30,18 @@ export async function calculateRatioCalibCurve(arrayIdCalibCurve: string[]): Pro
                     metaConcentration[row.id_mol] = [];
                 }
                 metaConcentration[row.id_mol].push([row.area, row.concentration]);
-            });
-            console.log("metaConcentration0", metaConcentration);         
+            });      
            
             // caclulate regression of each metabolite in ax + b
             const metaRatio: { [key: string]: {a: number, b: number} } = {}
             for (const key in metaConcentration) {
-                // calculate the linear regression
-                console.log(key, metaConcentration[key]);
-                
+                // calculate the linear regression               
                 const { m, b } = linearRegression(metaConcentration[key]);
 
                 // Case where we have one point in the calibration curve
                 // The regression is not possible or defined constant curve
                 // So we define a curve ax+b with 
                 //  a = concentration/area and b = 0
-                console.log("les nan","m",m, isNaN(m), isNaN(b));
-                
                 if (isNaN(m) || isNaN(b) || m === 0) {
                     metaRatio[key] = {
                         a: metaConcentration[key][0][1]/
@@ -59,7 +52,6 @@ export async function calculateRatioCalibCurve(arrayIdCalibCurve: string[]): Pro
                     metaRatio[key] = {a: m, b: b};
                 }
             }
-            console.log("metaRatio", metaRatio);
             return metaRatio
         })
         .catch(() => {

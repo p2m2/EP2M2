@@ -10,8 +10,6 @@ export default defineEventHandler(async (event) => {
     const client = new pg.Client();
     return client.connect()
         .then(() => {
-            console.log(body);
-            
             const lValues = [];
             for(const idCalibCurve of body.calibCurves){               
                 lValues.push(`(${body.id_project},${idCalibCurve})`);                
