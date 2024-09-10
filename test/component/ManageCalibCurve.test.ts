@@ -104,10 +104,10 @@ function checkHeaders(wrapper: any){
 function checkNotHeaders(wrapper: any){
     // check it doen't try to display the table
     expect(wrapper.findComponent({name: 'TableDbAction'}).exists()).toBe(false);
-    expect(wrapper.text()).toContain('header.name');
-    expect(wrapper.text()).toContain('header.metabolite');
-    expect(wrapper.text()).toContain('header.date_create');
-    expect(wrapper.text()).toContain('header.date_archive');
+    expect(wrapper.text()).not.toContain('header.name');
+    expect(wrapper.text()).not.toContain('header.metabolite');
+    expect(wrapper.text()).not.toContain('header.date_create');
+    expect(wrapper.text()).not.toContain('header.date_archive');
 }
 
 /**
