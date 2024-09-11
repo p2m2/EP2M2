@@ -66,8 +66,24 @@ export default {
     },
     image: {
         banner: {
-            alt: "icône P2M2",
-            src: "/logoP2M2_fr.png",
+            alt: {
+                P2M2:"icône P2M2",
+                BIA: "icône BIA",
+                INRAE: "icône INRAE",
+                IGEPP: "icône IGEPP",
+                IFPC: "icône IFPC",
+                MTH: "icône MTH",
+                REPFR: "icône République Française",
+            },
+            src:{
+                P2M2: "/logoP2M2_fr.png",
+                BIA: "/BIA.png",
+                INRAE: "/INRAE.png",
+                IGEPP: "/IGEPP.png",
+                IFPC: "/IFPC.png",
+                MTH: "/MTH.png",
+                REPFR: "/REPFR.png",
+            }, 
             title: "Accueil",
         }
     },
@@ -98,7 +114,7 @@ export default {
         url_provider: "URL fournisseur"
     },
     message: {
-        addIssue: "Un problème dit le",
+        addIssue: "Reportez un problème",
         badProjectName: "Le nom de project doit contenir au moins 3 caractère (hors les espaces)",
         confDelProject: "La suppresion d'un projet est irréversible!",
         confirm:{

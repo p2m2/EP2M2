@@ -66,10 +66,26 @@ export default {
         url: "URL",
         
     },
-    image:{
-        banner:{
-            alt:"P2M2 icon",
-            src:"/logoP2M2_en.png",
+    image: {
+        banner: {
+            alt: {
+                P2M2:"icône P2M2",
+                BIA: "icône BIA",
+                INRAE: "icône INRAE",
+                IGEPP: "icône IGEPP",
+                IFPC: "icône IFPC",
+                MTH: "icône MTH",
+                REPFR: "icône République Française",
+            },
+            src:{
+                P2M2: "/logoP2M2_en.png",
+                BIA: "/BIA.png",
+                INRAE: "/INRAE.png",
+                IGEPP: "/IGEPP.png",
+                IFPC: "/IFPC.png",
+                MTH: "/MTH.png",
+                REPFR: "/REPFR.png",
+            }, 
             title: "Home",
         }
     },

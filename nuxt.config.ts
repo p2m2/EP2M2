@@ -15,7 +15,11 @@ export default defineNuxtConfig({
         urlP2m2ApiSnif: "http://p2m2ToolsApi:8080/p2m2tools/api/format/sniffer",
         // be overridden by NUXT_PATH_SHARE  environment variable
         pathShare: "/shareFile",
-      },
+        public:{
+            // be overridden by NUXT_L_PARTNER  environment variable
+            lPartner: "REPFR,INRAE,IGEPP,P2M2,BIA,IFPC,MTH",
+        }
+    },
     $production: {
         routeRules: {
             "/**": { isr: true }
