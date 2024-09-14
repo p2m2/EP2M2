@@ -19,8 +19,14 @@ const lPartner = runtimeConfig.public.lPartner;
   <v-app>
     <div>
       <v-container class="mb-4">
-        <v-row justify="space-between">
-          <v-col justify="space-between">
+        <v-row
+          justify="space-between"
+          class="pb-12"
+        >
+          <v-col
+            justify="space-between"
+            align-self="center"
+          >
             <v-row justify="space-between">
               <!-- cliquable image of p2m2  -->
               <v-col
@@ -47,7 +53,7 @@ const lPartner = runtimeConfig.public.lPartner;
           >
             <v-row
               justify="end"
-              class="ma-2 pa-8"
+              class="ma-2 pa-2"
             >
               <lang-button />
               <help-button />
@@ -55,7 +61,11 @@ const lPartner = runtimeConfig.public.lPartner;
             </v-row>
           </v-col>
         </v-row>
-        <v-row>
+        <v-row
+          align="center"
+          justify="center"
+          no-gutters
+        >
           <slot />
         </v-row>
       </v-container>

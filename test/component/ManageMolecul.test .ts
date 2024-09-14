@@ -50,7 +50,7 @@ const header = [{
     type: String,
     sort: true},{
     key: 'equivalents',
-    type: String,
+    type: Number,
     sort: true 
 }]
 
@@ -59,25 +59,25 @@ const mol_0 = {
     id: '0',
     name: 'mol_0',
     ChEBI: "ChEBI:1234",
-    equivalents: '2',
+    equivalents: 2,
 }
 const mol_1 = {
     id: '1',
     name: 'mol_1',
     ChEBI: "ChEBI:1235",
-    equivalents: '2',
+    equivalents: 2,
 }
 const mol_2 = {
     id: '2',
     name: 'mol_2',
     ChEBI: "ChEBI:1236",
-    equivalents: '0',
+    equivalents: 0,
 }
 const mol_3 = {
     id: '3',
     name: 'mol_3',
     ChEBI: "ChEBI:0036",
-    equivalents: '2',
+    equivalents: 2,
 }
 
 // row of equivalents
@@ -195,13 +195,18 @@ async function checkAddDialog(wrapper:any){
  */
 async function checkSave(wrapper:any, mol:any){
     // Click on save button
-    await wrapper.find('.mdi-content-save').trigger('click');
+    await wrapper.find('button[name="saveMolecule"]').trigger('click');
     await wrapper.vm.$nextTick();
     await flushPromises();
+
+    //check call API to save Molecule
+    expect($fetchMock).toHaveBeenCalledWith('api/addMolecule',mol);
+
     // Check dialog is closed
     expect(wrapper.find('.v-dialog').exists()).toBe(false);
-    // Check Molecule is saved
-    checkLines(wrapper, mol);
+
+    // Check indicate Molecule is saved
+    expect(successMock).toHaveBeenCalledWith('message.saveMolecule');
 }
 
 /**
@@ -263,18 +268,45 @@ async function checkViewDialog(wrapper:any, mol:any){
 
 }
 
+/**
+ * Check Module modify
+ * @param wrapper html wrapper
+ * @param mol Molecule information
+ */
+async function checkModif(wrapper:any, mol:any){
+    // Click on save button
+    await wrapper.find('button[name="saveMolecule"]').trigger('click');
+    await wrapper.vm.$nextTick();
+    await flushPromises();
+
+    //check call API to save Molecule
+    expect($fetchMock).toHaveBeenCalledWith('api/modifMolecule',mol);
+
+    // Check dialog is closed
+    expect(wrapper.find('.v-dialog').exists()).toBe(false);
+
+    // Check indicate Molecule is saved
+    expect(successMock).toHaveBeenCalledWith('message.saveMolecule');
+}
+
 describe('ManageMolecule', () => {
 
     beforeEach(async () => {
         // abort a tag without delete inside
         config.global.renderStubDefaultSlot = true
         vi.resetAllMocks();
+
+        // reset global variables
+        mol_0.equivalents = 2;
+        mol_1.equivalents = 2;
+        mol_2.equivalents = 0;
+        mol_3.equivalents = 2;
     })
 
     test('No Molecule', async () => {
         // Mock fetch
         $fetchMock.mockImplementation(async (url: string) => {
-            if(url.includes('totalItems')) {
+            if(url === 'api/manageControle/totalItems') {
                 return 0;
             }
             return header;
@@ -292,9 +324,9 @@ describe('ManageMolecule', () => {
     test('2 Molecules', async () => {
         // Mock fetch
         $fetchMock.mockImplementation(async (url: string) => {
-            if(url.includes('totalItems')) {
+            if(url === 'api/manageControle/totalItems') {
                 return 2;
-            } else if(url.includes('getPage')) {
+            } else if(url === 'api/manageControle/getPage') {
                 return [
                     mol_0,
                     mol_1
@@ -319,15 +351,15 @@ describe('ManageMolecule', () => {
     test('Add Molecule in empty table, with synonym', async () => {
         // Mock fetch
         $fetchMock.mockImplementation(async (url: string) => {
-            if(url=== 'api/manageControle/totalItems') {
+            if(url === 'api/manageControle/totalItems') {
                 return 0;
             }
-            if(url == 'api/getChEBI?search=epichlicin') {
+            if(url === 'api/getChEBI?search=epichlicin') {
                 return {chebi: 'ChEBI:65849',
                         name: 'epichlicin',
                         formular: 'C48H74N12O14'};
             }
-            if(url.includes('manageControle/')) {
+            if(url === 'api/manageControle/header') {
                 return header;
             }
             return 0;
@@ -382,42 +414,30 @@ describe('ManageMolecule', () => {
         expect(wrapper.text()).toContain('CinCin');
 
         // Save Molecule
-        await wrapper.find('button[name="saveMolecule"]').trigger('click');
-        await wrapper.vm.$nextTick();
-        await flushPromises();
-
-        //check call API to save Molecule
-        expect($fetchMock).toHaveBeenCalledWith('api/addMolecule',{name: 'epichlicin', ChEBI: 'ChEBI:65849', equivalents: '0', synonyms: ['CinCin']});
-
-        // Check dialog is closed
-        expect(wrapper.find('.v-dialog').exists()).toBe(false);
-
-        // Check indicate Molecule is saved
-        expect(successMock).toHaveBeenCalledWith('message.saveMolecule');
-
-        // Check Molecule is added
-        checkLines(wrapper, {
-            name: 'epichlicin',
-            ChEBI: 'ChEBI:65849',
-            equivalents: '0',
-        });
+        checkSave(wrapper, {name: 'epichlicin', ChEBI: 'ChEBI:65849', equivalents: 0, synonyms: ['CinCin']});
 
     });
 
     test("Add Molecule in not empty table, just molecule", async () => {
         // Mock fetch
         $fetchMock.mockImplementation(async (url: string) => {
-            if(url.includes('totalItems')) {
+            if(url=== 'api/manageControle/totalItems') {
                 return 2;
-            } else if(url.includes('getPage')) {
+            } else if(url === 'api/manageControle/getPage') {
                 return [
                     mol_0,
                     mol_1,
-                    mol_2
                 ]
             }
-
-            return header;
+            if(url === 'api/getChEBI?search=epichlicin') {
+                return {chebi: 'ChEBI:65849',
+                        name: 'epichlicin',
+                        formular: 'C48H74N12O14'};
+            }
+            if(url === 'api/manageControle/header') {
+                return header;
+            }
+            return 0;
         });
 
         const wrapper = mount(ManageMolecule,{
@@ -459,30 +479,32 @@ describe('ManageMolecule', () => {
         checkSave(wrapper, {
             name: 'epichlicin',
             ChEBI: 'ChEBI:65849',
-            equivalents: '0',
+            equivalents: 0,
         });
 
         // Check other molecules aren't modified
         checkLines(wrapper, mol_0);
         checkLines(wrapper, mol_1);
-        checkLines(wrapper, mol_2);
         
     });
 
     test("Add Molecule in not empty table with equivalents", async () => {
         // Mock fetch
         $fetchMock.mockImplementation(async (url: string) => {
-            if(url.includes('totalItems')) {
-                return 2;
-            } else if(url.includes('getPage')) {
+            if(url === 'api/manageControle/totalItems') {
+                return 3;
+            } 
+            if(url === 'api/manageControle/getPage') {
                 return [
                     mol_0,
                     mol_1,
                     mol_2
                 ]
             }
-
-            return header;
+            if(url === 'api/manageControle/header') {
+                return header;
+            }
+            return 0;
         });
 
         const wrapper = mount(ManageMolecule,{
@@ -539,27 +561,51 @@ describe('ManageMolecule', () => {
         checkSave(wrapper, {
             name: 'epichlicin',
             ChEBI: 'ChEBI:65849',
-            equivalents: '1',
+            equivalents: 1,
         });
 
+        // Mock fetch
+        $fetchMock.mockImplementation(async (url: string) => {
+            if(url === 'api/manageControle/totalItems') {
+                return 4;
+            } 
+            if(url === 'api/manageControle/getPage') {
+                return [
+                    mol_0,
+                    mol_1,
+                    mol_2,
+                    {
+                        name: 'epichlicin',
+                        ChEBI: 'ChEBI:65849',
+                        equivalents: 1,
+                    }
+                ]
+            }
+
+            if(url === 'api/manageControle/header') {
+                return header;
+            }
+            return 0;
+        });
         // Check equivalent to Mol_2 are added
         checkLines(wrapper, {
             name: 'mol_2',
             ChEBI: 'ChEBI:1236',
-            equivalents: '1',
+            equivalents: 1,
         });
 
         checkLines(wrapper, mol_0);
         checkLines(wrapper, mol_1);
+        checkLines(wrapper, mol_2);
         
     });
     test('View a Molecule', async () => {
         // Mock fetch
         $fetchMock.mockImplementation(async (url: string) => {
-            if(url.includes('totalItems')) {
-                return 2;
+            if(url === 'api/manageControle/totalItems') {
+                return 4;
             } 
-            if(url.includes('getPage')) {
+            if(url === 'api/manageControle/getPage') {
                 return [
                     mol_0,
                     mol_1,
@@ -567,20 +613,23 @@ describe('ManageMolecule', () => {
                     mol_3
                 ]
             }
-            if(url.includes('getEquivalents')) {
+            if(url === 'api/getEquivalents') {
                 return [
                     eq_0_1,
                     eq_0_3,
                     eq_1_3
                 ]
             }
-            if(url.includes('getSynonyms')) {
+            if(url === 'api/getSynonyms') {
                 return [
                     syn_1
                 ]
             }
 
-            return header;
+            if(url === 'api/manageControle/header') {
+                return header;
+            }
+            return 0;
         });
 
         const wrapper = mount(ManageMolecule,{
@@ -620,10 +669,10 @@ describe('ManageMolecule', () => {
     test('Modify a Molecule, add synonyms', async () => {
         // Mock fetch
         $fetchMock.mockImplementation(async (url: string) => {
-            if(url.includes('totalItems')) {
-                return 2;
+            if(url === 'api/manageControle/totalItems') {
+                return 4;
             } 
-            if(url.includes('getPage')) {
+            if(url === 'api/manageControle/getPage') {
                 return [
                     mol_0,
                     mol_1,
@@ -631,18 +680,21 @@ describe('ManageMolecule', () => {
                     mol_3
                 ]
             }
-            if(url.includes('getEquivalents')) {
+            if(url === 'api/getEquivalents') {
                 return [
                     eq_0_1,
                     eq_0_3,
                     eq_1_3
                 ]
             }
-            if(url.includes('getSynonyms')) {
+            if(url === 'api/getSynonyms') {
                 return [];
             }
 
-            return header;
+            if(url === 'api/manageControle/header') {
+                return header;
+            }
+            return 0;
         });
 
         const wrapper = mount(ManageMolecule,{
@@ -669,16 +721,539 @@ describe('ManageMolecule', () => {
 
         // Check other molecules aren't modified
         checkLines(wrapper, mol_0);
+        checkLines(wrapper, mol_1);
         checkLines(wrapper, mol_2);
         checkLines(wrapper, mol_3);
     });
-    test.todo('Modify a Molecule, add equivalents');
-    test.todo('Modify a Molecule, add equivalents, cascade modification');
-    test.todo('Modify a Molecule, add synonyms and equivalents');
-    test.todo('Modify a Molecule, remove synonyms');
-    test.todo('Modify a Molecule, remove equivalents, cascade modification');
-    test.todo('Modify a Molecule, remove synonyms and equivalents');
-    test.todo('Modify a Molecule, add synonyms and remove equivalents');
-    test.todo('Modify a Molecule, add equivalents and remove synonyms');
+    test('Modify a Molecule, add equivalents',async () => {
+        // Mock fetch
+        $fetchMock.mockImplementation(async (url: string) => {
+            if(url === 'api/manageControle/totalItems') {
+                return 4;
+            } 
+            if(url === 'api/manageControle/getPage') {
+                return [
+                    mol_0,
+                    mol_1,
+                    mol_2,
+                    mol_3
+                ]
+            }
+            if(url === 'api/getEquivalents') {
+                return [
+                    eq_0_1,
+                    eq_0_3,
+                    eq_1_3
+                ]
+            }
+            if(url === 'api/getSynonyms') {
+                return [];
+            }
+
+            if(url === 'api/manageControle/header') {
+                return header;
+            }
+            return 0;
+        });
+
+        const wrapper = mount(ManageMolecule,{
+            ...globalConfig,
+        });
+        await flushPromises();
+
+        // Modify Molecule
+        checkModifyDialog(wrapper, mol_2);
+        // Add equivalents
+        await wrapper.find('input[name="equivalents"]').setValue('mol');
+        // Check have table to select equivalents
+        expect(wrapper.findAll('.v-table')[1].exists()).toBe(true);
+        // Get table
+        const tableEq = wrapper.findAll('.v-table')[1];
+        // Check table has three line
+        expect(tableEq.findAll('tr').length).toBe(3);
+        // Check name of Molecule
+        expect(tableEq.text()).toContain('mol_0');
+        expect(tableEq.text()).toContain('mol_1');
+        expect(tableEq.text()).toContain('mol_3');
+        expect(tableEq.text()).not.toContain('mol_4');
+        // Select Molecule
+        await tableEq.findAll('tr')[2].trigger('click');
+        await wrapper.vm.$nextTick();
+        await flushPromises();
+        // Check Molecule is selected
+        expect(wrapper.text()).toContain('mol_2');
+        expect(wrapper.find('.mdi-delete').exists()).toBe(true);
+        expect(wrapper.findAll('.mdi-plus').length).toBe(1);
+
+        // Save Molecule
+        checkModif(wrapper, {
+            name: 'mol_2',
+            ChEBI: 'ChEBI:1236',
+            equivalents: 1,
+        });
+
+        // Check other molecules are modified
+        mol_0.equivalents++;
+        mol_1.equivalents++;
+        mol_2.equivalents++;
+        mol_3.equivalents++;
+
+        checkLines(wrapper, mol_0);
+        checkLines(wrapper, mol_1);
+        checkLines(wrapper, mol_2);
+    });
+    test('Modify a Molecule, add synonyms and equivalents', async () => {
+        // Mock fetch
+        $fetchMock.mockImplementation(async (url: string) => {
+            if(url === 'api/manageControle/totalItems') {
+                return 4;
+            } 
+            if(url === 'api/manageControle/getPage') {
+                return [
+                    mol_0,
+                    mol_1,
+                    mol_2,
+                    mol_3
+                ]
+            }
+            if(url === 'api/getEquivalents') {
+                return [
+                    eq_0_1,
+                    eq_0_3,
+                    eq_1_3
+                ]
+            }
+            if(url === 'api/getSynonyms') {
+                return [];
+            }
+
+            if(url === 'api/manageControle/header') {
+                return header;
+            }
+            return 0;
+        });
+
+        const wrapper = mount(ManageMolecule,{
+            ...globalConfig,
+        });
+        await flushPromises();
+
+        // Modify Molecule
+        checkModifyDialog(wrapper, mol_2);
+        // Add equivalents
+        await wrapper.find('input[name="equivalents"]').setValue('mol');
+        // Check have table to select equivalents
+        expect(wrapper.findAll('.v-table')[1].exists()).toBe(true);
+        // Get table
+        const tableEq = wrapper.findAll('.v-table')[1];
+        // Check table has three line
+        expect(tableEq.findAll('tr').length).toBe(3);
+        // Check name of Molecule
+        expect(tableEq.text()).toContain('mol_0');
+        expect(tableEq.text()).toContain('mol_1');
+        expect(tableEq.text()).toContain('mol_3');
+        expect(tableEq.text()).not.toContain('mol_4');
+        // Select Molecule
+        await tableEq.findAll('tr')[2].trigger('click');
+        await wrapper.vm.$nextTick();
+        await flushPromises();
+        // Check Molecule is selected
+        expect(wrapper.text()).toContain('mol_2');
+        expect(wrapper.find('.mdi-delete').exists()).toBe(true);
+        expect(wrapper.findAll('.mdi-plus').length).toBe(1);
+
+        // Add synonyms
+        await wrapper.find('input[name="synonyms"]').setValue('Other');
+        // Click on add button
+        await wrapper.find('button[name="addSynonyms"]').trigger('click');
+        await wrapper.vm.$nextTick();
+        await flushPromises();
+        // Check synonyms are added
+        expect(wrapper.text()).toContain('Other');
+        // Check add delete button
+        // 2 because we have 1 equivalents and 1 synonyms
+        expect(wrapper.findAll('.mdi-delete').length).toBe(2);
+
+        // Save Molecule
+        checkModif(wrapper, {
+            name: 'mol_2',
+            ChEBI: 'ChEBI:1236',
+            equivalents: 1,
+        });
+
+        // Check other molecules are modified
+        mol_0.equivalents++;
+        mol_1.equivalents++;
+        mol_2.equivalents++;
+        mol_3.equivalents++;
+
+        checkLines(wrapper, mol_0);
+        checkLines(wrapper, mol_1);
+        checkLines(wrapper, mol_2);
+    });
+    test('Modify a Molecule, remove synonyms', async () => {
+        mol_0.equivalents++;
+        mol_1.equivalents++;
+        mol_2.equivalents++;
+        mol_3.equivalents++;
+        // Mock fetch
+        $fetchMock.mockImplementation(async (url: string) => {
+            if(url === 'api/manageControle/totalItems') {
+                return 4;
+            } 
+            if(url === 'api/manageControle/getPage') {
+                return [
+                    mol_0,
+                    mol_1,
+                    mol_2,
+                    mol_3
+                ]
+            }
+            if(url === 'api/getEquivalents') {
+                return [
+                    {
+                        id_mol_0: '0',
+                        id_mol_1: '2',
+                    },
+                    {
+                        id_mol_0: '1',
+                        id_mol_1: '2',
+                    },
+                    {
+                        id_mol_0: '3',
+                        id_mol_1: '2',
+                    }
+                ]
+            }
+            if(url === 'api/getSynonyms') {
+                return ["Other"];
+            }
+
+            if(url === 'api/manageControle/header') {
+                return header;
+            }
+            return 0;
+        });
+
+        const wrapper = mount(ManageMolecule,{
+            ...globalConfig,
+        });
+        await flushPromises();
+
+        // Modify Molecule
+        checkModifyDialog(wrapper, mol_2);
+        // Check have equivalents input
+        expect(wrapper.find('input[name="equivalents"]').exists()).toBe(true);
+        // Check have table to select equivalents
+        expect(wrapper.findAll('.v-table')[1].exists()).toBe(true);
+
+        // Check we have 3 equivalents
+        expect(wrapper.text()).toContain('mol_0');
+        expect(wrapper.text()).toContain('mol_1');
+        expect(wrapper.text()).toContain('mol_3');
+        // 4 = 3 equivalents + 1 synonyms
+        expect(wrapper.findAll('.mdi-delete').length).toBe(4);
+
+        // Check we have 1 synonyms
+        expect(wrapper.text()).toContain('Other');
+        // Remove synonyms
+        await wrapper.findAll('.mdi-delete')[3].trigger('click');
+        await wrapper.vm.$nextTick();
+        await flushPromises();
+        // Check synonyms are removed
+        expect(wrapper.text()).not.toContain('Other');
+        // 3 = 3 equivalents
+        expect(wrapper.findAll('.mdi-delete').length).toBe(3);
+
+        // Save Molecule
+        checkModif(wrapper, {
+            name: 'mol_2',
+            ChEBI: 'ChEBI:1236',
+            equivalents: 1,
+        });
+
+        // Check other molecules are modified
+        checkLines(wrapper, mol_0);
+        checkLines(wrapper, mol_1);
+        checkLines(wrapper, mol_2);
+    });
+
+    test('Modify a Molecule, remove synonyms and equivalents',async () => {
+        mol_0.equivalents++;
+        mol_1.equivalents++;
+        mol_2.equivalents++;
+        mol_3.equivalents++;
+        // Mock fetch
+        $fetchMock.mockImplementation(async (url: string) => {
+            if(url === 'api/manageControle/totalItems') {
+                return 4;
+            } 
+            if(url === 'api/manageControle/getPage') {
+                return [
+                    mol_0,
+                    mol_1,
+                    mol_2,
+                    mol_3
+                ]
+            }
+            if(url === 'api/getEquivalents') {
+                return [
+                    {
+                        id_mol_0: '0',
+                        id_mol_1: '2',
+                    },
+                    {
+                        id_mol_0: '1',
+                        id_mol_1: '2',
+                    },
+                    {
+                        id_mol_0: '3',
+                        id_mol_1: '2',
+                    }
+                ]
+            }
+            if(url === 'api/getSynonyms') {
+                return ["Other"];
+            }
+
+            if(url === 'api/manageControle/header') {
+                return header;
+            }
+            return 0;
+        });
+
+        const wrapper = mount(ManageMolecule,{
+            ...globalConfig,
+        });
+        await flushPromises();
+
+        // Modify Molecule
+        checkModifyDialog(wrapper, mol_2);
+        // Check have equivalents input
+        expect(wrapper.find('input[name="equivalents"]').exists()).toBe(true);
+        // Check have table to select equivalents
+        expect(wrapper.findAll('.v-table')[1].exists()).toBe(true);
+
+        // Check we have 3 equivalents
+        expect(wrapper.text()).toContain('mol_0');
+        expect(wrapper.text()).toContain('mol_1');
+        expect(wrapper.text()).toContain('mol_3');
+        // 4 = 3 equivalents + 1 synonyms
+        expect(wrapper.findAll('.mdi-delete').length).toBe(4);
+
+        // simulate fetch delete equivalents
+        $fetchMock.mockImplementation(async (url: string) => {
+            if(url === 'api/deleteEquivalents') {
+                return [];
+            }
+            return 0;
+        });
+
+        // Delete equivalents
+        await wrapper.findAll('.mdi-delete')[2].trigger('click');
+        await wrapper.vm.$nextTick();
+        await flushPromises();
+
+        // Check call API to delete equivalents
+        expect($fetchMock).toHaveBeenCalledWith('api/deleteEquivalents', {id_mol_0: '3', id_mol_1: '2'});
+
+        // Check equivalents are removed
+        expect(wrapper.text()).not.toContain('mol_0');
+        expect(wrapper.text()).not.toContain('mol_1');
+        expect(wrapper.text()).not.toContain('mol_3');
+
+
+        // Check we have 1 synonyms
+        expect(wrapper.text()).toContain('Other');
+
+        // Simulate fetch delete synonyms
+        $fetchMock.mockImplementation(async (url: string) => {
+            if(url === 'api/deleteSynonyms') {
+                return [];
+            }
+            return 0;
+        });
+
+        // Remove synonyms
+        await wrapper.find('.mdi-delete').trigger('click');
+        await wrapper.vm.$nextTick();
+        await flushPromises();
+        // Check synonyms are removed
+        expect(wrapper.text()).not.toContain('Other');
+        expect(wrapper.findAll('.mdi-delete').length).toBe(0);
+
+        // Check call API to delete synonyms
+        expect($fetchMock).toHaveBeenCalledWith('api/deleteSynonyms', {id_mol: '2', synonyms: 'Other'});
+
+
+        // remettre les molecules au velur initale et vérifier
+        mol_0.equivalents--;
+        mol_1.equivalents--;
+        mol_2.equivalents--;
+        mol_3.equivalents--;
+
+        // Save Molecule
+        checkModif(wrapper, mol_2);
+
+        // Check other molecules are modified
+        checkLines(wrapper, mol_0);
+        checkLines(wrapper, mol_1);
+        checkLines(wrapper, mol_2);
+        checkLines(wrapper, mol_3);
+
+    });
+
+    test('Cancel modification of Molecule', async () => {
+        // Mock fetch
+        $fetchMock.mockImplementation(async (url: string) => {
+            if(url === 'api/manageControle/totalItems') {
+                return 4;
+            } 
+            if(url === 'api/manageControle/getPage') {
+                return [
+                    mol_0,
+                    mol_1,
+                    mol_2,
+                    mol_3
+                ]
+            }
+            if(url === 'api/getEquivalents') {
+                return [
+                    eq_0_1,
+                    eq_0_3,
+                    eq_1_3
+                ]
+            }
+            if(url === 'api/getSynonyms') {
+                return [];
+            }
+
+            if(url === 'api/manageControle/header') {
+                return header;
+            }
+            return 0;
+        });
+
+        const wrapper = mount(ManageMolecule,{
+            ...globalConfig,
+        });
+        await flushPromises();
+
+        // Modify Molecule
+        checkModifyDialog(wrapper, mol_1);
+        // Add synonyms
+        await wrapper.find('input[name="synonyms"]').setValue('Other');
+        // Click on add button
+        await wrapper.find('button[name="addSynonyms"]').trigger('click');
+        await wrapper.vm.$nextTick();
+        await flushPromises();
+        // Check synonyms are added
+        expect(wrapper.text()).toContain('Other');
+        // Check add delete button
+        // 3 because we have 2 equivalents and 1 synonyms
+        expect(wrapper.findAll('.mdi-delete').length).toBe(3);
+
+        // Cancel Modification
+        await wrapper.find('.mdi-close').trigger('click');
+        await wrapper.vm.$nextTick();
+        await flushPromises();
+
+        // Check confirm dialog is open
+        expect(wrapper.find('.confirm-box').exists()).toBe(true);
+        // Cancel confirm dialog
+        await wrapper.find('bt[name="btNo"]').trigger('click');
+        await wrapper.vm.$nextTick();
+        await flushPromises();
+
+        // Check confirm dialog is closed
+        expect(wrapper.find('.confirm-box').exists()).toBe(false);
+
+        // Cancel Modification
+        await wrapper.find('.mdi-close').trigger('click');
+        await wrapper.vm.$nextTick();
+        await flushPromises();
+
+        // Check confirm dialog is open
+        expect(wrapper.find('.confirm-box').exists()).toBe(true);
+        // Confirm confirm dialog
+        await wrapper.find('bt[name="btYes"]').trigger('click');
+        await wrapper.vm.$nextTick();
+        await flushPromises();
+
+        // Check dialog is closed
+        expect(wrapper.find('.v-dialog').exists()).toBe(false);
+
+        // Check any molecules aren't modified 
+        checkLines(wrapper, mol_0);
+        checkLines(wrapper, mol_1);
+        checkLines(wrapper, mol_2);
+        checkLines(wrapper, mol_3);       
+    });
+
+    test('Cancel add Molecule', async () => {
+        // Mock fetch
+        $fetchMock.mockImplementation(async (url: string) => {
+            if(url=== 'api/manageControle/totalItems') {
+                return 2;
+            } else if(url === 'api/manageControle/getPage') {
+                return [
+                    mol_0,
+                    mol_1,
+                ]
+            }
+            if(url === 'api/getChEBI?search=epichlicin') {
+                return {chebi: 'ChEBI:65849',
+                        name: 'epichlicin',
+                        formular: 'C48H74N12O14'};
+            }
+            if(url === 'api/manageControle/header') {
+                return header;
+            }
+            return 0;
+        });
+
+        const wrapper = mount(ManageMolecule,{
+            ...globalConfig,
+        });
+        await flushPromises();
+
+        // Open dialog to add Molecule
+        checkAddDialog(wrapper);
+
+        // Cancel add Molecule
+        await wrapper.find('.mdi-close').trigger('click');
+        await wrapper.vm.$nextTick();
+        await flushPromises();
+
+        // Check confirm dialog is open
+        expect(wrapper.find('.confirm-box').exists()).toBe(true);
+        // Cancel confirm dialog
+        await wrapper.find('bt[name="btNo"]').trigger('click');
+        await wrapper.vm.$nextTick();
+        await flushPromises();
+
+        // Check confirm dialog is closed
+        expect(wrapper.find('.confirm-box').exists()).toBe(false);
+
+        // Cancel add Molecule
+        await wrapper.find('.mdi-close').trigger('click');
+        await wrapper.vm.$nextTick();
+        await flushPromises();
+
+        // Check confirm dialog is open
+        expect(wrapper.find('.confirm-box').exists()).toBe(true);
+        // Confirm confirm dialog
+        await wrapper.find('bt[name="btYes"]').trigger('click');
+        await wrapper.vm.$nextTick();
+        await flushPromises();
+
+        // Check dialog is closed
+        expect(wrapper.find('.v-dialog').exists()).toBe(false);
+
+        // Check any molecules aren't modified
+        checkLines(wrapper, mol_0);
+        checkLines(wrapper, mol_1);
+
+    });
 });
 
