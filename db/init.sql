@@ -139,6 +139,41 @@ SELECT *
 FROM machine
 WHERE date_achieve IS NULL;
 
+-- Molecule
+-- Molecule is a table to store information of molecules
+CREATE TABLE molecule
+(
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(255) UNIQUE,
+  formula VARCHAR(255),
+  mass FLOAT
+);
+-- Equivalents is a table to store information of equivalents
+CREATE TABLE equivalent
+(
+  id_mol_0 SERIAL REFERENCES molecule (id) ON DELETE CASCADE,
+  id_mol_1 SERIAL REFERENCES molecule (id) ON DELETE CASCADE,
+  PRIMARY KEY (id_mol_0, id_mol_1)
+);
+-- Synonyms is a table to store information of synonyms
+CREATE TABLE synonym
+(
+  id_mol SERIAL REFERENCES molecule (id) ON DELETE CASCADE,
+  name VARCHAR(255),
+  PRIMARY KEY (id_mol, name)
+);
+
+-- view to show all information of molecule
+CREATE VIEW view_complete_molecule AS
+SELECT molecule.id AS id, molecule.name AS name, formula, mass,
+       array_agg(DISTINCT equivalent.id_mol_1) AS equivalent,
+       array_agg(DISTINCT synonym.name) AS synonym
+FROM molecule
+LEFT JOIN equivalent ON molecule.id = equivalent.id_mol_0 
+                     OR molecule.id = equivalent.id_mol_1
+LEFT JOIN synonym ON molecule.id = synonym.id_mol
+GROUP BY molecule.id;
+
 CREATE TABLE calib_curves
 (
   id SERIAL PRIMARY KEY,
