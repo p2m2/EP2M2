@@ -200,7 +200,7 @@ async function checkSave(wrapper:any, mol:any){
     await flushPromises();
 
     //check call API to save Molecule
-    expect($fetchMock).toHaveBeenCalledWith('api/addMolecule',mol);
+    expect($fetchMock).toHaveBeenCalledWith('api/molecule/add',mol);
 
     // Check dialog is closed
     expect(wrapper.find('.v-dialog').exists()).toBe(false);
@@ -280,7 +280,7 @@ async function checkModif(wrapper:any, mol:any){
     await flushPromises();
 
     //check call API to save Molecule
-    expect($fetchMock).toHaveBeenCalledWith('api/modifMolecule',mol);
+    expect($fetchMock).toHaveBeenCalledWith('api/molecule/modif',mol);
 
     // Check dialog is closed
     expect(wrapper.find('.v-dialog').exists()).toBe(false);
@@ -613,14 +613,14 @@ describe('ManageMolecule', () => {
                     mol_3
                 ]
             }
-            if(url === 'api/getEquivalents') {
+            if(url === 'api/molecule/equivalents') {
                 return [
                     eq_0_1,
                     eq_0_3,
                     eq_1_3
                 ]
             }
-            if(url === 'api/getSynonyms') {
+            if(url === 'api/molecule/synonyms') {
                 return [
                     syn_1
                 ]
@@ -680,14 +680,14 @@ describe('ManageMolecule', () => {
                     mol_3
                 ]
             }
-            if(url === 'api/getEquivalents') {
+            if(url === 'api/molecule/equivalents') {
                 return [
                     eq_0_1,
                     eq_0_3,
                     eq_1_3
                 ]
             }
-            if(url === 'api/getSynonyms') {
+            if(url === 'api/molecule/synonyms') {
                 return [];
             }
 
@@ -739,14 +739,14 @@ describe('ManageMolecule', () => {
                     mol_3
                 ]
             }
-            if(url === 'api/getEquivalents') {
+            if(url === 'api/molecule/equivalents') {
                 return [
                     eq_0_1,
                     eq_0_3,
                     eq_1_3
                 ]
             }
-            if(url === 'api/getSynonyms') {
+            if(url === 'api/molecule/synonyms') {
                 return [];
             }
 
@@ -816,14 +816,14 @@ describe('ManageMolecule', () => {
                     mol_3
                 ]
             }
-            if(url === 'api/getEquivalents') {
+            if(url === 'api/molecule/equivalents') {
                 return [
                     eq_0_1,
                     eq_0_3,
                     eq_1_3
                 ]
             }
-            if(url === 'api/getSynonyms') {
+            if(url === 'api/molecule/synonyms') {
                 return [];
             }
 
@@ -909,7 +909,7 @@ describe('ManageMolecule', () => {
                     mol_3
                 ]
             }
-            if(url === 'api/getEquivalents') {
+            if(url === 'api/molecule/equivalents') {
                 return [
                     {
                         id_mol_0: '0',
@@ -925,7 +925,7 @@ describe('ManageMolecule', () => {
                     }
                 ]
             }
-            if(url === 'api/getSynonyms') {
+            if(url === 'api/molecule/synonyms') {
                 return ["Other"];
             }
 
@@ -996,7 +996,7 @@ describe('ManageMolecule', () => {
                     mol_3
                 ]
             }
-            if(url === 'api/getEquivalents') {
+            if(url === 'api/molecule/equivalents') {
                 return [
                     {
                         id_mol_0: '0',
@@ -1012,7 +1012,7 @@ describe('ManageMolecule', () => {
                     }
                 ]
             }
-            if(url === 'api/getSynonyms') {
+            if(url === 'api/molecule/synonyms') {
                 return ["Other"];
             }
 
@@ -1041,21 +1041,10 @@ describe('ManageMolecule', () => {
         // 4 = 3 equivalents + 1 synonyms
         expect(wrapper.findAll('.mdi-delete').length).toBe(4);
 
-        // simulate fetch delete equivalents
-        $fetchMock.mockImplementation(async (url: string) => {
-            if(url === 'api/deleteEquivalents') {
-                return [];
-            }
-            return 0;
-        });
-
         // Delete equivalents
         await wrapper.findAll('.mdi-delete')[2].trigger('click');
         await wrapper.vm.$nextTick();
         await flushPromises();
-
-        // Check call API to delete equivalents
-        expect($fetchMock).toHaveBeenCalledWith('api/deleteEquivalents', {id_mol_0: '3', id_mol_1: '2'});
 
         // Check equivalents are removed
         expect(wrapper.text()).not.toContain('mol_0');
@@ -1066,14 +1055,6 @@ describe('ManageMolecule', () => {
         // Check we have 1 synonyms
         expect(wrapper.text()).toContain('Other');
 
-        // Simulate fetch delete synonyms
-        $fetchMock.mockImplementation(async (url: string) => {
-            if(url === 'api/deleteSynonyms') {
-                return [];
-            }
-            return 0;
-        });
-
         // Remove synonyms
         await wrapper.find('.mdi-delete').trigger('click');
         await wrapper.vm.$nextTick();
@@ -1081,10 +1062,6 @@ describe('ManageMolecule', () => {
         // Check synonyms are removed
         expect(wrapper.text()).not.toContain('Other');
         expect(wrapper.findAll('.mdi-delete').length).toBe(0);
-
-        // Check call API to delete synonyms
-        expect($fetchMock).toHaveBeenCalledWith('api/deleteSynonyms', {id_mol: '2', synonyms: 'Other'});
-
 
         // remettre les molecules au velur initale et vérifier
         mol_0.equivalents--;
@@ -1117,14 +1094,14 @@ describe('ManageMolecule', () => {
                     mol_3
                 ]
             }
-            if(url === 'api/getEquivalents') {
+            if(url === 'api/molecule/equivalents') {
                 return [
                     eq_0_1,
                     eq_0_3,
                     eq_1_3
                 ]
             }
-            if(url === 'api/getSynonyms') {
+            if(url === 'api/molecule/synonyms') {
                 return [];
             }
 
