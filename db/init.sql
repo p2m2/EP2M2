@@ -163,16 +163,30 @@ CREATE TABLE synonym
   PRIMARY KEY (id_mol, name)
 );
 
--- view to show all information of molecule
-CREATE VIEW view_complete_molecule AS
+-- view to show information of molecule in tab
+CREATE VIEW view_tab_molecule AS
 SELECT molecule.id AS id, molecule.name AS name, formula, mass,
-       array_agg(DISTINCT equivalent.id_mol_1) AS equivalent,
-       array_agg(DISTINCT synonym.name) AS synonym
+       COUNT(DISTINCT equivalent.id_mol_1) AS equivalent
 FROM molecule
 LEFT JOIN equivalent ON molecule.id = equivalent.id_mol_0 
                      OR molecule.id = equivalent.id_mol_1
 LEFT JOIN synonym ON molecule.id = synonym.id_mol
 GROUP BY molecule.id;
+
+-- Function to get all names of equivalent molecules
+CREATE OR REPLACE FUNCTION func_equivalent_molecule(id_mol INTEGER)
+RETURNS TABLE(name VARCHAR(255)) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT DISTINCT molecule.name AS name
+    FROM molecule
+    LEFT JOIN equivalent ON molecule.id = equivalent.id_mol_0 
+                          OR molecule.id = equivalent.id_mol_1
+    WHERE molecule.id = id_mol;
+
+END;
+$$ LANGUAGE plpgsql;
+
 
 CREATE TABLE calib_curves
 (
