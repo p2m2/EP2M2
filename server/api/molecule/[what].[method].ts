@@ -6,7 +6,7 @@
 
 import {getEquivalent, getSynonym, addMolecule, updateMolecule} from "./functions"
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async (event: any) => {
     const what = getRouterParam(event, "what");
     const method = getRouterParam(event, "method");
 

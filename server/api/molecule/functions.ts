@@ -9,6 +9,7 @@ import { queryDatabase } from '../function/database';
 export { getEquivalent, getSynonym, addMolecule, updateMolecule, tMolecule };
 
 interface tMolecule {
+    id: number,
     name: string,
     formula: string,
     mass: number,
@@ -53,7 +54,7 @@ function getSynonym(id: number): Promise<string[] | number> {
 
 /**
  * Add a new molecule to the database
- * @param event 
+ * @param mol tMolecule info about molecule 
  * @returns number 0 if the operation is successful, 1 otherwise
  */
 function addMolecule(mol: tMolecule): Promise<number> {
@@ -112,21 +113,17 @@ function addSynonyms(idMolecule: number, synonyms: string[]): Promise<void> {
 
 /**
  * Update a molecule in the database
- * @param event 
+ * @param mol tMolecule info about molecule  
  * @returns number 0 if the operation is successful, 1 otherwise
  */
-function updateMolecule(event: any): Promise<any> {
-    return readBody(event)
-        .then((body) => body.json())
-        .then((json) => {
-            // Get all synonyms and equivalents of the molecule from the database
-            return Promise.all([
-                updateSynonyms(json.id, json.synonyms),
-                updateEquivalent(json.id, json.equivalents)
-            ]);
-        })
-        .then(() => 0)
-        .catch(() => 1);
+function updateMolecule(mol: tMolecule): Promise<any> {
+    // Get all synonyms and equivalents of the molecule from the database
+    return Promise.all([
+        updateSynonyms(mol.id, mol.synonyms),
+        updateEquivalent(mol.id, mol.equivalents)
+    ])
+    .then(() => 0)
+    .catch(() => 1);
 }
 
 /**
