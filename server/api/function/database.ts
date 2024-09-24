@@ -4,10 +4,10 @@
 
 // This file profides function to handle database queries
 
-import { Pool } from 'pg';
+import pg from 'pg';
 
 // Params of the database are defined in the .env file
-const pool = new Pool();
+const pool = new pg.Pool();
 
 /**
  * Handles database queries

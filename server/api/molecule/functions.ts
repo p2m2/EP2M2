@@ -9,12 +9,12 @@ import { queryDatabase } from '../function/database';
 export { getEquivalent, getSynonym, addMolecule, updateMolecule, tMolecule };
 
 interface tMolecule {
-    id: number,
+    id: number|null | undefined,
     name: string,
     formula: string,
     mass: number,
-    synonyms: string [],
-    equivalents: number[]
+    synonyms: string [] | [] | undefined,
+    equivalents: number[] | [] | undefined
 
 }
 /**
@@ -58,12 +58,16 @@ function getSynonym(id: number): Promise<string[] | number> {
  * @returns number 0 if the operation is successful, 1 otherwise
  */
 function addMolecule(mol: tMolecule): Promise<number> {
+    console.log(1);
+    
     // Insert a new molecule into the database
     return queryDatabase(`
         INSERT INTO molecule (name, formula, mass) 
         VALUES ($1, $2, $3) RETURNING id`,
         [mol.name, mol.formula, mol.mass])
     .then((result) => {
+        console.log(2);
+        
         const aPromises = [];
         if (mol.equivalents.length) {
             aPromises.push(addEquivalents(result.rows[0].id,
