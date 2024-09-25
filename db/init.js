@@ -6,8 +6,12 @@ import fs from 'fs';
 import path from 'path';
 import pg from 'pg';
 
+// Obtenir le chemin du répertoire actuel
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
 // Créez une instance de client PostgreSQL
 const client = new pg.Client({
+    database: "ep2m2db",
     user: "ep2m2",
     password: "ep2m2",
 });
@@ -24,7 +28,6 @@ async function initializeDatabase() {
         // Lire le contenu du fichier
         const sql = fs.readFileSync(sqlFilePath, 'utf8');
 
-        console.log("Lecture du fichier SQL réussie !",sql.length);
         // Exécuter le contenu SQL
         await client.query(sql);
 
