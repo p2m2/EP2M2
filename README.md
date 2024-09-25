@@ -4,8 +4,9 @@ SPDX-FileCopyrightText: 2024 Marcellino Palerme <marcellino.palerme@inrae.fr>
 SPDX-License-Identifier: MIT
 -->
 
-# EP2M2
-metabolomic target analyzes manager.
+# EP2M2 : Metabolomic Target Analyzes Manager.
+
+![Tests Unit](https://github.com/p2m2/EP2M2/actions/workflows/test_unit.yml/badge.svg)
 
 ## Features
 - Extraction of formats files of the metabolomics data acquisition devices of the P2M2 platform

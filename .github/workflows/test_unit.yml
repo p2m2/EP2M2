@@ -55,7 +55,6 @@ jobs:
         run: npm ci
       - name: Configure database
         run: node ./db/init.js
-        #run: PGPASSWORD='ep2m2' psql -U ep2m2 -d ep2m2db -f ./db/init.sql
       - name: Test
         run: npm run test
       - name: Coverage

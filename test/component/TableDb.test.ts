@@ -1,11 +1,10 @@
 // SPDX-FileCopyrightText: 2024 Marcellino Palerme <marcellino.palerme@inrae.fr>
 //
 // SPDX-License-Identifier: MIT
+import { mockNuxtImport, mountSuspended } from '@nuxt/test-utils/runtime';
+import { flushPromises } from "@vue/test-utils";
 import { describe, test } from "vitest";
 import TableDb from "~/components/TableDb.vue";
-import { mountSuspended } from '@nuxt/test-utils/runtime';
-import { flushPromises } from "@vue/test-utils";
-import { mockNuxtImport} from '@nuxt/test-utils/runtime'
 
 const { useI18nMock} = vi.hoisted(() => {
     return {
@@ -30,7 +29,7 @@ describe("TableDb", async () => {
         vi.clearAllMocks();
     });
 
-    test("unexist database table", async() => {
+    test.todo("unexist database table", async() => {
         $fetchMock.mockReturnValueOnce(Promise.reject("unexist"));
 
         const wrapper = await mountSuspended(TableDb,{

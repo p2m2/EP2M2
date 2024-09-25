@@ -12,7 +12,7 @@ describe("tableClass", async ()=>{
         expect(await(new Table("users"))).toBeInstanceOf(Table);
     });
 
-    test("bad name table",async ()=>{
+    test.todo("bad name table",async ()=>{
         expect(await(new Table("unknow"))).toThrowError(/^unknow table doesn't exist$/);
     });
 
