@@ -91,10 +91,6 @@ describe("molecule", async () => {
     test('modif molecule: add synonym', async () => {
         (queryDatabase as Mock).mockResolvedValueOnce({
                     rows: [{
-                        id: 1,
-                        name: "voglibose",
-                        formula: "C10H21NO7",
-                        mass: 267.277,
                         equivalent: [0],
                         synonym: ["vague"]
                     }]
@@ -105,11 +101,11 @@ describe("molecule", async () => {
         (queryDatabase as Mock).mockImplementation((query: string,
                                                     values: any[]) => {
             if (query.includes("SELECT") 
-                && query.includes("FROM view_complete_molecule") 
-                && query.includes("WHERE id = $1")) {
+                && query.includes("func_synonym_equivalent_molecule($1)")){
                 expect(values).toContain([1]);
 
             }
+
             else if (query.includes("DELETE FROM") && query.includes("synonym")) {
                 expect(values).toContain([1]);
                 expect(query.includes("WHERE id_molecule = $1")).toBe(true)
@@ -139,10 +135,6 @@ describe("molecule", async () => {
 
         (queryDatabase as Mock).mockResolvedValueOnce({
                     rows: [{
-                        id: 1,
-                        name: "voglibose",
-                        formula: "C10H21NO7",
-                        mass: 267.277,
                         equivalent: [0],
                         synonym: ["vague", "vog"]
                     }]
@@ -152,8 +144,7 @@ describe("molecule", async () => {
         (queryDatabase as Mock).mockImplementation((query: string,
                                                     values: any[]) => {
             if (query.includes("SELECT")
-                && query.includes("FROM view_complete_molecule")
-                && query.includes("WHERE id = $1")) {
+                && query.includes("func_synonym_equivalent_molecule($1)")) {
                 expect(values).toContain([1]);
             }
             else if (query.includes("DELETE FROM") && query.includes("synonym")) {
@@ -178,10 +169,6 @@ describe("molecule", async () => {
     test('modif molecule: add equivalent', async () => {
         (queryDatabase as Mock).mockResolvedValueOnce({
                     rows: [{
-                        id: 1,
-                        name: "voglibose",
-                        formula: "C10H21NO7",
-                        mass: 267.277,
                         equivalent: [0],
                         synonym: ["vague"]
                     }]
@@ -191,8 +178,7 @@ describe("molecule", async () => {
         (queryDatabase as Mock).mockImplementation((query: string,
                                                     values: any[]) => {
             if (query.includes("SELECT")
-                && query.includes("FROM view_complete_molecule")
-                && query.includes("WHERE id = $1")) {
+                && query.includes("func_synonym_equivalent_molecule($1)")) {
                 expect(values).toContain([1]);
             }
             else if (query.includes("DELETE FROM") && query.includes("equivalent")) {
@@ -224,10 +210,6 @@ describe("molecule", async () => {
     test('modif molecule: delete equivalent', async () => {
         (queryDatabase as Mock).mockResolvedValueOnce({
             rows: [{
-                id: 1,
-                name: "voglibose",
-                formula: "C10H21NO7",
-                mass: 267.277,
                 equivalent: [0, 2],
                 synonym: ["vague"]
             }]
@@ -236,8 +218,7 @@ describe("molecule", async () => {
         (queryDatabase as Mock).mockImplementation((query: string,
                                                     values: any[]) => {
             if (query.includes("SELECT")
-                && query.includes("FROM view_complete_molecule")
-                && query.includes("WHERE id = $1")) {
+                && query.includes("func_synonym_equivalent_molecule($1)")) {
                 expect(values).toContain([1]);
             }
             else if (query.includes("DELETE FROM") && query.includes("equivalent")) {
