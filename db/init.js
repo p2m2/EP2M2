@@ -8,7 +8,6 @@ import pg from 'pg';
 
 // Créez une instance de client PostgreSQL
 const client = new pg.Client({
-    database: "ep2m2db",
     user: "ep2m2",
     password: "ep2m2",
 });
