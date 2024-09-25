@@ -4,6 +4,7 @@
 
 // This file provides functions to handle molecule-related operations
 
+import { compareArray } from '../function/compareArray';
 import { queryDatabase } from '../function/database';
 
 export { getEquivalent, getSynonym, addMolecule, updateMolecule, tMolecule };
@@ -58,16 +59,13 @@ function getSynonym(id: number): Promise<string[] | number> {
  * @returns number 0 if the operation is successful, 1 otherwise
  */
 function addMolecule(mol: tMolecule): Promise<number> {
-    console.log(1);
     
     // Insert a new molecule into the database
     return queryDatabase(`
         INSERT INTO molecule (name, formula, mass) 
         VALUES ($1, $2, $3) RETURNING id`,
         [mol.name, mol.formula, mol.mass])
-    .then((result) => {
-        console.log(2);
-        
+    .then((result) => {        
         const aPromises = [];
         if (mol.equivalents.length) {
             aPromises.push(addEquivalents(result.rows[0].id,
@@ -92,7 +90,7 @@ function addEquivalents(idMolecule: number, equivalents: number[]):
     Promise<void> {
     const promises = equivalents.map((equivalent) => {
         return queryDatabase(`
-            INSERT INTO equivalent (id_mol_1, id_mol_2) 
+            INSERT INTO equivalent (id_mol_0, id_mol_1) 
             VALUES ($1, $2)`,
             [idMolecule, equivalent]);
     });
@@ -112,7 +110,7 @@ function addSynonyms(idMolecule: number, synonyms: string[]): Promise<void> {
             VALUES ($1, $2)`,
             [idMolecule, synonym]);
     });
-    return Promise.all(promises).then(() => { });
+    return Promise.all(promises);
 }
 
 /**
@@ -122,10 +120,20 @@ function addSynonyms(idMolecule: number, synonyms: string[]): Promise<void> {
  */
 function updateMolecule(mol: tMolecule): Promise<any> {
     // Get all synonyms and equivalents of the molecule from the database
-    return Promise.all([
-        updateSynonyms(mol.id, mol.synonyms),
-        updateEquivalent(mol.id, mol.equivalents)
-    ])
+    return queryDatabase(`SELECT * FROM func_synonym_equivalent_molecule($1)`, [mol.id])
+    .then((res) => {
+        const lPromises = [];
+        // Check if the molecule has synonyms to update
+        if (mol.synonyms && !compareArray(res.rows[0].synonym, mol.synonyms)) {
+            lPromises.push(updateSynonyms(mol.id, mol.synonyms));
+        }
+        // Check if the molecule has equivalents to update
+        if (mol.equivalents && !compareArray(res.rows[0].equivalent,
+                                             mol.equivalents)) {
+            lPromises.push(updateEquivalent(mol.id, mol.equivalents));
+        }
+        return Promise.all(lPromises)
+    })
     .then(() => 0)
     .catch(() => 1);
 }
