@@ -198,8 +198,8 @@ BEGIN
                           OR molecule.id = equivalent.id_mol_1
     LEFT JOIN synonym ON molecule.id = synonym.id_mol
     WHERE molecule.id = id_mol;
-
 END;
+$$ LANGUAGE plpgsql;
 
 CREATE TABLE calib_curves
 (
