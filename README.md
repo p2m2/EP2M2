@@ -6,7 +6,8 @@ SPDX-License-Identifier: MIT
 
 # EP2M2 : Metabolomic Target Analyzes Manager.
 
-![Tests Unit](https://github.com/p2m2/EP2M2/actions/workflows/test_unit.yml/badge.svg)
+[![Tests Unit](https://github.com/p2m2/EP2M2/actions/workflows/test_unit.yml/badge.svg)](https://github.com/p2m2/EP2M2/actions/workflows/test_unit.yml)
+
 
 ## Features
 - Extraction of formats files of the metabolomics data acquisition devices of the P2M2 platform
