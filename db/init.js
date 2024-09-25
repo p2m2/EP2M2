@@ -2,7 +2,8 @@
 //
 // SPDX-License-Identifier: MIT
 
-const pg = require("pg");
+import pg from 'pg';
+
 const client = new pg.Client({
     database: "ep2m2db",
     user: "ep2m2",
