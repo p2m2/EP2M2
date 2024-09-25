@@ -25,6 +25,7 @@ async function initializeDatabase() {
         // Lire le contenu du fichier
         const sql = fs.readFileSync(sqlFilePath, 'utf8');
 
+        console.log("Lecture du fichier SQL réussie !",sql.length);
         // Exécuter le contenu SQL
         await client.query(sql);
 

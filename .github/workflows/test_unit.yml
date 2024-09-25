@@ -37,7 +37,7 @@ jobs:
         # Set health checks to wait until postgres has started
         options: >-
           --health-cmd pg_isready
-          --health-interval 9s
+          --health-interval 10s
           --health-timeout 5s
           --health-retries 5
         ports:
@@ -45,21 +45,7 @@ jobs:
     
     steps:
       - name: Get repo
-        uses: actions/checkout@v3
-      
-      - name: Copy init.sql to PostgreSQL container
-        run: docker cp ./db/init.sql $(docker ps -qf "name=db"):/docker-entrypoint-initdb.d/
-
-      - name: Wait for PostgreSQL to be ready
-        run: |
-          until PGPASSWORD=$PGPASSWORD psql -h localhost -U $PGUSER -d $PGDATABASE -c '\q'; do
-            >&2 echo "PostgreSQL is unavailable - sleeping"
-            sleep 1
-          done
-
-      - name: Run init.sql
-        run: PGPASSWORD=$PGPASSWORD psql -h localhost -U $PGUSER -d $PGDATABASE -f /docker-entrypoint-initdb.d/init.sql
-
+        uses: actions/checkout@v4
       - name: Use Node.js
         uses: actions/setup-node@v3
         with:
@@ -67,8 +53,8 @@ jobs:
           cache: 'npm'
       - name: Installation project s packages
         run: npm ci
-      #- name: Configure database
-      #  run: node ./db/init.js
+      - name: Configure database
+        run: node ./db/init.js
       - name: Test
         run: npm run test
       - name: Coverage
