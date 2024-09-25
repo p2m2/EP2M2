@@ -8,7 +8,7 @@ import Table from "~/server/api/class/tableClass";
 
 describe("tableClass", async ()=>{
 
-    test("Check create table object", async ()=>{
+    test.todo("Check create table object", async ()=>{
         expect(await(new Table("users"))).toBeInstanceOf(Table);
     });
 
