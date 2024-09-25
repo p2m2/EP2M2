@@ -5,6 +5,7 @@
 import fs from 'fs';
 import path from 'path';
 import pg from 'pg';
+import { fileURLToPath } from 'url';
 
 // Obtenir le chemin du répertoire actuel
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
