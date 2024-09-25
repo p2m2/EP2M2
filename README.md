@@ -22,6 +22,23 @@ metabolomic target analyzes manager.
   - Associated calibration curves
 
 ## Installation
+
+### Manual installation
+
+```bash
+npm i
+```
+
+### Running tests
+
+```bash
+docker volume prune
+## database and API
+docker compose --env-file .env.test -f compose.dev.yaml up -d
+
+rpm run test
+```
+
 ### Docker compose (Recommended)
 _Requirement_ : Docker Engine
 1. Download release archive

@@ -19,8 +19,12 @@ services:
       - "5432:5432"
     volumes:
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
-    env_file:
-      - ./secrets/pg.env
+    environment:
+      POSTGRES_PASSWORD: ${PGPASSWORD}
+      POSTGRES_USER: ${PGUSER}
+      POSTGRES_DB: ${PGDATABASE}
+      PGPORT: ${PGPORT}
+      PGHOST: ${PGHOST}
 
 volumes:
   shareFile:
