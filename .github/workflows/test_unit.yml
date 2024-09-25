@@ -30,6 +30,8 @@ jobs:
       db:
         image: postgres:latest
         # Provide the password for postgres
+        volumes:
+          - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
         env:
           POSTGRES_PASSWORD: ep2m2
           POSTGRES_DB: ep2m2db
@@ -53,8 +55,8 @@ jobs:
           cache: 'npm'
       - name: Installation project s packages
         run: npm ci
-      - name: Configure database
-        run: node ./db/init.js
+ #     - name: Configure database
+ #       run: node ./db/init.js
       - name: Test
         run: npm run test
       - name: Coverage
