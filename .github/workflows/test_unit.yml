@@ -61,8 +61,13 @@ jobs:
         if: always()
         uses: davelosert/vitest-coverage-report-action@v2
         with:
-          file-coverage-mode: all
-          comment-on: pr,commit
+           file-coverage-mode: all
+           github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: ⚙️ Generating coverage badges
+        uses: jpb06/coverage-badges-action@latest
+        with:
+          branches: all
+          badges-icon: vitest
       - name: Summary Tests
         uses: EnricoMi/publish-unit-test-result-action@v2
         if: always()
