@@ -55,11 +55,8 @@ jobs:
         run: npm ci
       - name: Configure database
         run: node ./db/init.js
-      - name: Test
+      - name: Test and Coverage
         run: npm run test
-      - name: Coverage
-        if: always()
-        run: npm run coverage
       - name: Report coverage
         if: always()
         uses: davelosert/vitest-coverage-report-action@v2
@@ -70,11 +67,11 @@ jobs:
         if: always()
         with:
           files: |
-            ./test/**/*.xml
+            ./test/results/*.xml
       - name: Complet report tests
         uses: dorny/test-reporter@v1
         if: always()
         with:
           reporter: "java-junit"
           name: Test Unit
-          path: ./test/**/*.xml
+          path: ./test/results/*.xml
