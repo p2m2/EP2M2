@@ -5,8 +5,8 @@
 //  This file extracts the results of the tests from the file results.json
 
 import fs from 'fs';
-// import path from 'path';
-import {exec} from 'child_process';
+import path from 'path';
+import {core}from '@actions/core';
 
 // Path to the file containing the results of the tests
 const filePath = './test/results/results.json';
@@ -14,7 +14,7 @@ const filePath = './test/results/results.json';
 fs.readFile(filePath, 'utf-8', (err, data) => {
     if (err) {
         console.error('Reading file failed:', err);
-        process.exit(1); // out with an error
+        core.setFailed(`Reading file failed with error: ${err}`);
     }
 
     try {
@@ -27,16 +27,23 @@ fs.readFile(filePath, 'utf-8', (err, data) => {
         const todoTests = results.numTodoTests; 
         const successTests = results.success=='true' ? 1 : 0;
 
-        // Print the outputs for GitHub Actions
-        exec(`echo "{totalTests}=${totalTests}" >> "$GITHUB_OUT"`);
-        exec(`echo "{passedTests}=${passedTests}" >> "$GITHUB_OUT"`);
-        exec(`echo "{failedTests}=${failedTests}" >> "$GITHUB_OUT"`);
-        exec(`echo "{pendingTests}=${pendingTests}" >> "$GITHUB_OUT"`);
-        exec(`echo "{todoTests}=${todoTests}" >> "$GITHUB_OUT"`);
-        exec(`echo "{successTests}=${successTests}" >> "$GITHUB_OUT"`);
+        // Sauvegarde l'état dans le fichier GitHub state
+        fs.appendFileSync(
+            path.join(process.env.GITHUB_OUTPUT),
+            `\ntotalTest=${totalTests}\npassedTests=${passedTests}\nfailedTests=${failedTests}\npendingTests=${pendingTests}\ntodoTests=${todoTests}\nsuccessTests=${successTests}\n`
+        );
 
-    } catch (parseError) {
-        console.error('Analyse of json failed', parseError);
-        process.exit(1); // out with an error
+        // Définir l'output
+        core.setOutput("todoTests", todoTests);
+        core.setOutput("successTests", successTests);
+        core.setOutput("totalTests", totalTests);
+        core.setOutput("passedTests", passedTests);
+        core.setOutput("failedTests", failedTests);
+        core.setOutput("pendingTests", pendingTests);
+
+
+    } catch (error) {
+        console.error('Analyse of json failed', error);
+        core.setFailed(`Action failed with error: ${error}`);
     }
 });

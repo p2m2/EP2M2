@@ -84,6 +84,7 @@ jobs:
       - name: Extract test results
         id: extract_results
         run: |
+          npm install @actions/core
           node .github/workflows/extractResultsTest.js
       - name: Generate Badges fail result global tests
         if: steps.extract_results.outputs.successTests == 0
