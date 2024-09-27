@@ -6,7 +6,7 @@
 
 import fs from 'fs';
 import path from 'path';
-import {core}from '@actions/core';
+import * as core from '@actions/core';
 
 // Path to the file containing the results of the tests
 const filePath = './test/results/results.json';
