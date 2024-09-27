@@ -6,7 +6,7 @@
 
 import fs from 'fs';
 import path from 'path';
-import core from '@actions/core';
+// import core from '@actions/core';
 // Path to the file containing the results of the tests
 const filePath = './test/results/results.json';
 
@@ -35,12 +35,12 @@ fs.readFile(filePath, 'utf-8', (err, data) => {
                           \n successTests=${successTests}`);
         
         // Define the outputs for GitHub Actions
-        core.setOutput('totalTests', totalTests);
-        core.setOutput('passedTests', passedTests);
-        core.setOutput('failedTests', failedTests);
-        core.setOutput('pendingTests', pendingTests);
-        core.setOutput('todoTests', todoTests);
-        core.setOutput('successTests', successTests);
+        // core.setOutput('totalTests', totalTests);
+        // core.setOutput('passedTests', passedTests);
+        // core.setOutput('failedTests', failedTests);
+        // core.setOutput('pendingTests', pendingTests);
+        // core.setOutput('todoTests', todoTests);
+        // core.setOutput('successTests', successTests);
 
     } catch (parseError) {
         console.error('Analyse of json failed', parseError);
