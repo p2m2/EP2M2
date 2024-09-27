@@ -7,7 +7,7 @@
 import fs from 'fs';
 
 // Path to the file containing the results of the tests
-const filePath = '../../test/results/results.json';
+const filePath = './test/results/results.json';
 
 fs.readFile(filePath, 'utf-8', (err, data) => {
     if (err) {
