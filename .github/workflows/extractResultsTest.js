@@ -25,7 +25,7 @@ fs.readFile(filePath, 'utf-8', (err, data) => {
         const failedTests = results.numFailedTests;
         const pendingTests = results.numPendingTests;
         const todoTests = results.numTodoTests; 
-        const successTests = results.success=='true' ? 1 : 0;
+        const successTests = results.success;
 
         // Sauvegarde l'état dans le fichier GitHub state
         fs.appendFileSync(

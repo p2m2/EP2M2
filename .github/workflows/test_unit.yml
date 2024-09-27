@@ -87,7 +87,7 @@ jobs:
           npm install @actions/core
           node .github/workflows/extractResultsTest.js
       - name: Generate Badges fail result global tests
-        if: steps.extract_results.outputs.successTests == 0
+        if: steps.extract_results.outputs.successTests == 'false'
         uses: jaywcjlove/generated-badges@main
         with:
           label: Tests
@@ -95,7 +95,7 @@ jobs:
           color: 'red'
           output: badges/tests-result.svg
       - name: Generate Badges pass result global tests
-        if: steps.extract_results.outputs.successTests == 1
+        if: steps.extract_results.outputs.successTests == 'true'
         uses: jaywcjlove/generated-badges@main
         with:
           label: Tests
