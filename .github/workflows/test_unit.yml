@@ -84,7 +84,7 @@ jobs:
       - name: Extract test results
         id: extract_results
         run: |
-          node .github/workflows/extractVitestResults.js
+          node .github/workflows/extractResultsTest.js
       - name: Generate Badges fail result global tests
         if: steps.extract_results.outputs.successTests == 'false'
         uses: jaywcjlove/generated-badges@main
