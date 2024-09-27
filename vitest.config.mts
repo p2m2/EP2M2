@@ -85,9 +85,10 @@ export default defineVitestConfig({
                 inline: ["vuetify"],
             },
         },
-        reporters: ["junit", "verbose"],
+        reporters: ["junit", "verbose",'json'],
         outputFile: {
             junit: "test/results/junit.xml",
+            json: "test/results/results.json",
         },
     }
 });
