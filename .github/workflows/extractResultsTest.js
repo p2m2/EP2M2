@@ -5,8 +5,9 @@
 //  This file extracts the results of the tests from the file results.json
 
 import fs from 'fs';
-import path from 'path';
-// import core from '@actions/core';
+// import path from 'path';
+import {exec} from 'child_process';
+
 // Path to the file containing the results of the tests
 const filePath = './test/results/results.json';
 
@@ -26,21 +27,13 @@ fs.readFile(filePath, 'utf-8', (err, data) => {
         const todoTests = results.numTodoTests; 
         const successTests = results.success;
 
-        fs.writeFileSync(path.join(process.env.GITHUB_OUTPUT), 
-                         `\n totalTests=${totalTests}
-                          \n passedTests=${passedTests}
-                          \n failedTests=${failedTests}
-                          \n pendingTests=${pendingTests}
-                          \n todoTests=${todoTests}
-                          \n successTests=${successTests}`);
-        
-        // Define the outputs for GitHub Actions
-        // core.setOutput('totalTests', totalTests);
-        // core.setOutput('passedTests', passedTests);
-        // core.setOutput('failedTests', failedTests);
-        // core.setOutput('pendingTests', pendingTests);
-        // core.setOutput('todoTests', todoTests);
-        // core.setOutput('successTests', successTests);
+        // Print the outputs for GitHub Actions
+        exec(`echo "{totalTests}=${totalTests}" >> $GITHUB_OUT`);
+        exec(`echo "{passedTests}=${passedTests}" >> $GITHUB_OUT`);
+        exec(`echo "{failedTests}=${failedTests}" >> $GITHUB_OUT`);
+        exec(`echo "{pendingTests}=${pendingTests}" >> $GITHUB_OUT`);
+        exec(`echo "{todoTests}=${todoTests}" >> $GITHUB_OUT`);
+        exec(`echo "{successTests}=${successTests}" >> $GITHUB_OUT`);
 
     } catch (parseError) {
         console.error('Analyse of json failed', parseError);
