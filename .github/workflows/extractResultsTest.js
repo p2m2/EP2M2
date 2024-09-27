@@ -25,7 +25,7 @@ fs.readFile(filePath, 'utf-8', (err, data) => {
         const failedTests = results.numFailedTests;
         const pendingTests = results.numPendingTests;
         const todoTests = results.numTodoTests; 
-        const successTests = results.success;
+        const successTests = results.success=='true' ? 1 : 0;
 
         // Print the outputs for GitHub Actions
         exec(`echo "{totalTests}=${totalTests}" >> $GITHUB_OUT`);
