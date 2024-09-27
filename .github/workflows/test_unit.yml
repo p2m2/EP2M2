@@ -91,7 +91,7 @@ jobs:
         with:
           label: Tests
           status: Fail
-          color: '#ff0000'
+          color: 'red'
           output: badges/tests-result.svg
       - name: Generate Badges pass result global tests
         if: steps.extract_results.outputs.successTests == 'true'
@@ -99,7 +99,7 @@ jobs:
         with:
           label: Tests
           status: Pass
-          color: '#00ff00'
+          color: 'green'
           output: badges/tests-result.svg
       - name: Generate Badges number tests
         uses: jaywcjlove/generated-badges@main

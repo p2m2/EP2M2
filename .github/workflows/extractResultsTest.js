@@ -5,7 +5,8 @@
 //  This file extracts the results of the tests from the file results.json
 
 import fs from 'fs';
-
+import path from 'path';
+import core from '@actions/core';
 // Path to the file containing the results of the tests
 const filePath = './test/results/results.json';
 
@@ -24,13 +25,22 @@ fs.readFile(filePath, 'utf-8', (err, data) => {
         const pendingTests = results.numPendingTests;
         const todoTests = results.numTodoTests; 
         const successTests = results.success;
-        // Print the outputs for GitHub Actions
-        console.log(`::set-output name=totalTests::${totalTests}`);
-        console.log(`::set-output name=passedTests::${passedTests}`);
-        console.log(`::set-output name=failedTests::${failedTests}`);
-        console.log(`::set-output name=pendingTests::${pendingTests}`);
-        console.log(`::set-output name=todoTests::${todoTests}`);
-        console.log(`::set-output name=successTests::${successTests}`);
+
+        fs.writeFileSync(path.join(process.env.GITHUB_OUTPUT), 
+                         `\n totalTests=${totalTests}
+                          \n passedTests=${passedTests}
+                          \n failedTests=${failedTests}
+                          \n pendingTests=${pendingTests}
+                          \n todoTests=${todoTests}
+                          \n successTests=${successTests}`);
+        
+        // Define the outputs for GitHub Actions
+        core.setOutput('totalTests', totalTests);
+        core.setOutput('passedTests', passedTests);
+        core.setOutput('failedTests', failedTests);
+        core.setOutput('pendingTests', pendingTests);
+        core.setOutput('todoTests', todoTests);
+        core.setOutput('successTests', successTests);
 
     } catch (parseError) {
         console.error('Analyse of json failed', parseError);
