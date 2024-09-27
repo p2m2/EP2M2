@@ -28,12 +28,12 @@ fs.readFile(filePath, 'utf-8', (err, data) => {
         const successTests = results.success=='true' ? 1 : 0;
 
         // Print the outputs for GitHub Actions
-        exec(`echo "{totalTests}=${totalTests}" >> $GITHUB_OUT`);
-        exec(`echo "{passedTests}=${passedTests}" >> $GITHUB_OUT`);
-        exec(`echo "{failedTests}=${failedTests}" >> $GITHUB_OUT`);
-        exec(`echo "{pendingTests}=${pendingTests}" >> $GITHUB_OUT`);
-        exec(`echo "{todoTests}=${todoTests}" >> $GITHUB_OUT`);
-        exec(`echo "{successTests}=${successTests}" >> $GITHUB_OUT`);
+        exec(`echo "{totalTests}=${totalTests}" >> "$GITHUB_OUT"`);
+        exec(`echo "{passedTests}=${passedTests}" >> "$GITHUB_OUT"`);
+        exec(`echo "{failedTests}=${failedTests}" >> "$GITHUB_OUT"`);
+        exec(`echo "{pendingTests}=${pendingTests}" >> "$GITHUB_OUT"`);
+        exec(`echo "{todoTests}=${todoTests}" >> "$GITHUB_OUT"`);
+        exec(`echo "{successTests}=${successTests}" >> "$GITHUB_OUT"`);
 
     } catch (parseError) {
         console.error('Analyse of json failed', parseError);
