@@ -81,3 +81,58 @@ jobs:
           reporter: "java-junit"
           name: Test Unit
           path: ./test/results/*.xml
+      - name: Extract test results
+        id: extract_results
+        run: |
+          node .github/workflows/extractVitestResults.js
+      - name: Generate Badges fail result global tests
+        if: steps.extract_results.outputs.successTests == 'false'
+        uses: jaywcjlove/generated-badges@main
+        with:
+          label: Tests
+          status: Fail
+          color: '#ff0000'
+          output: badges/tests-result.svg
+      - name: Generate Badges pass result global tests
+        if: steps.extract_results.outputs.successTests == 'true'
+        uses: jaywcjlove/generated-badges@main
+        with:
+          label: Tests
+          status: Pass
+          color: '#00ff00'
+          output: badges/tests-result.svg
+      - name: Generate Badges number tests
+        uses: jaywcjlove/generated-badges@main
+        with:
+          label: Number of tests
+          status: ${{ steps.extract_results.outputs.totalTests }}
+          color: 'black'
+          output: badges/tests-total.svg
+      - name: Generate Badges number passed tests
+        uses: jaywcjlove/generated-badges@main
+        with:
+          label: Passed tests
+          status: ${{ steps.extract_results.outputs.passedTests }}
+          color: 'green'
+          output: badges/tests-passed.svg
+      - name: Generate Badges number failed tests
+        uses: jaywcjlove/generated-badges@main
+        with:
+          label: Failed tests
+          status: ${{ steps.extract_results.outputs.failedTests }}
+          color: 'red'
+          output: badges/tests-failed.svg
+      - name: Generate Badges number todo tests
+        uses: jaywcjlove/generated-badges@main
+        with:
+          label: Todo tests
+          status: ${{ steps.extract_results.outputs.todoTests }}
+          color: 'yellow'
+          output: badges/tests-todo.svg
+      - name: Commit test badges
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add badges/*
+          git commit -m "Update test badges"
+          git push

@@ -6,7 +6,12 @@ SPDX-License-Identifier: MIT
 
 # EP2M2 : Metabolomic Target Analyzes Manager.
 
-[![Tests Unit](https://github.com/p2m2/EP2M2/actions/workflows/test_unit.yml/badge.svg)](https://github.com/p2m2/EP2M2/actions/workflows/test_unit.yml)
+## Tests
+[![result](./badges/tests-result.svg)
+![total](./badges/tests-total.svg)
+![passed](./badges/tests-passed.svg)
+![failed](./badges/tests-failed.svg)
+![todo](./badges/tests-todo.svg)](https://github.com/p2m2/EP2M2/actions/workflows/test_unit.yml)
 
 ![Branches](./badges/coverage-branches.svg)
 ![Functions](./badges/coverage-functions.svg)
