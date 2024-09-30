@@ -137,64 +137,12 @@ jobs:
           git add badges/*
           git commit -m "Update test badges"
           git push
-      - uses: wow-actions/add-badges@v1
-        env:
-          repo_url: ${{ github.repository }}
-          
+      - uses: jaywcjlove/github-action-modify-file-content@main
+         
         with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          center: true
-          badges: |
-            [
-              [
-                {
-                  "badge": "${{ github.repository }}/badges/tests-result.svg",
-                  "alt": "Result of tests",
-                  "link": "${{ github.repository }}/actions/runs/${{ github.run_id }}"
-                },
-                {
-                  "badge": "${{ github.repository }}/badges/tests-total.svg",
-                  "alt": "Total tests",
-                  "link": "${{ github.repository }}/actions/runs/${{ github.run_id }}"
-                },
-                {
-                  "badge": "${{ github.repository }}/badges/tests-passed.svg",
-                  "alt": "Passed tests",
-                  "link": "${{ github.repository }}/actions/runs/${{ github.run_id }}"
-                },
-                {
-                  "badge": "${{ github.repository }}/badges/tests-failed.svg",
-                  "alt": "Failed tests",
-                  "link": "${{ github.repository }}/actions/runs/${{ github.run_id }}"
-                },
-                {
-                  "badge": "${{ github.repository }}/badges/tests-todo.svg",
-                  "alt": "Todo tests",
-                  "link": "${{ github.repository }}/actions/runs/${{ github.run_id }}"
-                }
-                
-              ],
-              [
-                {
-                  "badge": "${{ github.repository }}/badges/coverage_total.svg",
-                  "alt": "Coverage Total",
-                  "link": "${{ github.repository }}/actions/runs/${{ github.run_id }}"
-                },
-                {
-                  "badge": "${{ github.repository }}/badges/coverage_lines.svg",
-                  "alt": "Coverage Lines",
-                  "link": "${{ github.repository }}/actions/runs/${{ github.run_id }}"
-                },
-                {
-                  "badge": "${{ github.repository }}/badges/coverage_functions.svg",
-                  "alt": "Coverage Functions",
-                  "link": "${{ github.repository }}/actions/runs/${{ github.run_id }}"
-                },
-                {
-                  "badge": "${{ github.repository }}/badges/coverage_branches.svg",
-                  "alt": "Coverage Branches",
-                  "link": "${{ github.repository }}/actions/runs/${{ github.run_id }}"
-                }
-              ]
-            ]
-
+          path: README.md
+          openDelimiter: "<!-- [START BADGES] -->"
+          closeDelimiter: "<!-- [END BADGES] -->"
+          body: |
+            "[![result](./badges/tests-result.svg) ![total](./badges/tests-total.svg) ![passed](./badges/tests-passed.svg) ![failed](./badges/tests-failed.svg) ![todo](./badges/tests-todo.svg)](${{ github.repository }}/actions/runs/${{ github.run_id }}) <\br>![Branches](./badges/coverage-branches.svg) ![Functions](./badges/coverage-functions.svg) ![Lines](./badges/coverage-lines.svg)![Statements](./badges/coverage-statements.svg) ![Coverage total](./badges/coverage-total.svg)"
+         
