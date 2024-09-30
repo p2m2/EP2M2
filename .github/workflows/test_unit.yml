@@ -141,8 +141,6 @@ jobs:
          
         with:
           path: README.md
-          openDelimiter: "<!-- [START BADGES] -->"
-          closeDelimiter: "<!-- [END BADGES] -->"
           body: |
             "[![result](./badges/tests-result.svg) ![total](./badges/tests-total.svg) ![passed](./badges/tests-passed.svg) ![failed](./badges/tests-failed.svg) ![todo](./badges/tests-todo.svg)](${{ github.repository }}/actions/runs/${{ github.run_id }}) <\br>![Branches](./badges/coverage-branches.svg) ![Functions](./badges/coverage-functions.svg) ![Lines](./badges/coverage-lines.svg)![Statements](./badges/coverage-statements.svg) ![Coverage total](./badges/coverage-total.svg)"
          

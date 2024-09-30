@@ -7,8 +7,7 @@ SPDX-License-Identifier: MIT
 # EP2M2 : Metabolomic Target Analyzes Manager.
 
 ## Tests
-<!-- [START BADGES] -->
-<!-- [END BADGES] -->
+<!--GAMFC-->empty<!--GAMFC-END-->
 ## Features
 - Extraction of formats files of the metabolomics data acquisition devices of the P2M2 platform
   - gcms
