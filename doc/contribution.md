@@ -37,7 +37,16 @@ docker compose -f compose.dev.yaml up -d
 npm i
 ```
 
-### lancer les tests
+## Lancer l'application
+
+1. Avoir fait l'installation
+2. Lancer l'application
+```bash
+npm run dev
+```
+3. Ouvrir un navigateur à l'adresse [http://localhost:3000](http://localhost:3000)
+
+## lancer les tests
 1. Avoir fait l'installation
 2. Lancer les tests
 ```bash
