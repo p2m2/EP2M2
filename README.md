@@ -25,38 +25,32 @@ SPDX-License-Identifier: MIT
 
 ## Installation
 
-### Manual installation
+### Requirements  
+- adminitrator rights
+- docker
+- docker-compose
+- docker with sudo rights
+
+### Linux
+
+1. Clone the repository
+2. Define user and password for the database and the database name
 
 ```bash
-npm i
+cd EP2M2
+echo "PGUSER=<user_name>" > ./secrets/pg.env
+echo "PGPASSWORD=<password>" >> ./secrets/pg.env
+echo "PGDATABASE=<database_name>" >> ./secrets/pg.env
+echo "POSTGRES_USER=\$PGUSER" >> ./secrets/pg.env
+echo "POSTGRES_PASSWORD=\$PGPASSWORD" >> ./secrets/pg.env
+echo "POSTGRES_DB=\$PGDATABASE" >> ./secrets/pg.env
 ```
 
-### Running tests
+3. Launch the docker-compose
 
 ```bash
-docker volume prune
-## database and API
-docker compose --env-file .env.test -f compose.dev.yaml up -d
-
-rpm run test
+docker compose -f compose.yaml up -d
 ```
-
-### Docker compose (Recommended)
-_Requirement_ : Docker Engine
-1. Download release archive
-2. Extract archive
-3. Go into folder
-4. Create env file  
-`echo "WEB_ADMIN=<adminitrator address>" > .env`  
-`echo "WEB_PWD=<adminitrator 
-password>" > .env`
-5. Launch compose  
-`docker compose up --detach`
-6. Open browser to ip machine. You arrive onto login page of EP2M2. (else hold on 1 minute and refresh)
-7. Remove env file  
-`rm .env`
-
-## User guide
 
 ## Contibution
 [let's go](./doc/contribution.md)
