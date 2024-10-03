@@ -1,6 +1,8 @@
-// SPDX-FileCopyrightText: 2024 Marcellino Palerme <marcellino.palerme@inrae.fr>
+// © 2024 INRAE
+// SPDX-FileContributor: Marcellino Palerme <marcellino.palerme@inrae.fr>
 //
 // SPDX-License-Identifier: MIT
+
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import type { RouteLocationNormalized } from 'vue-router';
 import checkLoginGlobal from '~/middleware/checkLogin.global';

@@ -1,5 +1,5 @@
 <!--
-Copyright © 2024 INRAE
+© 2024 INRAE
 SPDX-FileContributor: Marcellino Palerme <marcellino.palerme@inrae.fr>
 
 SPDX-License-Identifier: MIT

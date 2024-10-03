@@ -1,6 +1,8 @@
-// SPDX-FileCopyrightText: 2024 Marcellino Palerme <marcellino.palerme@inrae.fr>
+// © 2024 INRAE
+// SPDX-FileContributor: Marcellino Palerme <marcellino.palerme@inrae.fr>
 //
 // SPDX-License-Identifier: MIT
+
 import { mockNuxtImport, mountSuspended } from '@nuxt/test-utils/runtime';
 import { flushPromises } from "@vue/test-utils";
 import { describe, test } from "vitest";

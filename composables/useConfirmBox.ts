@@ -1,9 +1,7 @@
-/**
- * SPDX-FileCopyrightText: 2024 Marcellino Palerme <marcellino.palerme@inrae.fr>
- * SPDX-License-Identifier: MIT
- * 
- * Manage the display and answer of a confirm box
- */
+// © 2024 INRAE
+// SPDX-FileContributor: Marcellino Palerme <marcellino.palerme@inrae.fr>
+//
+// SPDX-License-Identifier: MIT
 
 import { waitElemtDom } from "./waitElemtDom";
 

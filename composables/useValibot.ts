@@ -1,3 +1,8 @@
+// Copyright © 2024 INRAE
+// SPDX-FileContributor: Marcellino Palerme <marcellino.palerme@inrae.fr>
+//
+// SPDX-License-Identifier: MIT
+
 import * as v from 'valibot';
 
 export const useValibot = (schema, value) => {

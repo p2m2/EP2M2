@@ -1,10 +1,11 @@
-/** SPDX-FileCopyrightText: 2024 Marcellino Palerme <marcellino.palerme@inrae.fr>
- * 
- *  SPDX-License-Identifier: MIT
- * 
- * This file test the DaughterTable component
-*/
+// © 2024 INRAE
+// SPDX-FileContributor: Marcellino Palerme <marcellino.palerme@inrae.fr>
+//
+// SPDX-License-Identifier: MIT
 
+/** 
+* This file test the DaughterTable component
+*/
 import { mount, config, flushPromises } from '@vue/test-utils';
 import { expect, test, describe, vi } from 'vitest';
 import { vuetify4Test } from '../extra/vuetify4Test';
