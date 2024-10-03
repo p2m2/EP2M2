@@ -7,6 +7,9 @@ SPDX-License-Identifier: MIT
 
 # EP2M2 : Metabolomic Target Analyzes Manager.
 
+## Reuse compliance
+<!--REUSE--> empty <!--REUSE-END-->  
+
 ## Tests
 <!--GAMFC--></br>
 [![result](./badges/tests-result.svg) ![total](./badges/tests-total.svg) ![passed](./badges/tests-passed.svg) ![failed](./badges/tests-failed.svg) ![todo](./badges/tests-todo.svg)](https://github.com/p2m2/EP2M2/actions/runs/11162902243) </br>[![Branches](./badges/coverage-branches.svg) ![Functions](./badges/coverage-functions.svg) ![Lines](./badges/coverage-lines.svg)![Statements](./badges/coverage-statements.svg) ![Coverage total](./badges/coverage-total.svg)](https://github.com/p2m2/EP2M2/actions/runs/11162902243)<!--GAMFC-END-->

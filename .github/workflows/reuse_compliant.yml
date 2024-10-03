@@ -8,13 +8,14 @@
 # https://stackoverflow.com/a/67840292
 name: REUSE Compliance Check
 
-on: 
-  # thx: https://stackoverflow.com/a/71057825
-  workflow_dispatch:
-  pull_request_target:
-    branches: 
-      - main
-      - develop
+on:
+  push:
+    branches: '*'
+
+permissions: 
+  contents: write
+  pull-requests: write
+  checks: write
 
 jobs:
   Check-REUSE-compliant:
@@ -27,10 +28,35 @@ jobs:
       uses: fsfe/reuse-action@v3
       with:
         args: --include-submodules lint
-    # Close pull request if not REUSE compliant
-    - name: Stop pull request
+    - name: Badge not REUSE compliant
       if: ${{ failure() }}
-      uses: superbrothers/close-pull-request@v3
+      uses: jaywcjlove/generated-badges@main
       with:
-        # Optional. Post a issue comment just before closing a pull request.
-        comment: "We do not accept PRs. Your part isn't REUSE Compliant. (see reuse.software)."
+        label: Reuse compliant
+        status: NO
+        color: 'red'
+        output: badges/reuse_compliant.svg
+    - name: Badge REUSE compliant
+      if: ${{ success() }}
+      uses: jaywcjlove/generated-badges@main
+      with:
+        label: Reuse compliant
+        status: YES
+        color: 'green'
+        output: badges/reuse_compliant.svg
+    - name: Commit badge
+      run: |
+        git config --local user.email "
+        git config --local user.name "GitHub Actions"
+        git add badges/reuse_compliant.svg
+        git commit -m "Add REUSE compliant badge"
+        git push
+    - uses: jaywcjlove/github-action-modify-file-content@main
+      with:
+        path: README.md
+        openDelimiter: <!--REUSE-->
+        closeDelimiter: <!--REUSE_END-->
+        body: |
+          </br>
+          [![Reuse compliant](./badges/reuse_compliant.svg)]](https://github.com/p2m2/EP2M2/actions/runs/${{ github.run_id }})
+        

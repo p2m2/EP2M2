@@ -6,8 +6,6 @@ SPDX-License-Identifier: CC-BY-NC-4.0
 
 # Contribution
 
-
-
 Avant toutes contributions à ce projet merci de bien vouloir lire:
 - [Les spécifications](./spec_fr.md)
 - [La documentation technique](./doc_fr.md)
@@ -51,4 +49,26 @@ npm run dev
 2. Lancer les tests
 ```bash
 npm run test
+```
+
+## Tagger les nouveaux fichiers avec une licence
+
+### Fichier de code
+```bash
+docker run --rm --volume $(pwd):/data fsfe/reuse annotate --copyright INRAE --copyright-prefix string-symbol --contributor "prénom_nom <e-mail>" --license MIT --fallback-dot-license --merge-copyrights chemin_du_fichier
+```
+
+### Fichier de documentation
+```bash
+docker run --rm --volume $(pwd):/data fsfe/reuse annotate --copyright INRAE --copyright-prefix string-symbol --contributor "prénom_nom <e-mail>" --license CC-BY-NC-4.0 --fallback-dot-license --merge-copyrights chemin_du_fichier
+```
+
+### Un logo
+```bash
+docker run --rm --volume $(pwd):/data fsfe/reuse annotate --copyright INRAE --copyright-prefix string-symbol --contributor "prénom_nom <e-mail>" --license CC-BY-NC-ND-4.0 --fallback-dot-license --merge-copyrights chemin_du_fichier
+```
+
+## Vérifier la conformité de la réutilisation
+```bash
+docker run --rm --volume $(pwd):/data fsfe/reuse --include-submodules lint
 ```
