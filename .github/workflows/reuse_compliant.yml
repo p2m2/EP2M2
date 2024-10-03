@@ -45,14 +45,17 @@ jobs:
         color: 'green'
         output: badges/reuse_compliant.svg
     - name: Commit badge
+      if: always()
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
-        git pull --rebase
         git add badges/reuse_compliant.svg
         git commit -m "Add REUSE compliant badge"
+        git pull --rebase
         git push
-    - uses: jaywcjlove/github-action-modify-file-content@main
+    - name: Add badge to README
+      if: always()
+      uses: jaywcjlove/github-action-modify-file-content@main
       with:
         path: README.md
         openDelimiter: <!--REUSE-->

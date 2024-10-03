@@ -83,6 +83,7 @@ jobs:
           name: Test Unit
           path: ./test/results/*.xml
       - name: Extract test results
+        if: always()
         id: extract_results
         run: |
           npm install @actions/core
@@ -104,6 +105,7 @@ jobs:
           color: 'green'
           output: badges/tests-result.svg
       - name: Generate Badges number tests
+        if: always()
         uses: jaywcjlove/generated-badges@main
         with:
           label: Number of tests
@@ -111,6 +113,7 @@ jobs:
           color: 'black'
           output: badges/tests-total.svg
       - name: Generate Badges number passed tests
+        if : always()
         uses: jaywcjlove/generated-badges@main
         with:
           label: Passed tests
@@ -118,6 +121,7 @@ jobs:
           color: 'green'
           output: badges/tests-passed.svg
       - name: Generate Badges number failed tests
+        if: always()
         uses: jaywcjlove/generated-badges@main
         with:
           label: Failed tests
@@ -125,6 +129,7 @@ jobs:
           color: 'red'
           output: badges/tests-failed.svg
       - name: Generate Badges number todo tests
+        if: always()
         uses: jaywcjlove/generated-badges@main
         with:
           label: Todo tests
@@ -132,15 +137,17 @@ jobs:
           color: 'yellow'
           output: badges/tests-todo.svg
       - name: Commit test badges
+        if: always()
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git pull --rebase
           git add badges/*
           git commit -m "Update test badges"
+          git pull --rebase
           git push
-      - uses: jaywcjlove/github-action-modify-file-content@main
-         
+      - name: Add badge to README
+        if: always()
+        uses: jaywcjlove/github-action-modify-file-content@main
         with:
           path: README.md
           body: |
