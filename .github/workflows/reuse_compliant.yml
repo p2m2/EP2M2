@@ -46,8 +46,8 @@ jobs:
         output: badges/reuse_compliant.svg
     - name: Commit badge
       run: |
-        git config --local user.email "
-        git config --local user.name "GitHub Actions"
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
         git add badges/reuse_compliant.svg
         git commit -m "Add REUSE compliant badge"
         git push
