@@ -1,8 +1,10 @@
 <!--
-SPDX-FileCopyrightText: 2024 Marcellino Palerme <marcellino.palerme@inrae.fr>
+© 2024 INRAE
+SPDX-FileContributor: Marcellino Palerme <marcellino.palerme@inrae.fr>
 
 SPDX-License-Identifier: MIT
 -->
+
 <!-- This module manage calibration curves add / view / delete / archive / modify -->
 <script setup lang="ts">
 import * as v from 'valibot';
