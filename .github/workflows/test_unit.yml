@@ -143,7 +143,7 @@ jobs:
           git config --local user.name "GitHub Action"
           git add badges/*
           git commit -m "Update test badges"
-          git pull --rebase
+          git pull --rebase --autostash
           git push
       - name: Add badge to README
         if: always()
