@@ -48,6 +48,7 @@ jobs:
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
+        git fetch
         git add badges/reuse_compliant.svg
         git commit -m "Add REUSE compliant badge"
         git push
