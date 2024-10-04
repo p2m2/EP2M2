@@ -198,6 +198,7 @@ jobs:
           git config --local user.name "GitHub Action"
           git add badges/*
           git commit -m "Update all badges"
+          git pull --rebase
           git push
       - name: Add badge to README
         if: always()
