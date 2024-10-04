@@ -3,7 +3,7 @@
 #
 # SPDX-License-Identifier: MIT
 
-name: Tests Unit
+name: Validate
 
 on:
   push:
@@ -21,8 +21,39 @@ env:
   PGDATABASE: ep2m2db
 
 jobs:
+  Check-REUSE-compliant:
+    runs-on: ubuntu-latest
+    outputs:
+      reuse_fail: ${{ steps.fail.outputs.result }}
+      reuse_sucesse: ${{ steps.success.outputs.result }}
+      job_id: ${{ github.job.id }}
+    steps:
+    # Load my repo
+    - uses: actions/checkout@v4
+    # Check if futur new repo is REUSE compliant
+    - name: REUSE Compliance Check
+      uses: fsfe/reuse-action@v3
+      with:
+        args: --include-submodules lint
+    - name: Badge not REUSE compliant
+      if: ${{ failure() }}
+      id: fail
+      run: echo "result=false" >> "$GITHUB_OUTPUT"
+
+    - name: Badge REUSE compliant
+      if: ${{ success() }}
+      id: success
+      run: echo "result=true" >> "$GITHUB_OUTPUT"
+
   test:
     runs-on: ubuntu-latest
+    outputs:
+      successTests: ${{ steps.extract_results.outputs.successTests }}
+      totalTests: ${{ steps.extract_results.outputs.totalTests }}
+      passedTests: ${{ steps.extract_results.outputs.passedTests }}
+      failedTests: ${{ steps.extract_results.outputs.failedTests }}
+      todoTests: ${{ steps.extract_results.outputs.todoTests }}
+      job_id: ${{ github.job.id }}
     services:
       service-p2m2tool-api:
         image: inraep2m2/service-p2m2tools-api
@@ -88,8 +119,32 @@ jobs:
         run: |
           npm install @actions/core
           node .github/workflows/extractResultsTest.js
+            
+  badges:
+    needs: [test, Check-REUSE-compliant]
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Get repository
+        uses: actions/checkout@v3
+      - name: Not Reuse compliant badge
+        if: ${{ needs.Check-REUSE-compliant.outputs.reuse_fail == 'false' }}
+        uses: jaywcjlove/generated-badges@main
+        with:
+          label: Reuse compliant
+          status: NO
+          color: 'red'
+          output: badges/reuse_compliant.svg
+      - name: Reuse compliant badge
+        if: ${{ needs.Check-REUSE-compliant.outputs.reuse_sucesse == 'true' }}
+        uses: jaywcjlove/generated-badges@main
+        with:
+          label: Reuse compliant
+          status: YES
+          color: 'green'
+          output: badges/reuse_compliant.svg
       - name: Generate Badges fail result global tests
-        if: steps.extract_results.outputs.successTests == 'false'
+        if: needs.test.outputs.successTests == 'false'
         uses: jaywcjlove/generated-badges@main
         with:
           label: Tests
@@ -97,7 +152,7 @@ jobs:
           color: 'red'
           output: badges/tests-result.svg
       - name: Generate Badges pass result global tests
-        if: steps.extract_results.outputs.successTests == 'true'
+        if: needs.test.outputs.successTests == 'true'
         uses: jaywcjlove/generated-badges@main
         with:
           label: Tests
@@ -109,7 +164,7 @@ jobs:
         uses: jaywcjlove/generated-badges@main
         with:
           label: Number of tests
-          status: ${{ steps.extract_results.outputs.totalTests }}
+          status: ${{ needs.test.outputs.totalTests }}
           color: 'black'
           output: badges/tests-total.svg
       - name: Generate Badges number passed tests
@@ -117,7 +172,7 @@ jobs:
         uses: jaywcjlove/generated-badges@main
         with:
           label: Passed tests
-          status: ${{ steps.extract_results.outputs.passedTests }}
+          status: ${{ needs.test.outputs.passedTests }}
           color: 'green'
           output: badges/tests-passed.svg
       - name: Generate Badges number failed tests
@@ -125,7 +180,7 @@ jobs:
         uses: jaywcjlove/generated-badges@main
         with:
           label: Failed tests
-          status: ${{ steps.extract_results.outputs.failedTests }}
+          status: ${{ needs.test.outputs.failedTests }}
           color: 'red'
           output: badges/tests-failed.svg
       - name: Generate Badges number todo tests
@@ -133,27 +188,34 @@ jobs:
         uses: jaywcjlove/generated-badges@main
         with:
           label: Todo tests
-          status: ${{ steps.extract_results.outputs.todoTests }}
+          status: ${{ needs.test.outputs.todoTests }}
           color: 'yellow'
           output: badges/tests-todo.svg
-      - name: Commit test badges
+      - name: Commit all badges
         if: always()
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add badges/*
-          git commit -m "Update test badges"
-          git pull --rebase --autostash
+          git commit -m "Update all badges"
           git push
       - name: Add badge to README
         if: always()
         uses: jaywcjlove/github-action-modify-file-content@main
         with:
           path: README.md
+          openDelimiter: <!--REUSE-->
+          closeDelimiter: <!--REUSE-END-->
           body: |
             </br>
-            [![result](./badges/tests-result.svg) ![total](./badges/tests-total.svg) ![passed](./badges/tests-passed.svg) ![failed](./badges/tests-failed.svg) ![todo](./badges/tests-todo.svg)](https://github.com/p2m2/EP2M2/actions/runs/${{ github.run_id }}) </br>[![Branches](./badges/coverage-branches.svg) ![Functions](./badges/coverage-functions.svg) ![Lines](./badges/coverage-lines.svg)![Statements](./badges/coverage-statements.svg) ![Coverage total](./badges/coverage-total.svg)](https://github.com/p2m2/EP2M2/actions/runs/${{ github.run_id }})
-            
-            
-
-         
+            [![Reuse compliant](./badges/reuse_compliant.svg)]](https://github.com/p2m2/EP2M2/actions/runs/${{ needs.Check-REUSE-compliant.outputs.job_id }})
+      - name: Add tests badges to README
+        if: always()
+        uses: jaywcjlove/github-action-modify-file-content@main
+        with:
+          path: README.md
+          body: |
+            </br>
+            [![result](./badges/tests-result.svg) ![total](./badges/tests-total.svg) ![passed](./badges/tests-passed.svg) ![failed](./badges/tests-failed.svg) ![todo](./badges/tests-todo.svg)](https://github.com/p2m2/EP2M2/actions/runs/${{ needs.test.outputs.job_id }}) </br>[![Branches](./badges/coverage-branches.svg) ![Functions](./badges/coverage-functions.svg) ![Lines](./badges/coverage-lines.svg)![Statements](./badges/coverage-statements.svg) ![Coverage total](./badges/coverage-total.svg)](https://github.com/p2m2/EP2M2/actions/runs/${{  needs.test.outputs.job_id }})
+      
+        
