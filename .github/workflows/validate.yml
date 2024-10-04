@@ -256,6 +256,8 @@ jobs:
           git commit -m "Update all badges"
           git pull --rebase
           git push
+        # Not fail if we have no changes
+        continue-on-error: true  # This step won't affect the job's outcome
       - name: Add badge to README
         if: always()
         uses: jaywcjlove/github-action-modify-file-content@main
