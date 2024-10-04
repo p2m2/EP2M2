@@ -21,12 +21,13 @@ env:
   PGDATABASE: ep2m2db
 
 jobs:
+  # Check if the repository is REUSE compliant
   Check-REUSE-compliant:
     runs-on: ubuntu-latest
+    # Outputs of the job is the result of the REUSE compliance check
     outputs:
       reuse_fail: ${{ steps.fail.outputs.result }}
       reuse_sucesse: ${{ steps.success.outputs.result }}
-      job_id: ${{ github.job.id }}
     steps:
     # Load my repo
     - uses: actions/checkout@v4
@@ -35,6 +36,7 @@ jobs:
       uses: fsfe/reuse-action@v3
       with:
         args: --include-submodules lint
+    # Return the result of the REUSE compliance check
     - name: Badge not REUSE compliant
       if: ${{ failure() }}
       id: fail
@@ -45,20 +47,29 @@ jobs:
       id: success
       run: echo "result=true" >> "$GITHUB_OUTPUT"
 
+  # Test the project and generate coverage
   test:
     runs-on: ubuntu-latest
+    # Outputs of the job are the results of the tests and the coverage
     outputs:
+      # Results of the tests
       successTests: ${{ steps.extract_results.outputs.successTests }}
       totalTests: ${{ steps.extract_results.outputs.totalTests }}
       passedTests: ${{ steps.extract_results.outputs.passedTests }}
       failedTests: ${{ steps.extract_results.outputs.failedTests }}
       todoTests: ${{ steps.extract_results.outputs.todoTests }}
-      branchCov: ${{ steps.extract_coverage.outputs.branchCov }}
+      # Coverage
+      branchesCov: ${{ steps.extract_coverage.outputs.branchesCov }}
       functionsCov: ${{ steps.extract_coverage.outputs.functionsCov }}
       linesCov: ${{ steps.extract_coverage.outputs.linesCov }}
       statementsCov: ${{ steps.extract_coverage.outputs.statementsCov }}
       totalCov: ${{ steps.extract_coverage.outputs.totalCov }}
-      job_id: ${{ github.job.id }}
+      # Colors for the coverage
+      branchesColorCov: ${{ steps.extract_coverage.outputs.branchesColorCov }}
+      functionsColorCov: ${{ steps.extract_coverage.outputs.functionsColorCov }}
+      linesColorCov: ${{ steps.extract_coverage.outputs.linesColorCov }}
+      statementsColorCov: ${{ steps.extract_coverage.outputs.statementsColorCov }}
+      totalColorCov: ${{ steps.extract_coverage.outputs.totalColorCov }}
     services:
       service-p2m2tool-api:
         image: inraep2m2/service-p2m2tools-api
@@ -124,7 +135,7 @@ jobs:
         id: extract_results
         run: |
           node .github/workflows/extractResultsTest.js
-            
+  # Generate all badges
   badges:
     needs: [test, Check-REUSE-compliant]
     runs-on: ubuntu-latest
@@ -137,8 +148,8 @@ jobs:
         uses: jaywcjlove/generated-badges@main
         with:
           label: Branches
-          status: ${{ needs.test.outputs.branchCov }}
-          color: 'black'
+          status: ${{ needs.test.outputs.branchesCov }}
+          color: ${{ needs.test.outputs.branchesColorCov }}
           output: badges/coverage-branches.svg
       - name: Generate Badges functions coverage 
         if: always()
@@ -146,7 +157,7 @@ jobs:
         with:
           label: Functions
           status: ${{ needs.test.outputs.functionsCov }}
-          color: 'black'
+          color: ${{ needs.test.outputs.functionsColorCov }}
           output: badges/coverage-functions.svg
       - name: Generate Badges lines coverage
         if: always()
@@ -154,7 +165,7 @@ jobs:
         with:
           label: Lines
           status: ${{ needs.test.outputs.linesCov }}
-          color: 'black'
+          color: ${{ needs.test.outputs.linesColorCov }}
           output: badges/coverage-lines.svg
       - name: Generate Badges statements coverage
         if: always()
@@ -162,7 +173,7 @@ jobs:
         with:
           label: Statements
           status: ${{ needs.test.outputs.statementsCov }}
-          color: 'black'
+          color: ${{ needs.test.outputs.statementsColorCov }}
           output: badges/coverage-statements.svg
       - name: Generate Badges total coverage
         if: always()
@@ -170,7 +181,7 @@ jobs:
         with:
           label: Coverage total
           status: ${{ needs.test.outputs.totalCov }}
-          color: 'black'
+          color: ${{ needs.test.outputs.totalColorCov }}
           output: badges/coverage-total.svg
       - name: Not Reuse compliant badge
         if: ${{ needs.Check-REUSE-compliant.outputs.reuse_fail == 'false' }}
@@ -254,7 +265,7 @@ jobs:
           closeDelimiter: <!--REUSE-END-->
           body: |
             </br>
-            [![Reuse compliant](./badges/reuse_compliant.svg)](https://github.com/p2m2/EP2M2/actions/runs/${{ needs.Check-REUSE-compliant.outputs.job_id }})
+            [![Reuse compliant](./badges/reuse_compliant.svg)](https://github.com/p2m2/EP2M2/actions/runs/${{ github.run_id }})
       - name: Add tests badges to README
         if: always()
         uses: jaywcjlove/github-action-modify-file-content@main
@@ -262,6 +273,6 @@ jobs:
           path: README.md
           body: |
             </br>
-            [![result](./badges/tests-result.svg) ![total](./badges/tests-total.svg) ![passed](./badges/tests-passed.svg) ![failed](./badges/tests-failed.svg) ![todo](./badges/tests-todo.svg)](https://github.com/p2m2/EP2M2/actions/runs/${{ needs.test.outputs.job_id }}) </br>[![Branches](./badges/coverage-branches.svg) ![Functions](./badges/coverage-functions.svg) ![Lines](./badges/coverage-lines.svg)![Statements](./badges/coverage-statements.svg) ![Coverage total](./badges/coverage-total.svg)](https://github.com/p2m2/EP2M2/actions/runs/${{  needs.test.outputs.job_id }})
+            [![result](./badges/tests-result.svg) ![total](./badges/tests-total.svg) ![passed](./badges/tests-passed.svg) ![failed](./badges/tests-failed.svg) ![todo](./badges/tests-todo.svg)](https://github.com/p2m2/EP2M2/actions/runs/${{ github.run_id }}) </br>[![Branches](./badges/coverage-branches.svg) ![Functions](./badges/coverage-functions.svg) ![Lines](./badges/coverage-lines.svg)![Statements](./badges/coverage-statements.svg) ![Coverage total](./badges/coverage-total.svg)](https://github.com/p2m2/EP2M2/actions/runs/${{ github.run_id }})
       
         
