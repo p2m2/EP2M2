@@ -209,7 +209,7 @@ jobs:
           closeDelimiter: <!--REUSE-END-->
           body: |
             </br>
-            [![Reuse compliant](./badges/reuse_compliant.svg)]](https://github.com/p2m2/EP2M2/actions/runs/${{ needs.Check-REUSE-compliant.outputs.job_id }})
+            [![Reuse compliant](./badges/reuse_compliant.svg)](https://github.com/p2m2/EP2M2/actions/runs/${{ needs.Check-REUSE-compliant.outputs.job_id }})
       - name: Add tests badges to README
         if: always()
         uses: jaywcjlove/github-action-modify-file-content@main
