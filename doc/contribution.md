@@ -26,7 +26,7 @@ L'environnement de développement est basé de deux conteneurs docker. Ils fourn
 2. Lancez les conteneurs docker
 
 ```bash
-docker compose -f compose.dev.yaml up -d
+docker compose --env-file=.env.dev -f compose.dev.yaml up -d
 ```
 
 3. installer les dépendances
