@@ -53,6 +53,11 @@ jobs:
       passedTests: ${{ steps.extract_results.outputs.passedTests }}
       failedTests: ${{ steps.extract_results.outputs.failedTests }}
       todoTests: ${{ steps.extract_results.outputs.todoTests }}
+      branchCov: ${{ steps.extract_coverage.outputs.branchCov }}
+      functionsCov: ${{ steps.extract_coverage.outputs.functionsCov }}
+      linesCov: ${{ steps.extract_coverage.outputs.linesCov }}
+      statementsCov: ${{ steps.extract_coverage.outputs.statementsCov }}
+      totalCov: ${{ steps.extract_coverage.outputs.totalCov }}
       job_id: ${{ github.job.id }}
     services:
       service-p2m2tool-api:
@@ -95,11 +100,12 @@ jobs:
         with:
            file-coverage-mode: all
            github-token: ${{ secrets.GITHUB_TOKEN }}
-      - name: ⚙️ Generating coverage badges
-        uses: jpb06/coverage-badges-action@latest
-        with:
-          branches: '*'
-          badges-icon: vitest
+      - name: Extract coverage results
+        if: always()
+        id: extract_coverage
+        run: |
+          npm install @actions/core
+          node .github/workflows/extractResultsCov.js
       - name: Summary Tests
         uses: EnricoMi/publish-unit-test-result-action@v2
         if: always()
@@ -117,7 +123,6 @@ jobs:
         if: always()
         id: extract_results
         run: |
-          npm install @actions/core
           node .github/workflows/extractResultsTest.js
             
   badges:
@@ -127,6 +132,46 @@ jobs:
     steps:
       - name: Get repository
         uses: actions/checkout@v3
+      - name: Generate Badges branches coverage
+        if: always()
+        uses: jaywcjlove/generated-badges@main
+        with:
+          label: Branches
+          status: ${{ needs.test.outputs.branchCov }}
+          color: 'black'
+          output: badges/coverage-branches.svg
+      - name: Generate Badges functions coverage 
+        if: always()
+        uses: jaywcjlove/generated-badges@main
+        with:
+          label: Functions
+          status: ${{ needs.test.outputs.functionsCov }}
+          color: 'black'
+          output: badges/coverage-functions.svg
+      - name: Generate Badges lines coverage
+        if: always()
+        uses: jaywcjlove/generated-badges@main
+        with:
+          label: Lines
+          status: ${{ needs.test.outputs.linesCov }}
+          color: 'black'
+          output: badges/coverage-lines.svg
+      - name: Generate Badges statements coverage
+        if: always()
+        uses: jaywcjlove/generated-badges@main
+        with:
+          label: Statements
+          status: ${{ needs.test.outputs.statementsCov }}
+          color: 'black'
+          output: badges/coverage-statements.svg
+      - name: Generate Badges total coverage
+        if: always()
+        uses: jaywcjlove/generated-badges@main
+        with:
+          label: Coverage total
+          status: ${{ needs.test.outputs.totalCov }}
+          color: 'black'
+          output: badges/coverage-total.svg
       - name: Not Reuse compliant badge
         if: ${{ needs.Check-REUSE-compliant.outputs.reuse_fail == 'false' }}
         uses: jaywcjlove/generated-badges@main
