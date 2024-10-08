@@ -23,8 +23,9 @@ services:
     environment:
       POSTGRES_PASSWORD: ${PGPASSWORD}
       POSTGRES_USER: ${PGUSER}
-      PGPORT: ${PGPORT}
-      PGHOST: ${PGHOST}
+      POSTGRES_PORT: ${PGPORT}
+      POSTGRES_HOST: ${PGHOST}
+      POSTGRES_DB: ${PGDATABASE}
 
 volumes:
   shareFile:
