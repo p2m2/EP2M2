@@ -1,0 +1,280 @@
+# © 2024 INRAE
+# SPDX-FileContributor: Marcellino Palerme <marcellino.palerme@inrae.fr>
+#
+# SPDX-License-Identifier: MIT
+
+name: Validate
+
+on:
+  push:
+    branches: '*'
+
+permissions: 
+  contents: write
+  pull-requests: write
+  checks: write
+
+env:
+  PGPASSWORD: ep2m2
+  PGUSER: ep2m2
+  PGPORT: 5432
+  PGDATABASE: ep2m2db
+
+jobs:
+  # Check if the repository is REUSE compliant
+  Check-REUSE-compliant:
+    runs-on: ubuntu-latest
+    # Outputs of the job is the result of the REUSE compliance check
+    outputs:
+      reuse_fail: ${{ steps.fail.outputs.result }}
+      reuse_sucesse: ${{ steps.success.outputs.result }}
+    steps:
+    # Load my repo
+    - uses: actions/checkout@v4
+    # Check if futur new repo is REUSE compliant
+    - name: REUSE Compliance Check
+      uses: fsfe/reuse-action@v3
+      with:
+        args: --include-submodules lint
+    # Return the result of the REUSE compliance check
+    - name: Badge not REUSE compliant
+      if: ${{ failure() }}
+      id: fail
+      run: echo "result=false" >> "$GITHUB_OUTPUT"
+
+    - name: Badge REUSE compliant
+      if: ${{ success() }}
+      id: success
+      run: echo "result=true" >> "$GITHUB_OUTPUT"
+
+  # Test the project and generate coverage
+  test:
+    runs-on: ubuntu-latest
+    # Outputs of the job are the results of the tests and the coverage
+    outputs:
+      # Results of the tests
+      successTests: ${{ steps.extract_results.outputs.successTests }}
+      totalTests: ${{ steps.extract_results.outputs.totalTests }}
+      passedTests: ${{ steps.extract_results.outputs.passedTests }}
+      failedTests: ${{ steps.extract_results.outputs.failedTests }}
+      todoTests: ${{ steps.extract_results.outputs.todoTests }}
+      # Coverage
+      branchesCov: ${{ steps.extract_coverage.outputs.branchesCov }}
+      functionsCov: ${{ steps.extract_coverage.outputs.functionsCov }}
+      linesCov: ${{ steps.extract_coverage.outputs.linesCov }}
+      statementsCov: ${{ steps.extract_coverage.outputs.statementsCov }}
+      totalCov: ${{ steps.extract_coverage.outputs.totalCov }}
+      # Colors for the coverage
+      branchesColorCov: ${{ steps.extract_coverage.outputs.branchesColorCov }}
+      functionsColorCov: ${{ steps.extract_coverage.outputs.functionsColorCov }}
+      linesColorCov: ${{ steps.extract_coverage.outputs.linesColorCov }}
+      statementsColorCov: ${{ steps.extract_coverage.outputs.statementsColorCov }}
+      totalColorCov: ${{ steps.extract_coverage.outputs.totalColorCov }}
+    services:
+      service-p2m2tool-api:
+        image: inraep2m2/service-p2m2tools-api
+        ports:
+          - 8080:8080
+      db:
+        image: postgres:latest
+        # Provide the password for postgres
+        env:
+          POSTGRES_PASSWORD: ep2m2
+          POSTGRES_DB: ep2m2db
+          POSTGRES_USER: ep2m2
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    
+    steps:
+      - name: Get repository
+        uses: actions/checkout@v3
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: latest
+          cache: 'npm'
+      - name: Installation project s packages
+        run: npm ci
+      - name: Configure database
+        run: node ./db/init.js
+      - name: Test and Coverage
+        run: npm run test
+      - name: Report coverage
+        if: always()
+        uses: davelosert/vitest-coverage-report-action@v2
+        with:
+           file-coverage-mode: all
+           github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Extract coverage results
+        if: always()
+        id: extract_coverage
+        run: |
+          npm install @actions/core
+          node .github/workflows/extractResultsCov.js
+      - name: Summary Tests
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always()
+        with:
+          files: |
+            ./test/results/*.xml
+      - name: Complet report tests
+        uses: dorny/test-reporter@v1
+        if: always()
+        with:
+          reporter: "java-junit"
+          name: Test Unit
+          path: ./test/results/*.xml
+      - name: Extract test results
+        if: always()
+        id: extract_results
+        run: |
+          node .github/workflows/extractResultsTest.js
+  # Generate all badges
+  badges:
+    needs: [test, Check-REUSE-compliant]
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Get repository
+        uses: actions/checkout@v3
+      - name: Generate Badges branches coverage
+        if: always()
+        uses: jaywcjlove/generated-badges@main
+        with:
+          label: Branches
+          status: ${{ needs.test.outputs.branchesCov }}
+          color: ${{ needs.test.outputs.branchesColorCov }}
+          output: badges/coverage-branches.svg
+      - name: Generate Badges functions coverage 
+        if: always()
+        uses: jaywcjlove/generated-badges@main
+        with:
+          label: Functions
+          status: ${{ needs.test.outputs.functionsCov }}
+          color: ${{ needs.test.outputs.functionsColorCov }}
+          output: badges/coverage-functions.svg
+      - name: Generate Badges lines coverage
+        if: always()
+        uses: jaywcjlove/generated-badges@main
+        with:
+          label: Lines
+          status: ${{ needs.test.outputs.linesCov }}
+          color: ${{ needs.test.outputs.linesColorCov }}
+          output: badges/coverage-lines.svg
+      - name: Generate Badges statements coverage
+        if: always()
+        uses: jaywcjlove/generated-badges@main
+        with:
+          label: Statements
+          status: ${{ needs.test.outputs.statementsCov }}
+          color: ${{ needs.test.outputs.statementsColorCov }}
+          output: badges/coverage-statements.svg
+      - name: Generate Badges total coverage
+        if: always()
+        uses: jaywcjlove/generated-badges@main
+        with:
+          label: Coverage total
+          status: ${{ needs.test.outputs.totalCov }}
+          color: ${{ needs.test.outputs.totalColorCov }}
+          output: badges/coverage-total.svg
+      - name: Not Reuse compliant badge
+        if: ${{ needs.Check-REUSE-compliant.outputs.reuse_fail == 'false' }}
+        uses: jaywcjlove/generated-badges@main
+        with:
+          label: Reuse compliant
+          status: NO
+          color: 'red'
+          output: badges/reuse_compliant.svg
+      - name: Reuse compliant badge
+        if: ${{ needs.Check-REUSE-compliant.outputs.reuse_sucesse == 'true' }}
+        uses: jaywcjlove/generated-badges@main
+        with:
+          label: Reuse compliant
+          status: YES
+          color: 'green'
+          output: badges/reuse_compliant.svg
+      - name: Generate Badges fail result global tests
+        if: needs.test.outputs.successTests == 'false'
+        uses: jaywcjlove/generated-badges@main
+        with:
+          label: Tests
+          status: Fail
+          color: 'red'
+          output: badges/tests-result.svg
+      - name: Generate Badges pass result global tests
+        if: needs.test.outputs.successTests == 'true'
+        uses: jaywcjlove/generated-badges@main
+        with:
+          label: Tests
+          status: Pass
+          color: 'green'
+          output: badges/tests-result.svg
+      - name: Generate Badges number tests
+        if: always()
+        uses: jaywcjlove/generated-badges@main
+        with:
+          label: Number of tests
+          status: ${{ needs.test.outputs.totalTests }}
+          color: 'black'
+          output: badges/tests-total.svg
+      - name: Generate Badges number passed tests
+        if : always()
+        uses: jaywcjlove/generated-badges@main
+        with:
+          label: Passed tests
+          status: ${{ needs.test.outputs.passedTests }}
+          color: 'green'
+          output: badges/tests-passed.svg
+      - name: Generate Badges number failed tests
+        if: always()
+        uses: jaywcjlove/generated-badges@main
+        with:
+          label: Failed tests
+          status: ${{ needs.test.outputs.failedTests }}
+          color: 'red'
+          output: badges/tests-failed.svg
+      - name: Generate Badges number todo tests
+        if: always()
+        uses: jaywcjlove/generated-badges@main
+        with:
+          label: Todo tests
+          status: ${{ needs.test.outputs.todoTests }}
+          color: 'yellow'
+          output: badges/tests-todo.svg
+      - name: Commit all badges
+        if: always()
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add badges/*
+          git commit -m "Update all badges"
+          git pull --rebase
+          git push
+        # Not fail if we have no changes
+        continue-on-error: true  # This step won't affect the job's outcome
+      - name: Add badge to README
+        if: always()
+        uses: jaywcjlove/github-action-modify-file-content@main
+        with:
+          path: README.md
+          openDelimiter: <!--REUSE-->
+          closeDelimiter: <!--REUSE-END-->
+          body: |
+            </br>
+            [![Reuse compliant](./badges/reuse_compliant.svg)](https://github.com/p2m2/EP2M2/actions/runs/${{ github.run_id }})
+      - name: Add tests badges to README
+        if: always()
+        uses: jaywcjlove/github-action-modify-file-content@main
+        with:
+          path: README.md
+          body: |
+            </br>
+            [![result](./badges/tests-result.svg) ![total](./badges/tests-total.svg) ![passed](./badges/tests-passed.svg) ![failed](./badges/tests-failed.svg) ![todo](./badges/tests-todo.svg)](https://github.com/p2m2/EP2M2/actions/runs/${{ github.run_id }}) </br>[![Branches](./badges/coverage-branches.svg) ![Functions](./badges/coverage-functions.svg) ![Lines](./badges/coverage-lines.svg)![Statements](./badges/coverage-statements.svg) ![Coverage total](./badges/coverage-total.svg)](https://github.com/p2m2/EP2M2/actions/runs/${{ github.run_id }})
+      
+        

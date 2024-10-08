@@ -1,4 +1,5 @@
-# SPDX-FileCopyrightText: 2024 Marcellino Palerme <marcellino.palerme@inrae.fr>
+# © 2024 INRAE
+# SPDX-FileContributor: Marcellino Palerme <marcellino.palerme@inrae.fr>
 #
 # SPDX-License-Identifier: MIT
 
@@ -19,8 +20,11 @@ services:
       - "5432:5432"
     volumes:
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
-    env_file:
-      - ./secrets/pg.env
+    environment:
+      POSTGRES_PASSWORD: ${PGPASSWORD}
+      POSTGRES_USER: ${PGUSER}
+      PGPORT: ${PGPORT}
+      PGHOST: ${PGHOST}
 
 volumes:
   shareFile:

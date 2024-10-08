@@ -1,8 +1,10 @@
-/** SPDX-FileCopyrightText: 2024 Marcellino Palerme <marcellino.palerme@inrae.fr>
- * 
- *  SPDX-License-Identifier: MIT
- * 
- * This file test the ConfirmBox component
+// © 2024 INRAE
+// SPDX-FileContributor: Marcellino Palerme <marcellino.palerme@inrae.fr>
+//
+// SPDX-License-Identifier: MIT
+
+/** 
+* This file test the ConfirmBox component
 */
 import { mount, config } from '@vue/test-utils';
 import { expect, test, describe } from 'vitest';

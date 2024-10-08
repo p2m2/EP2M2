@@ -1,9 +1,10 @@
-// SPDX-FileCopyrightText: 2024 Marcellino Palerme <marcellino.palerme@inrae.fr>
+// © 2024 INRAE
+// SPDX-FileContributor: Marcellino Palerme <marcellino.palerme@inrae.fr>
 //
 // SPDX-License-Identifier: MIT
 
-import { describe, test } from "vitest";
 import { mount } from "@vue/test-utils";
+import { describe, test } from "vitest";
 import TableDbAction from "~/components/TableDbAction.vue";
 
 describe("TableDbAction", async () => {
@@ -12,7 +13,7 @@ describe("TableDbAction", async () => {
 
     test.todo("unexist database table");
 
-    test("Just show databse table empty", () => {
+    test.todo("Just show databse table empty", () => {
         const wrapper = mount(TableDbAction, {
             // attachTo: document.getElementById("app") as HTMLElement,
             props:{

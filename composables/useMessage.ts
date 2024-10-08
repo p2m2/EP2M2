@@ -1,10 +1,10 @@
-/**
- * SPDX-FileCopyrightText: 2024 Marcellino Palerme <marcellino.palerme@inrae.fr>
- * SPDX-License-Identifier: MIT
- * 
- * Manage the display of messages
- */
-
+// © 2024 INRAE
+// SPDX-FileContributor: Marcellino Palerme <marcellino.palerme@inrae.fr>
+//
+// SPDX-License-Identifier: MIT
+/** 
+* Manage the display of messages
+*/
 /**
  * Provide a function to display a message in the application
  * @returns success and error functions

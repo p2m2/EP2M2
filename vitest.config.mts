@@ -61,6 +61,12 @@ import { defineVitestConfig } from "@nuxt/test-utils/config";
 export default defineVitestConfig({
     // any custom Vitest config you require
     test: {
+        coverage: {
+            enabled: true,
+            provider: "v8",
+            reportOnFailure: true,
+            reporter: ["json-summary", "json", "html", "text"]
+        },
         globals: true,
         environment: "nuxt",
         // you can optionally set Nuxt-specific environment options
@@ -78,6 +84,11 @@ export default defineVitestConfig({
             deps: {
                 inline: ["vuetify"],
             },
+        },
+        reporters: ["junit", "verbose",'json'],
+        outputFile: {
+            junit: "test/results/junit.xml",
+            json: "test/results/results.json",
         },
     }
 });

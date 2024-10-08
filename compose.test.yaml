@@ -1,25 +1,9 @@
-# SPDX-FileCopyrightText: 2024 Marcellino Palerme <marcellino.palerme@inrae.fr>
+# © 2024 INRAE
+# SPDX-FileContributor: Marcellino Palerme <marcellino.palerme@inrae.fr>
 #
 # SPDX-License-Identifier: MIT
 
-services:
-  web:
-    build:
-      context: .
-      dockerfile: Dockerfile.test
-    container_name: ep2m2_web
-    ports:
-      - "80:3000"
-    volumes:
-      - shareFile:/shareFile
-      - /home/runner/work/EP2M2/EP2M2/test:/EP2M2/test
-    environment:
-      PGPASSWORD: ep2m2
-      PGUSER: ep2m2
-      PGPORT: 5432
-      PGDATABASE: ep2m2db
-
-      
+services:      
   api:
     image: inraep2m2/service-p2m2tools-api:latest
     container_name: p2m2ToolsApi

@@ -1,12 +1,13 @@
--- SPDX-FileCopyrightText: 2024 Marcellino Palerme <marcellino.palerme@inrae.fr>
+-- © 2024 INRAE
+-- SPDX-FileContributor: Marcellino Palerme <marcellino.palerme@inrae.fr>
 --
 -- SPDX-License-Identifier: MIT
 
 -- CREATE USER ep2m2 WITH PASSWORD 'ep2m2';
-CREATE DATABASE ep2m2db;
-GRANT ALL PRIVILEGES ON DATABASE ep2m2db TO ep2m2;
+-- CREATE DATABASE ep2m2db;
+-- GRANT ALL PRIVILEGES ON DATABASE ep2m2db TO ep2m2;
 
-\c ep2m2db ep2m2
+-- \c ep2m2db ep2m2
 
 CREATE TABLE verification_token
 (

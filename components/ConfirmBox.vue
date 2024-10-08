@@ -1,3 +1,10 @@
+<!--
+© 2024 INRAE
+SPDX-FileContributor: Marcellino Palerme <marcellino.palerme@inrae.fr>
+
+SPDX-License-Identifier: MIT
+-->
+
 <script setup lang="ts">
 
 // token to save the state of the dialog box

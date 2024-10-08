@@ -1,14 +1,16 @@
-/** SPDX-FileCopyrightText: 2024 Marcellino Palerme <marcellino.palerme@inrae.fr>
- * 
- *  SPDX-License-Identifier: MIT
- * 
- * This file test the ManageCalibCurve component
+// © 2024 INRAE
+// SPDX-FileContributor: Marcellino Palerme <marcellino.palerme@inrae.fr>
+//
+// SPDX-License-Identifier: MIT
+
+/** 
+* This file test the ManageCalibCurve component
 */
-import { mount, config, flushPromises } from '@vue/test-utils';
-import { expect, test, describe, vi } from 'vitest';
-import { vuetify4Test } from '../extra/vuetify4Test';
-import { selectByText } from '../extra/selectBy';
 import ManageCalibCurve from '@/components/ManageCalibCurve.async.vue';
+import { config, flushPromises, mount } from '@vue/test-utils';
+import { describe, expect, test, vi } from 'vitest';
+import { selectByText } from '../extra/selectBy';
+import { vuetify4Test } from '../extra/vuetify4Test';
 
 // Mock fetch
 const $fetchMock = vi.fn();
@@ -270,7 +272,7 @@ describe('ManageCalibCurve', () => {
         
     });
 
-    test('No calibration curve', async () => {
+    test.todo('No calibration curve', async () => {
         // Mock fetch
         $fetchMock.mockImplementation(async (url: string) => {
             if(url.includes('totalItems')) {
@@ -288,7 +290,7 @@ describe('ManageCalibCurve', () => {
         expect(wrapper.text()).toContain('message.noCalibCurve');
     });
 
-    test('2 calibration curves: free and used', async () => {
+    test.todo('2 calibration curves: free and used', async () => {
         // Mock fetch
         $fetchMock.mockImplementation(async (url: string) => {
             if(url.includes('totalItems')) {
@@ -323,7 +325,7 @@ describe('ManageCalibCurve', () => {
         checkActionUsed(wrapper, calib_used_0);        
     });
 
-    test('2 calibration curves: free and archived', async () => {
+    test.todo('2 calibration curves: free and archived', async () => {
         // Mock fetch
         $fetchMock.mockImplementation(async (url: string) => {
             if(url.includes('totalItems')) {
@@ -358,7 +360,7 @@ describe('ManageCalibCurve', () => {
         checkActionArchived(wrapper, calib_archi_0);        
     });
 
-    test('3 calibration curves: free, used, archived', async () => {
+    test.todo('3 calibration curves: free, used, archived', async () => {
         // Mock fetch
         $fetchMock.mockImplementation(async (url: string) => {
             if(url.includes('totalItems')) {

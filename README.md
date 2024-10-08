@@ -1,12 +1,22 @@
 <!--
-SPDX-FileCopyrightText: 2024 Marcellino Palerme <marcellino.palerme@inrae.fr>
+© 2024 INRAE
+SPDX-FileContributor: Marcellino Palerme <marcellino.palerme@inrae.fr>
 
 SPDX-License-Identifier: MIT
 -->
 
-# EP2M2
-metabolomic target analyzes manager.
+# EP2M2 : Metabolomic Target Analyzes Manager.
 
+## Version
+__0.2.1__
+
+## Reuse compliance
+<!--REUSE--></br>
+[![Reuse compliant](./badges/reuse_compliant.svg)](https://github.com/p2m2/EP2M2/actions/runs/11209877737)<!--REUSE-END-->  
+
+## Tests
+<!--GAMFC--></br>
+[![result](./badges/tests-result.svg) ![total](./badges/tests-total.svg) ![passed](./badges/tests-passed.svg) ![failed](./badges/tests-failed.svg) ![todo](./badges/tests-todo.svg)](https://github.com/p2m2/EP2M2/actions/runs/11209877737) </br>[![Branches](./badges/coverage-branches.svg) ![Functions](./badges/coverage-functions.svg) ![Lines](./badges/coverage-lines.svg)![Statements](./badges/coverage-statements.svg) ![Coverage total](./badges/coverage-total.svg)](https://github.com/p2m2/EP2M2/actions/runs/11209877737)<!--GAMFC-END-->
 ## Features
 - Extraction of formats files of the metabolomics data acquisition devices of the P2M2 platform
   - gcms
@@ -22,22 +32,33 @@ metabolomic target analyzes manager.
   - Associated calibration curves
 
 ## Installation
-### Docker compose (Recommended)
-_Requirement_ : Docker Engine
-1. Download release archive
-2. Extract archive
-3. Go into folder
-4. Create env file  
-`echo "WEB_ADMIN=<adminitrator address>" > .env`  
-`echo "WEB_PWD=<adminitrator 
-password>" > .env`
-5. Launch compose  
-`docker compose up --detach`
-6. Open browser to ip machine. You arrive onto login page of EP2M2. (else hold on 1 minute and refresh)
-7. Remove env file  
-`rm .env`
 
-## User guide
+### Requirements  
+- adminitrator rights
+- docker
+- docker-compose
+- docker with sudo rights
+
+### Linux
+
+1. Clone the repository
+2. Define user and password for the database and the database name
+
+```bash
+cd EP2M2
+echo "PGUSER=<user_name>" > ./secrets/pg.env
+echo "PGPASSWORD=<password>" >> ./secrets/pg.env
+echo "PGDATABASE=<database_name>" >> ./secrets/pg.env
+echo "POSTGRES_USER=\$PGUSER" >> ./secrets/pg.env
+echo "POSTGRES_PASSWORD=\$PGPASSWORD" >> ./secrets/pg.env
+echo "POSTGRES_DB=\$PGDATABASE" >> ./secrets/pg.env
+```
+
+3. Launch the docker-compose
+
+```bash
+docker compose -f compose.yaml up -d
+```
 
 ## Contibution
 [let's go](./doc/contribution.md)
