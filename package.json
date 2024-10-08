@@ -14,7 +14,7 @@
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore --ignore-pattern 'wireframe' "
   },
   "devDependencies": {
-    "@nuxt/eslint-config": ">=0.2.0",
+    "@nuxt/eslint-config": "0.5.7",
     "@nuxt/test-utils": "3.14.3",
     "@nuxt/ui": "npm:@nuxt/ui-edge@latest",
     "@nuxtjs/eslint-module": ">=4.1.0",
