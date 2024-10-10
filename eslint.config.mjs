@@ -1,3 +1,8 @@
+// © 2024 INRAE
+// SPDX-FileContributor: Marcellino Palerme <marcellino.palerme@inrae.fr>
+//
+// SPDX-License-Identifier: MIT
+
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import js from "@eslint/js";
