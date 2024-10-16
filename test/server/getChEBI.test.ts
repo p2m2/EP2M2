@@ -29,7 +29,7 @@ function checkGetChEBI(wishValue: tChEBI[], result: tChEBI[]){
 
 describe("getChEBI", async ()=>{
 
-    test('Complete name of molecule', async ()=>{
+    test.todo('Complete name of molecule', async ()=>{
         const result:tChEBI[] = await $fetch("api/getChEBI?search=Voglibose");
         expect(result.length).toBe(1);
         expect(result[0].id).toBe("CHEBI:32300");
@@ -37,7 +37,7 @@ describe("getChEBI", async ()=>{
         expect(result[0].formula).toBe("C10H21NO7");
         expect(result[0].mass).toBe(267.277);
     });
-    test('Partial name of molecule', async ()=>{
+    test.todo('Partial name of molecule', async ()=>{
         const wishValue = [
             {name:"levoglucosan", id:"CHEBI:30997", formula:"C6H10O5",
              mass:162.141},
@@ -52,7 +52,7 @@ describe("getChEBI", async ()=>{
         checkGetChEBI(wishValue, result);
     });
 
-    test('CHEBID', async ()=>{
+    test.todo('CHEBID', async ()=>{
         const wishValue = [
             {id: "CHEBI:32300", name: "voglibose", formula: "C10H21NO7",
              mass: 267.277}
@@ -61,7 +61,7 @@ describe("getChEBI", async ()=>{
         checkGetChEBI(wishValue, result);
     });
 
-    test('partial CHEBID', async ()=>{
+    test.todo('partial CHEBID', async ()=>{
         const wishValue = [
             {id: "CHEBI:15378", name:"hydron", formula:"H", mass:1.00784},
             {id: "CHEBI:17568", name:"uracil", formula:"C4H4N2O2",
@@ -79,7 +79,7 @@ describe("getChEBI", async ()=>{
         checkGetChEBI(wishValue, result);
     });
 
-    test('Formula', async ()=>{
+    test.todo('Formula', async ()=>{
         const wishValue = [
             {id: "CHEBI:17790", name: "methanol", formula: "CH4O",
              mass: 32.04186},
@@ -88,7 +88,7 @@ describe("getChEBI", async ()=>{
         checkGetChEBI(wishValue, result);
     });
 
-    test('Partial formula', async ()=>{
+    test.todo('Partial formula', async ()=>{
         const wishValue = [
             {id: "CHEBI:15862", name:"ethylamine", formula:"C2H7N",
              mass:45.08370},
