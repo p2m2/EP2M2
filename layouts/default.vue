@@ -18,7 +18,7 @@ const lPartner = runtimeConfig.public.lPartner;
 <template>
   <!-- mandatory tag to use vuetify in nuxt3 -->
   <v-app>
-    <div>
+    <div id="bannerImage">
       <v-container class="mb-4">
         <v-row
           justify="space-between"
