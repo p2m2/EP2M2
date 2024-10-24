@@ -11,6 +11,7 @@ declare global {
         name: string,
         formula?: string,
         mass?: number
+        synonyms?: string[]
     }
 
 }

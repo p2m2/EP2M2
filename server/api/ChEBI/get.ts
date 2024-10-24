@@ -8,7 +8,7 @@
 
 // We can call this file like /api/ChEBI?search=epi
 
-import { searchGlobal } from "./function/search";
+import { getLiteEntity } from "./function/search";
 
 export default defineEventHandler(async (event) => {
     const {search} = getQuery(event);
@@ -18,6 +18,6 @@ export default defineEventHandler(async (event) => {
         throw new Error(`Erreur miss search parameter`);
     }
 
-    return await searchGlobal(search as string);
+    return await getLiteEntity(search as string);
 })
 
