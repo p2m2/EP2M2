@@ -9,8 +9,8 @@ declare global {
     interface tChEBI {
         id: string,
         name: string,
-        formula: string,
-        mass: number
+        formula?: string,
+        mass?: number
     }
 
 }
