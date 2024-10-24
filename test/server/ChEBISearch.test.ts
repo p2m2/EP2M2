@@ -2,8 +2,9 @@
 //
 // SPDX-License-Identifier: MIT
 
-import { describe, test } from "vitest";
 
+import { describe, test } from "vitest";
+import {searchGlobal} from "~/server/api/ChEBI/function/search.ts";
 /**
  * Check we all results from getChEBI are correct
  * @param wishValue - the expected value
@@ -29,8 +30,10 @@ function checkGetChEBI(wishValue: tChEBI[], result: tChEBI[]){
 
 describe("getChEBI", async ()=>{
 
-    test.todo('Complete name of molecule', async ()=>{
-        const result:tChEBI[] = await $fetch("api/getChEBI?search=Voglibose");
+    test('Complete name of molecule', async ()=>{
+        const result:tChEBI[] = await searchGlobal("Voglibose");
+        console.log(result);
+        
         expect(result.length).toBe(1);
         expect(result[0].id).toBe("CHEBI:32300");
         expect(result[0].name).toBe("voglibose");

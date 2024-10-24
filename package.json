@@ -38,6 +38,7 @@
   "dependencies": {
     "@mdi/font": ">=7.3.67",
     "@nuxt/ui": "npm:@nuxt/ui-edge@latest",
+    "@xmldom/xmldom": "^0.9.4",
     "bcrypt": ">=5.1.1",
     "nuxt": "3.13.2",
     "pg": "8.13.0",
