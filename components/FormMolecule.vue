@@ -30,11 +30,74 @@ const props = defineProps({
 
 // Event to close dialog box
 const event = defineEmits(['close']);
+const panel = ref<string[]>([])
+const loading = ref<boolean>(false)
 
 // Variable to manage the form
 const validateForm = computed<boolean>(() => {
     return true;
 });
+
+const molDisplay = ref<tChEBI>();
+
+// ******Variables to manage the search of molecule
+// Number of items per page
+const molItemsPerPage= ref<number>(5);
+// Page of table
+const molPage = ref<number>(1);
+// Search molecule
+const searchMolecule = ref<string>('');
+// List of molecule found
+const itemMol = ref<any>([]);
+// Header of table
+const headerMol = [
+    { title : 'ChEBIId', key: 'id' },
+    { title: 'name', key: 'name' }
+];
+// Timeout to manage the search of molecule
+let debounceTimeout: ReturnType<typeof setTimeout>;
+
+// Part to manage the search of molecule in real time on ChEBI
+watch(searchMolecule, (value) => {
+    // start to search molecule after 3 characters
+    if(value.length < 3){
+        return;
+    }
+    // clear the timeout if the user is still typing
+    clearTimeout(debounceTimeout);
+
+    debounceTimeout = setTimeout(() => {
+        loading.value = true
+        $fetch('/api/ChEBI?search='+value)
+        .then((response) => {
+            loading.value = false
+            // check no error
+            if(typeof response === 'number'){
+               // shom error messaeg
+               return;
+            }
+            itemMol.value = response;
+        });
+    }, 300); 
+});
+// Variable to get selected molecule
+const itemMolSelected = ref<any>([]);
+// Get all information on the molecule selected
+watch(itemMolSelected, (value) => {
+    $fetch('/api/ChEBI?id='+value[0])
+    .then((response) => {
+      if(typeof response === 'number'){
+        // TODO manage error
+        return;
+      }
+      molDisplay.value = response as tChEBI;    
+      // close molecule panel
+      panel.value = [];
+    })
+});
+
+// *** Variables to manage the search of equivalent molecule
+
 
 /**
  * Define the title of dialog box
@@ -46,17 +109,6 @@ function titleDialogBox(): string{
         return t('title.modifyMolecule');
     }else{
         return t('title.viewMolecule');
-    }
-}
-
-/**
- * Define the subtitle of dialog box
- */
-function subtitleDialogBox(): string{
-    if(props.action === 'add'){
-        return "";
-    }else{
-        return "name of molecul";
     }
 }
 
@@ -95,20 +147,61 @@ function update(){
           variant="text"
           @click="event('close')"
         />
-      </v-card-title>
-      <v-card-subtitle class="text-h4">
-        {{ subtitleDialogBox() }}
+      </v-card-title> 
+      <!-- Shom molecule -->
+      <!-- its name -->
+      <v-card-subtitle
+        v-if="molDisplay"
+        class="text-h4"
+      >
+        {{ molDisplay.name }}
       </v-card-subtitle>
+      <!-- its formula and name -->
+      <v-card-text v-if="molDisplay">
+        {{ t('label.formula') }} : {{ molDisplay?.formula }} 
+        <br>
+        {{ t('label.mass') }} : {{ molDisplay?.mass }}
+        <br>
+        {{ molDisplay.id }}
+      </v-card-text>
 
 
-      <v-expansion-panels>
-        <!-- Tab where define on whose machine apply calibration curve -->
+      <v-expansion-panels v-model="panel">
+        <!-- Tab where search and select molecule -->
         <v-expansion-panel
+          v-if="props.action == 'add'"
           :title="t('title.molecule')"
-          disabled
         >
           <v-expansion-panel-text>
-            helle
+            <!-- field to indicate searched molecule -->
+            <v-text-field
+              v-model="searchMolecule"
+              label="t(label.search)"
+              :loading="loading"
+              required
+            />
+            <!-- Table to display found molecule -->
+            <v-data-table-server
+              v-model="itemMolSelected"
+              v-model:items-per-page="molItemsPerPage"
+              v-model:page="molPage"
+              :header="headerMol"
+              :items="itemMol.slice(molItemsPerPage*(molPage-1), molItemsPerPage*(molPage))"
+              :items-length="itemMol.length"
+              select-strategy="single"
+              :items-per-page-options="[5, 10, 15]"
+              :loading="loading"
+              show-select
+            />
+          </v-expansion-panel-text>
+        </v-expansion-panel>
+        <!-- Tab where define synonyms -->
+        <v-expansion-panel
+          :title="t('title.synonyms')"
+        >
+          <v-expansion-panel-text>
+            <!-- field to add synonym -->
+            <!-- Table to display synonyms -->
           </v-expansion-panel-text>
         </v-expansion-panel>
         <!-- Tab where define equivalent molecul -->
@@ -117,16 +210,9 @@ function update(){
           disabled
         >
           <v-expansion-panel-text>
-            helle
-          </v-expansion-panel-text>
-        </v-expansion-panel>
-        <!-- Tab where define synonyms -->
-        <v-expansion-panel
-          :title="t('title.synonyms')"
-          disabled
-        >
-          <v-expansion-panel-text>
-            helle
+            <!-- field to indicate searched molecule -->
+            <!-- Table to select equivalent enable in database -->
+            <!-- Table show equivalents -->
           </v-expansion-panel-text>
         </v-expansion-panel>
       </v-expansion-panels>

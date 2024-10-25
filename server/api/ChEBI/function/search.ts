@@ -27,7 +27,7 @@ async function getLiteEntity(search: string): Promise<tChEBI[] | number> {
         <chebi:getLiteEntity>
           <chebi:search>${search}</chebi:search>
           <chebi:searchCategory>ALL</chebi:searchCategory>
-          <chebi:maximumResults>200</chebi:maximumResults>
+          <chebi:maximumResults>50</chebi:maximumResults>
           <chebi:stars>ALL</chebi:stars>
         </chebi:getLiteEntity>
       </soapenv:Body>
