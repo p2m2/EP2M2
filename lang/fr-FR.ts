@@ -40,6 +40,7 @@ export default {
     },
     empty:{
         bug:"anomalie",
+        data:"Le système ne contient pas encore de données de ce type",
         email:"mailto:p2m2-it{'@'}inrae.fr?subject=Erreur de tableau",
         headline:"OUPS",
         or:"ou",

@@ -4,14 +4,12 @@ SPDX-FileContributor: Marcellino Palerme <marcellino.palerme@inrae.fr>
 
 SPDX-License-Identifier: MIT
 -->
+<script setup lang="ts">
+
+</script>
 
 <template>
-  <v-card
-    class="w-50 justify-center d-flex mx-auto"
-    color="secondary"
-  >
-    <v-card-text>
-      Bientôt sur vos écrans
-    </v-card-text>
-  </v-card>
+  <table-db-action 
+    name-db-table="view_tab_molecule"
+  />
 </template>
