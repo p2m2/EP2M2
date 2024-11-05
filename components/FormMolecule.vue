@@ -77,6 +77,8 @@ watch(searchMolecule, (value) => {
           return;
         }
         itemMol.value = response;
+        // back to first page
+        molPage.value = 1;
       });
   }, 300);
 });
@@ -196,12 +198,15 @@ function update() {
           </v-expansion-panel-text>
         </v-expansion-panel>
         <!-- Tab where define synonyms -->
-        <v-expansion-panel :title="t('title.synonyms')">
+        <v-expansion-panel
+          :title="t('title.synonyms')"
+          :disabled="molDisplay?.id === undefined"
+        >
           <v-expansion-panel-text>
             <!-- field to add synonym -->
             <!-- Table to display synonyms -->
             <v-virtual-scroll 
-              height="50%"
+              height="200"
               :items="molDisplay?.synonyms"
               :item-height="5"
             >
