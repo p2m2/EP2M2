@@ -11,21 +11,21 @@ The file profile form molecule composant
 const { t } = useI18n();
 
 const props = defineProps({
-    // id of molecule
-    idMolecule:{
-        type:String,
-        default: '',
-        required: false
-    },
-    // view mode of dialog box
-    action:{
-        type:String,
-        default: 'add',
-        required: true,
-        validator: (value: string) => {
-            return ['add', 'modify', 'view'].includes(value);
-        }
+  // id of molecule
+  idMolecule: {
+    type: String,
+    default: '',
+    required: false
+  },
+  // view mode of dialog box
+  action: {
+    type: String,
+    default: 'add',
+    required: true,
+    validator: (value: string) => {
+      return ['add', 'modify', 'view'].includes(value);
     }
+  }
 });
 
 // Event to close dialog box
@@ -35,14 +35,14 @@ const loading = ref<boolean>(false)
 
 // Variable to manage the form
 const validateForm = computed<boolean>(() => {
-    return true;
+  return true;
 });
 
 const molDisplay = ref<tChEBI>();
 
 // ******Variables to manage the search of molecule
 // Number of items per page
-const molItemsPerPage= ref<number>(5);
+const molItemsPerPage = ref<number>(5);
 // Page of table
 const molPage = ref<number>(1);
 // Search molecule
@@ -51,46 +51,46 @@ const searchMolecule = ref<string>('');
 const itemMol = ref<any>([]);
 // Header of table
 const headerMol = [
-    { title : 'ChEBIId', key: 'id' },
-    { title: 'name', key: 'name' }
+  { title: 'ChEBIId', key: 'id' },
+  { title: 'name', key: 'name' }
 ];
 // Timeout to manage the search of molecule
 let debounceTimeout: ReturnType<typeof setTimeout>;
 
 // Part to manage the search of molecule in real time on ChEBI
 watch(searchMolecule, (value) => {
-    // start to search molecule after 3 characters
-    if(value.length < 3){
-        return;
-    }
-    // clear the timeout if the user is still typing
-    clearTimeout(debounceTimeout);
+  // start to search molecule after 3 characters
+  if (value.length < 3) {
+    return;
+  }
+  // clear the timeout if the user is still typing
+  clearTimeout(debounceTimeout);
 
-    debounceTimeout = setTimeout(() => {
-        loading.value = true
-        $fetch('/api/ChEBI?search='+value)
-        .then((response) => {
-            loading.value = false
-            // check no error
-            if(typeof response === 'number'){
-               // shom error messaeg
-               return;
-            }
-            itemMol.value = response;
-        });
-    }, 300); 
+  debounceTimeout = setTimeout(() => {
+    loading.value = true
+    $fetch('/api/ChEBI?search=' + value)
+      .then((response) => {
+        loading.value = false
+        // check no error
+        if (typeof response === 'number') {
+          // shom error messaeg
+          return;
+        }
+        itemMol.value = response;
+      });
+  }, 300);
 });
 // Variable to get selected molecule
 const itemMolSelected = ref<any>([]);
 // Get all information on the molecule selected
 watch(itemMolSelected, (value) => {
-    $fetch('/api/ChEBI?id='+value[0])
+  $fetch('/api/ChEBI?id=' + value[0])
     .then((response) => {
-      if(typeof response === 'number'){
+      if (typeof response === 'number') {
         // TODO manage error
         return;
       }
-      molDisplay.value = response as tChEBI;    
+      molDisplay.value = response as tChEBI;
       // close molecule panel
       panel.value = [];
     })
@@ -102,29 +102,29 @@ watch(itemMolSelected, (value) => {
 /**
  * Define the title of dialog box
  */
-function titleDialogBox(): string{
-    if(props.action === 'add'){
-        return t('title.addMolecule');
-    }else if(props.action === 'modify'){
-        return t('title.modifyMolecule');
-    }else{
-        return t('title.viewMolecule');
-    }
+function titleDialogBox(): string {
+  if (props.action === 'add') {
+    return t('title.addMolecule');
+  } else if (props.action === 'modify') {
+    return t('title.modifyMolecule');
+  } else {
+    return t('title.viewMolecule');
+  }
 }
 
 /**
  * Add molecule
  */
-function add(){
-    // TODO
-    event('close');
+function add() {
+  // TODO
+  event('close');
 }
 /**
  * Update molecule
  */
-function update(){
-    // TODO
-    event('close');
+function update() {
+  // TODO
+  event('close');
 }
 </script>
 
@@ -147,7 +147,7 @@ function update(){
           variant="text"
           @click="event('close')"
         />
-      </v-card-title> 
+      </v-card-title>
       <!-- Shom molecule -->
       <!-- its name -->
       <v-card-subtitle
@@ -158,7 +158,7 @@ function update(){
       </v-card-subtitle>
       <!-- its formula and name -->
       <v-card-text v-if="molDisplay">
-        {{ t('label.formula') }} : {{ molDisplay?.formula }} 
+        {{ t('label.formula') }} : {{ molDisplay?.formula }}
         <br>
         {{ t('label.mass') }} : {{ molDisplay?.mass }}
         <br>
@@ -186,7 +186,7 @@ function update(){
               v-model:items-per-page="molItemsPerPage"
               v-model:page="molPage"
               :header="headerMol"
-              :items="itemMol.slice(molItemsPerPage*(molPage-1), molItemsPerPage*(molPage))"
+              :items="itemMol.slice(molItemsPerPage * (molPage - 1), molItemsPerPage * (molPage))"
               :items-length="itemMol.length"
               select-strategy="single"
               :items-per-page-options="[5, 10, 15]"
@@ -196,12 +196,22 @@ function update(){
           </v-expansion-panel-text>
         </v-expansion-panel>
         <!-- Tab where define synonyms -->
-        <v-expansion-panel
-          :title="t('title.synonyms')"
-        >
+        <v-expansion-panel :title="t('title.synonyms')">
           <v-expansion-panel-text>
             <!-- field to add synonym -->
             <!-- Table to display synonyms -->
+            <v-virtual-scroll 
+              height="50%"
+              :items="molDisplay?.synonyms"
+              :item-height="5"
+            >
+              <template #default="{ item }">
+                <v-list-item 
+                  :title="item"
+                  prepend-icon="mdi-lock"
+                />
+              </template>
+            </v-virtual-scroll>
           </v-expansion-panel-text>
         </v-expansion-panel>
         <!-- Tab where define equivalent molecul -->
@@ -236,7 +246,7 @@ function update(){
         :text="t('button.save')"
         type="submit"
         :disabled="!(validateForm === true)"
-      /> 
+      />
     </v-card>
   </v-form>
 </template>
