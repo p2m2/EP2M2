@@ -103,16 +103,16 @@ watch(itemMolSelected, (value) => {
 
 // *** Variables to manage the synonyms
 // Show synonyms but differenciate between synonyms from ChEBO and users
-const listSynonyms = computed<{syn:string, icon:string}[]>(() => {
+const listSynonyms = computed<{syn:string, icon:string, action:Function}[]>(() => {
     const inSyns = molDisplay.value?.inSyns ?? [];
     const synonyms = molDisplay.value?.synonyms ?? [];
     return [...inSyns, ...synonyms]
         .filter(syn => syn !== "")
         .map((syn) => {
             if (synonyms.includes(syn)) {
-                return { syn: syn, icon: "mdi-lock" };
+                return { syn: syn, icon: "mdi-lock", action: () => {} };
             } else {
-                return { syn: syn, icon: "mdi-delete" };
+                return { syn: syn, icon: "mdi-delete", action: removeSynonym };
             }
         });
 });
@@ -140,6 +140,13 @@ function addSynonym() {
   newSynonym.value = '';
 }
 
+/**
+ * Remove synonym from molecule
+ */
+function removeSynonym(item:{ syn: string }) {
+  // remove synonym from inSyns
+  molDisplay.value.inSyns = molDisplay.value.inSyns.filter((syn) => syn !== item.syn);
+}
 // *** Variables to manage the search of equivalent molecule
 
 
@@ -275,6 +282,7 @@ function update() {
                 <v-list-item 
                   :title="item.syn"
                   :prepend-icon="item.icon"
+                  @click="item.action(item)"
                 />
               </template>
             </v-virtual-scroll>
