@@ -7,6 +7,8 @@ SPDX-License-Identifier: MIT
 The file profile form molecule composant
 -->
 <script setup lang="ts">
+import { textChangeRangeIsUnchanged } from 'typescript';
+
 
 const { t } = useI18n();
 
@@ -117,10 +119,21 @@ const listSynonyms = computed<{syn:string, icon:string}[]>(() => {
 
 // Variable to add new synonym
 const newSynonym = ref<string>('');
+// Rules to add synonym
+const synRules = [
+  (text: string) => !!text || t('message.required'),
+  (text: string) => listSynonyms.value.filter((val) => val.syn == text).length == 0 || t('message.synonymExist')
+];
+// Variable to validate synonym
+const validateSynonym = ref<boolean>(false);
 /**
  * Add synonym to molecule
  */
 function addSynonym() {
+  // check two don't add the same synonym
+  if (!validateSynonym.value) {
+    return;
+  }
   // add synonym in inSyns
   molDisplay.value.inSyns.push(newSynonym.value);
   // clear the field
@@ -233,13 +246,15 @@ function update() {
         >
           <v-expansion-panel-text>
             <!-- field to add synonym -->
-            <form 
+            <v-form 
+              v-model="validateSynonym"
               @submit.prevent="addSynonym"
             >
               <v-text-field
                 v-model="newSynonym"
                 label="t(label.synonym)"
                 required
+                :rules="synRules"
               >
                 <template #append>
                   <v-btn
@@ -249,7 +264,7 @@ function update() {
                   />
                 </template>
               </v-text-field>
-            </form>
+            </v-form>
             <!-- Table to display synonyms -->
             <v-virtual-scroll 
               height="200"
