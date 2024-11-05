@@ -93,6 +93,7 @@ watch(itemMolSelected, (value) => {
         return;
       }
       molDisplay.value = response as tChEBI;
+      molDisplay.value.inSyns = [];
       // close molecule panel
       panel.value = [];
     })
@@ -113,6 +114,18 @@ const listSynonyms = computed<{syn:string, icon:string}[]>(() => {
             }
         });
 });
+
+// Variable to add new synonym
+const newSynonym = ref<string>('');
+/**
+ * Add synonym to molecule
+ */
+function addSynonym() {
+  // add synonym in inSyns
+  molDisplay.value.inSyns.push(newSynonym.value);
+  // clear the field
+  newSynonym.value = '';
+}
 
 // *** Variables to manage the search of equivalent molecule
 
@@ -220,6 +233,23 @@ function update() {
         >
           <v-expansion-panel-text>
             <!-- field to add synonym -->
+            <form 
+              @submit.prevent="addSynonym"
+            >
+              <v-text-field
+                v-model="newSynonym"
+                label="t(label.synonym)"
+                required
+              >
+                <template #append>
+                  <v-btn
+                    type="submit"
+                    variant="plain"
+                    icon="mdi-plus"
+                  />
+                </template>
+              </v-text-field>
+            </form>
             <!-- Table to display synonyms -->
             <v-virtual-scroll 
               height="200"
