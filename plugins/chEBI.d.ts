@@ -10,8 +10,9 @@ declare global {
         id: string,
         name: string,
         formula?: string,
-        mass?: number
-        synonyms?: string[]
+        mass?: number,
+        synonyms?: string[],
+        inSyns?: string[]
     }
 
 }

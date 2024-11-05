@@ -98,6 +98,22 @@ watch(itemMolSelected, (value) => {
     })
 });
 
+// *** Variables to manage the synonyms
+// Show synonyms but differenciate between synonyms from ChEBO and users
+const listSynonyms = computed<{syn:string, icon:string}[]>(() => {
+    const inSyns = molDisplay.value?.inSyns ?? [];
+    const synonyms = molDisplay.value?.synonyms ?? [];
+    return [...inSyns, ...synonyms]
+        .filter(syn => syn !== "")
+        .map((syn) => {
+            if (synonyms.includes(syn)) {
+                return { syn: syn, icon: "mdi-lock" };
+            } else {
+                return { syn: syn, icon: "mdi-delete" };
+            }
+        });
+});
+
 // *** Variables to manage the search of equivalent molecule
 
 
@@ -207,13 +223,13 @@ function update() {
             <!-- Table to display synonyms -->
             <v-virtual-scroll 
               height="200"
-              :items="molDisplay?.synonyms"
+              :items="listSynonyms"
               :item-height="5"
             >
               <template #default="{ item }">
                 <v-list-item 
-                  :title="item"
-                  prepend-icon="mdi-lock"
+                  :title="item.syn"
+                  :prepend-icon="item.icon"
                 />
               </template>
             </v-virtual-scroll>
