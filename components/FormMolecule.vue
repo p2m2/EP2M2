@@ -7,9 +7,6 @@ SPDX-License-Identifier: MIT
 The file profile form molecule composant
 -->
 <script setup lang="ts">
-import { textChangeRangeIsUnchanged } from 'typescript';
-
-
 const { t } = useI18n();
 
 const props = defineProps({
@@ -163,6 +160,22 @@ function titleDialogBox(): string {
   }
 }
 
+// Enable equivalent if there are molecule in database
+const disabledEquivalents = ref<boolean>(true);
+/**
+ * Check if database contain molecule
+ */
+function checkMolecule(){
+  $fetch('/api/molecule/check', {
+    method: 'GET'
+  })
+  .then((response) => {
+    console.log(response);
+    
+    disabledEquivalents.value = !response;
+  });
+}
+checkMolecule();
 /**
  * Add molecule
  */
@@ -177,6 +190,7 @@ function update() {
   // TODO
   event('close');
 }
+
 </script>
 
 <template>
@@ -291,7 +305,7 @@ function update() {
         <!-- Tab where define equivalent molecul -->
         <v-expansion-panel
           :title="t('title.equivalent')"
-          disabled
+          :disabled="disabledEquivalents"
         >
           <v-expansion-panel-text>
             <!-- field to indicate searched molecule -->
