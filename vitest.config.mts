@@ -57,15 +57,19 @@
 // });
 
 import { defineVitestConfig } from "@nuxt/test-utils/config";
+import { configDefaults } from 'vitest/config'
 
 export default defineVitestConfig({
     // any custom Vitest config you require
     test: {
+        exclude: [...configDefaults.exclude, "wireframe/**"],
         coverage: {
             enabled: true,
             provider: "v8",
             reportOnFailure: true,
-            reporter: ["json-summary", "json", "html", "text"]
+            reporter: ["json-summary", "json", "html", "text"],
+            exclude: [...(configDefaults.coverage.exclude || []), "wireframe/**"],
+            
         },
         globals: true,
         environment: "nuxt",
@@ -90,5 +94,5 @@ export default defineVitestConfig({
             junit: "test/results/junit.xml",
             json: "test/results/results.json",
         },
-    }
+     }
 });
