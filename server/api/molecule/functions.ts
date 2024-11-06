@@ -7,17 +7,39 @@
 import { compareArray } from '../function/compareArray';
 import { queryDatabase } from '../function/database';
 
-export { getEquivalent, getSynonym, addMolecule, updateMolecule, tMolecule };
+export { getSearch, getEquivalent, getSynonym, addMolecule, updateMolecule, tMolecule };
 
 interface tMolecule {
     id: number|null | undefined,
     name: string,
     formula: string,
     mass: number,
-    synonyms: string [] | [] | undefined,
-    equivalents: number[] | [] | undefined
+    synonyms?: string [] | [] | undefined,
+    inSyns?: string [] | [] | undefined,
+    equivalents?: number[] | [] | undefined
 
 }
+
+/**
+ * looking for molecules in the database
+ * @param search string of elements to search (name, formula, mass, synonyms)
+ * @returns list of molecules or an error code
+ */
+function getSearch(search: string): Promise<any> {
+    // Get all molecules from the database
+    return queryDatabase(`
+        SELECT molecule.id, molecule.name, molecule.formula, molecule.mass
+        FROM molecule
+        JOIN synonym s ON s.id_molecule = molecule.id
+        WHERE molecule.name ILIKE $1
+        OR molecule.formula ILIKE $1
+        OR molecule.mass::text ILIKE $1
+        OR s.name ILIKE $1`,
+        [`%${search}%`])
+    .then((result) => result.rows)
+    .catch(() => 1);
+}
+
 /**
  * Get equivalent molecules from the database
  * @param id number the molecule id

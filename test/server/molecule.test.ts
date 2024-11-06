@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: MIT
 
-import { addMolecule, updateMolecule, type tMolecule, } from "~/server/api/molecule/functions";
+import * as mol from "~/server/api/molecule/functions";
 import { expect, test, describe, vi, type Mock } from 'vitest';
 import { config } from '@vue/test-utils';
 import { queryDatabase } from "~/server/api/function/database";
@@ -35,14 +35,14 @@ describe("molecule", async () => {
                 assert.fail("Call to queryDatabase with unexpected query " + query);
             }
         });
-        const result = await addMolecule({
+        const result = await mol.addMolecule({
             id: null,
             name: "voglibose",
             formula: "C10H21NO7",
             mass: 267.277,
             equivalents: [],
             synonyms: []
-        } as tMolecule)
+        } as mol.tMolecule)
         expect(result).toBe(0);
     });
 
@@ -77,13 +77,13 @@ describe("molecule", async () => {
             }
         });
 
-        const result = await addMolecule({
+        const result = await mol.addMolecule({
             name: "voglibose",
             formula: "C10H21NO7",
             mass: 267.277,
             equivalents: [0],
             synonyms: ["vog"]
-        } as unknown as tMolecule)
+        } as unknown as mol.tMolecule)
         expect(result).toBe(0);
 
     });
@@ -120,7 +120,7 @@ describe("molecule", async () => {
                 assert.fail("Call to queryDatabase with unexpected query " + query);
             }
         });
-        const result = await updateMolecule({
+        const result = await mol.updateMolecule({
             id: 1,
             name: "voglibose",
             formula: "C10H21NO7",
@@ -155,7 +155,7 @@ describe("molecule", async () => {
                 assert.fail("Call to queryDatabase with unexpected query " + query);
             }
         });
-        const result = await updateMolecule({
+        const result = await mol.updateMolecule({
             id: 1,
             name: "voglibose",
             formula: "C10H21NO7",
@@ -196,7 +196,7 @@ describe("molecule", async () => {
             }
         });
 
-        const result = await updateMolecule({
+        const result = await mol.updateMolecule({
             id: 1,
             name: "voglibose",
             formula: "C10H21NO7",
@@ -235,7 +235,7 @@ describe("molecule", async () => {
                 assert.fail("Call to queryDatabase with unexpected query " + query);
             }
         });
-        const result = await updateMolecule({
+        const result = await mol.updateMolecule({
             id: 1,
             name: "voglibose",
             formula: "C10H21NO7",
@@ -245,4 +245,23 @@ describe("molecule", async () => {
         })
         expect(result).toBe(0);
     });
+
+    test('search molecule', async () => {
+        (queryDatabase as Mock).mockResolvedValueOnce({
+            rows: [{
+                id: 1,
+                name: "voglibose",
+                formula: "C10H21NO7",
+                mass: 267.277
+            }]
+        });
+        const result = await mol.getSearch("voglibose");
+        expect(result).toEqual([{
+            id: 1,
+            name: "voglibose",
+            formula: "C10H21NO7",
+            mass: 267.277
+        }]);
+    }
+    );
 });
