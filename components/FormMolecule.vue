@@ -160,6 +160,8 @@ function titleDialogBox(): string {
   }
 }
 
+//***** Manage equivalent molecule */
+
 // Enable equivalent if there are molecule in database
 const disabledEquivalents = ref<boolean>(true);
 /**
@@ -176,6 +178,76 @@ function checkMolecule(){
   });
 }
 checkMolecule();
+
+// variable to search equivalent molecule
+const searchEquivalents = ref<string>('');
+// variable to display equivalent molecule
+const itemEquivalents = ref<any>([]);
+// header of table
+const headerEquivalents = ref([
+  { title: 'name', key: 'name' },
+  { title: 'formula', key: 'formula' },
+  { title: 'mass', key: 'mass' }
+]);
+// Number of items per page
+const equiItemsPerPage = ref<number>(5);
+// Page of table
+const equiPage = ref<number>(1);
+/**
+ * search molecule in database
+ * @param search 
+ */
+ function searchInDatabase(search: string) {
+  // query to search molecule
+  $fetch('/api/molecule/search?param=' + search)
+    .then((response) => {
+      loading.value = false
+      // check no error
+      if (typeof response === 'number') {
+        // shom error message
+        return;
+      }
+      itemEquivalents.value = response;
+      // back to first page
+      equiPage.value = 1;
+    });
+}
+
+watch(searchEquivalents, (value) => {
+  // start to search molecule after 3 characters
+  if (value.length < 3) {
+    return;
+  }
+  // clear the timeout if the user is still typing
+  clearTimeout(debounceTimeout);
+
+  debounceTimeout = setTimeout(() => {
+    loading.value = true
+    searchInDatabase(value);
+  }, 300);
+});
+
+// Variable to get selected equivalent molecule
+const itemEquivalentsSelected = ref<{ id: string,name: string, formula: string }[]>();
+// variable to display equivalent molecule
+const listEquivalents = ref<{ id: string,name: string, formula: string }[]>([]);
+// Add molecule in list of equivalent
+watch(itemEquivalentsSelected, (value) => {
+  // check value is not empty
+  if( !value || value.length == 0){
+    return;
+  }
+  // check if the molecule is already in the list  
+  if(listEquivalents.value.filter((val) => val.id == value[0].id).length > 0){
+    return;
+  }
+  // add molecule in list
+  listEquivalents.value.push(...value);
+});
+// Remove molecule from list of equivalent
+function removeEquivalent(item: any) {
+  listEquivalents.value = listEquivalents.value.filter((val) => val.id !== item.id);
+}
 /**
  * Add molecule
  */
@@ -250,7 +322,7 @@ function update() {
               v-model="itemMolSelected"
               v-model:items-per-page="molItemsPerPage"
               v-model:page="molPage"
-              :header="headerMol"
+              :headers="headerMol"
               :items="itemMol.slice(molItemsPerPage * (molPage - 1), molItemsPerPage * (molPage))"
               :items-length="itemMol.length"
               select-strategy="single"
@@ -305,12 +377,44 @@ function update() {
         <!-- Tab where define equivalent molecul -->
         <v-expansion-panel
           :title="t('title.equivalent')"
-          :disabled="disabledEquivalents"
+          :disabled="disabledEquivalents || molDisplay?.id === undefined"
         >
           <v-expansion-panel-text>
             <!-- field to indicate searched molecule -->
+            <v-text-field
+              v-model="searchEquivalents"
+              label="t(label.search)"
+              :loading="loading"
+              required
+            />
             <!-- Table to select equivalent enable in database -->
+            <v-data-table-server
+              v-model="itemEquivalentsSelected"
+              v-model:items-per-page="equiItemsPerPage"
+              v-model:page="equiPage"
+              :headers="headerEquivalents"
+              :items="itemEquivalents.slice(equiItemsPerPage * (equiPage - 1), equiItemsPerPage * (equiPage))"
+              :items-length="itemEquivalents.length"
+              return-object
+              :items-per-page-options="[5, 10, 15]"
+              :loading="loading"
+              show-select
+              select-strategy="single"
+            />
             <!-- Table show equivalents -->
+            <v-virtual-scroll 
+              height="200"
+              :items="listEquivalents"
+              :item-height="5"
+            >
+              <template #default="{ item }">
+                <v-list-item 
+                  :title="item.name + ': ' + item.formula"
+                  prepend-icon="mdi-delete"
+                  @click="removeEquivalent(item)"
+                />
+              </template>
+            </v-virtual-scroll>
           </v-expansion-panel-text>
         </v-expansion-panel>
       </v-expansion-panels>

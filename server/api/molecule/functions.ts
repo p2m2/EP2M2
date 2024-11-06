@@ -50,14 +50,16 @@ function getSearch(search: string): Promise<any> {
     return queryDatabase(`
         SELECT molecule.id, molecule.name, molecule.formula, molecule.mass
         FROM molecule
-        JOIN synonym s ON s.id_molecule = molecule.id
+        LEFT JOIN synonym s ON s.id_mol = molecule.id
         WHERE molecule.name ILIKE $1
         OR molecule.formula ILIKE $1
         OR molecule.mass::text ILIKE $1
         OR s.name ILIKE $1`,
         [`%${search}%`])
     .then((result) => result.rows)
-    .catch(() => 1);
+    .catch((error) => {
+        console.log(error);
+        return 1});
 }
 
 /**
