@@ -7,7 +7,7 @@
 import { compareArray } from '../function/compareArray';
 import { queryDatabase } from '../function/database';
 
-export { getSearch, getEquivalent, getSynonym, addMolecule, updateMolecule, tMolecule };
+export {getCheck, getSearch, getEquivalent, getSynonym, addMolecule, updateMolecule, tMolecule };
 
 interface tMolecule {
     id: number|null | undefined,
@@ -19,6 +19,26 @@ interface tMolecule {
     equivalents?: number[] | [] | undefined
 
 }
+
+/**
+ * check if molecule table isn't empty
+ * @returns true if the table isn't empty, false otherwise
+ */
+const getCheck = () => {
+    return queryDatabase(`SELECT * FROM molecule LIMIT 1`,'')
+    .then((response) => {
+        if (response.rows.length === 0) {
+            console.log('Database is empty');
+            return false;
+        }
+        return true;
+    })
+    .catch(() =>{
+        console.log('Database is empty');
+        return false;
+    });
+}
+
 
 /**
  * looking for molecules in the database

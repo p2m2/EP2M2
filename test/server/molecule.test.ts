@@ -264,4 +264,28 @@ describe("molecule", async () => {
         }]);
     }
     );
+
+    test('search molecule with no result', async () => {
+        (queryDatabase as Mock).mockResolvedValueOnce({ rows: [] });
+        const result = await mol.getSearch("voglibose");
+        expect(result).toEqual([]);
+    });
+
+    test('search molecule with error', async () => {
+        (queryDatabase as Mock).mockRejectedValueOnce("error");
+        const result = await mol.getSearch("voglibose");
+        expect(result).toEqual(1);
+    });
+
+    test('check molecule table empty', async () => {
+        (queryDatabase as Mock).mockResolvedValueOnce({ rows: [] });
+        const result = await mol.getCheck();
+        expect(result).toBe(false);
+    });
+
+    test('check molecule table not empty', async () => {
+        (queryDatabase as Mock).mockResolvedValueOnce({ rows: [{}] });
+        const result = await mol.getCheck();
+        expect(result).toBe(true);
+    });
 });
