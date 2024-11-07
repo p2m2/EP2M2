@@ -92,7 +92,7 @@ watch(itemMolSelected, (value) => {
         return;
       }
       molDisplay.value = response as tChEBI;
-      molDisplay.value.inSyns = [];
+      molDisplay.value.userSyns = [];
       // close molecule panel
       panel.value = [];
     })
@@ -101,9 +101,9 @@ watch(itemMolSelected, (value) => {
 // *** Variables to manage the synonyms
 // Show synonyms but differenciate between synonyms from ChEBO and users
 const listSynonyms = computed<{syn:string, icon:string, action:Function}[]>(() => {
-    const inSyns = molDisplay.value?.inSyns ?? [];
+    const userSyns = molDisplay.value?.userSyns ?? [];
     const synonyms = molDisplay.value?.synonyms ?? [];
-    return [...inSyns, ...synonyms]
+    return [...userSyns, ...synonyms]
         .filter(syn => syn !== "")
         .map((syn) => {
             if (synonyms.includes(syn)) {
@@ -131,8 +131,8 @@ function addSynonym() {
   if (!validateSynonym.value) {
     return;
   }
-  // add synonym in inSyns
-  molDisplay.value.inSyns.push(newSynonym.value);
+  // add synonym in userSyns
+  molDisplay.value.userSyns.push(newSynonym.value);
   // clear the field
   newSynonym.value = '';
 }
@@ -141,8 +141,8 @@ function addSynonym() {
  * Remove synonym from molecule
  */
 function removeSynonym(item:{ syn: string }) {
-  // remove synonym from inSyns
-  molDisplay.value.inSyns = molDisplay.value.inSyns.filter((syn) => syn !== item.syn);
+  // remove synonym from userSyns
+  molDisplay.value.userSyns = molDisplay.value.userSyns.filter((syn) => syn !== item.syn);
 }
 // *** Variables to manage the search of equivalent molecule
 

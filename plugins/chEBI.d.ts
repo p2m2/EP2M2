@@ -12,7 +12,7 @@ declare global {
         formula?: string,
         mass?: number,
         synonyms?: string[],
-        inSyns?: string[]
+        userSyns?: string[]
     }
 
 }

@@ -157,10 +157,12 @@ CREATE TABLE equivalent
   PRIMARY KEY (id_mol_0, id_mol_1)
 );
 -- Synonyms is a table to store information of synonyms
+-- user is a boolean to know if the synonym is added by a user
 CREATE TABLE synonym
 (
   id_mol SERIAL REFERENCES molecule (id) ON DELETE CASCADE,
   name VARCHAR(255),
+  user BOOLEAN DEFAULT FALSE,
   PRIMARY KEY (id_mol, name)
 );
 

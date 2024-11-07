@@ -15,7 +15,7 @@ interface tMolecule {
     formula: string,
     mass: number,
     synonyms?: string [] | [] | undefined,
-    inSyns?: string [] | [] | undefined,
+    userSyns?: string [] | [] | undefined,
     equivalents?: number[] | [] | undefined
 
 }
@@ -111,12 +111,12 @@ function addMolecule(mol: tMolecule): Promise<number> {
         [mol.name, mol.formula, mol.mass])
     .then((result) => {        
         const aPromises = [];
-        if (mol.equivalents.length) {
+        if (mol.equivalents && mol.equivalents.length>0) {
             aPromises.push(addEquivalents(result.rows[0].id,
                 mol.equivalents));
         }
-        if (mol.synonyms.length) {
-            aPromises.push(addSynonyms(result.rows[0].id, mol.synonyms));
+        if (mol.synonyms && mol.synonyms.length>0) {
+            aPromises.push(addSynonyms(result.rows[0].id, mol.synonyms, false));
         }
         return Promise.all(aPromises);
     })
@@ -145,14 +145,15 @@ function addEquivalents(idMolecule: number, equivalents: number[]):
  * Add synonyms to a molecule in the database
  * @param idMolecule id of the molecule
  * @param synonyms array of synonyms
+ * @param user boolean true if the synonyms are added by the user, false otherwise
  * @returns Promise<void>
  */
-function addSynonyms(idMolecule: number, synonyms: string[]): Promise<void> {
+function addSynonyms(idMolecule: number, synonyms: string[], user: boolean): Promise<void> {
     const promises = synonyms.map((synonym) => {
         return queryDatabase(`
-            INSERT INTO synonym (id_molecule, name) 
-            VALUES ($1, $2)`,
-            [idMolecule, synonym]);
+            INSERT INTO synonym (id_molecule, name, user) 
+            VALUES ($1, $2, $3)`,
+            [idMolecule, synonym, user]);
     });
     return Promise.all(promises);
 }
@@ -163,18 +164,24 @@ function addSynonyms(idMolecule: number, synonyms: string[]): Promise<void> {
  * @returns number 0 if the operation is successful, 1 otherwise
  */
 function updateMolecule(mol: tMolecule): Promise<any> {
+    // Check id defined
+    if (mol.id === undefined || mol.id === null) {
+        return new Promise((resolve)=> resolve(2));
+    }
     // Get all synonyms and equivalents of the molecule from the database
     return queryDatabase(`SELECT * FROM func_synonym_equivalent_molecule($1)`, [mol.id])
     .then((res) => {
         const lPromises = [];
         // Check if the molecule has synonyms to update
-        if (mol.synonyms && !compareArray(res.rows[0].synonym, mol.synonyms)) {
-            lPromises.push(updateSynonyms(mol.id, mol.synonyms));
+        if (mol.synonyms && 
+            !compareArray(res.rows[0].synonym, 
+                          [...(mol.synonyms || []), ...(mol.userSyns || [])])) {
+            lPromises.push(updateSynonyms(mol.id, (mol.userSyns || [])));
         }
         // Check if the molecule has equivalents to update
         if (mol.equivalents && !compareArray(res.rows[0].equivalent,
-                                             mol.equivalents)) {
-            lPromises.push(updateEquivalent(mol.id, mol.equivalents));
+                                             (mol.equivalents || []))) {
+            lPromises.push(updateEquivalent(mol.id, (mol.equivalents || [])));
         }
         return Promise.all(lPromises)
     })
@@ -183,18 +190,21 @@ function updateMolecule(mol: tMolecule): Promise<any> {
 }
 
 /**
- * Update synonyms of a molecule in the database
+ * Update user synonyms of a molecule in the database
+ * because only user synonyms can be updated
  * @param idMolecule id of the molecule
- * @param synonyms array of synonyms
+ * @param userSyn array of user synonyms
  * @returns Promise<void>
  */
-function updateSynonyms(idMolecule: number, synonyms: string[]): Promise<void> {
-    // Delete all synonyms of the molecule from the database
+function updateSynonyms(idMolecule: number, userSyn: string[]): Promise<void> {
+    // Delete all user synonyms of the molecule from the database
     return queryDatabase(`
-        DELETE FROM synonym WHERE id_molecule = $1`,
-        [idMolecule])
+        DELETE FROM synonym WHERE id_molecule = $1 AND user = $2`,
+        [idMolecule, true])
         // Insert all synonyms into the database
-        .then(() => addSynonyms(idMolecule, synonyms));
+        .then(() => {
+            addSynonyms(idMolecule, userSyn, true);
+        });
 }
 
 /**
