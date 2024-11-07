@@ -162,36 +162,35 @@ CREATE TABLE synonym
 (
   id_mol SERIAL REFERENCES molecule (id) ON DELETE CASCADE,
   name VARCHAR(255),
-  user BOOLEAN DEFAULT FALSE,
+  is_user BOOLEAN DEFAULT FALSE,
   PRIMARY KEY (id_mol, name)
 );
 
 -- view to show information of molecule in tab
 CREATE VIEW view_tab_molecule AS
 SELECT molecule.id AS id, molecule.name AS name, formula, mass,
-       COUNT(DISTINCT (equivalent.id_mol_0, equivalent.id_mol_1)) AS equivalent
+       COUNT(equivalent.id_mol_0) AS equivalent
 FROM molecule
 LEFT JOIN equivalent ON molecule.id = equivalent.id_mol_0 
-                     OR molecule.id = equivalent.id_mol_1
-LEFT JOIN synonym ON molecule.id = synonym.id_mol
+                      OR molecule.id = equivalent.id_mol_1
 GROUP BY molecule.id;
 
 -- Function to get all names of equivalent molecules
-CREATE OR REPLACE FUNCTION func_equivalent_molecule(id_mol INTEGER)
+CREATE OR REPLACE FUNCTION func_equivalent_molecule(in_id_mol INTEGER)
 RETURNS TABLE(name VARCHAR(255)) AS $$
 BEGIN
     RETURN QUERY
     SELECT DISTINCT molecule.name AS name
     FROM molecule
-    LEFT JOIN equivalent ON molecule.id = equivalent.id_mol_0 
-                          OR molecule.id = equivalent.id_mol_1
-    WHERE molecule.id = id_mol;
+    JOIN equivalent ON molecule.id = equivalent.id_mol_0 
+      OR molecule.id = equivalent.id_mol_1
+    WHERE molecule.id = in_id_mol;
 
 END;
 $$ LANGUAGE plpgsql;
 
 -- Function to get all synonyms and equivalents of a molecule
-CREATE OR REPLACE FUNCTION func_synonym_equivalent_molecule(id_mol INTEGER)
+CREATE OR REPLACE FUNCTION func_synonym_equivalent_molecule(in_id_mol INTEGER)
 RETURNS TABLE(synonyms VARCHAR[], equivalents INTEGER[]) AS $$
 BEGIN
     RETURN QUERY
@@ -200,7 +199,7 @@ BEGIN
     LEFT JOIN equivalent ON molecule.id = equivalent.id_mol_0 
                           OR molecule.id = equivalent.id_mol_1
     LEFT JOIN synonym ON molecule.id = synonym.id_mol
-    WHERE molecule.id = id_mol;
+    WHERE molecule.id = in_id_mol;
 END;
 $$ LANGUAGE plpgsql;
 

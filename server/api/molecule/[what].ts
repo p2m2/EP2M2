@@ -6,7 +6,7 @@
 
 import * as mol from "./functions"
 
-export default defineEventHandler(async (event: any) => {
+export default defineEventHandler(async (event: any) => {   
     // get what to you want to do
     const what = getRouterParam(event, "what");
     // get the method
@@ -33,6 +33,7 @@ export default defineEventHandler(async (event: any) => {
     }
     // In case of a post or put request, we need to get the body
     const body = await readBody(event)
-    return await funcMap[`${method}-${what}`](body.json());
+    
+    return await funcMap[`${method}-${what}`](body);
 
 });

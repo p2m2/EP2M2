@@ -252,8 +252,25 @@ function removeEquivalent(item: any) {
  * Add molecule
  */
 function add() {
-  // TODO
-  event('close');
+  // add molecule in database
+  $fetch('/api/molecule/molecule', {
+    method: 'POST',
+    body: JSON.stringify({
+      id: molDisplay.value.id,
+      name: molDisplay.value.name,
+      formula: molDisplay.value.formula,
+      mass: molDisplay.value.mass,
+      synonyms: (molDisplay.value?.synonyms || []),
+      userSyns: (molDisplay.value?.userSyns || []),
+      equivalents: listEquivalents.value.map((val) => val.id)
+    })
+  })
+  .then(() => {
+    event('close');
+  })
+  .catch((error) => {
+    // TODO manage error
+  });
 }
 /**
  * Update molecule
@@ -271,7 +288,7 @@ function update() {
     validate-on="blur"
     persistent
     :disabled="props.action === 'view'"
-    @submit.prevent="props.action === 'modify' ? update : add"
+    @submit.prevent="add"
   >
     <v-card>
       <!-- title of dialog box about action -->

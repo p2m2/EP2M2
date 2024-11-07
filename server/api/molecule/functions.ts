@@ -34,7 +34,7 @@ const getCheck = () => {
         return true;
     })
     .catch(() =>{
-        console.log('Database is empty');
+        console.log('error Database is empty');
         return false;
     });
 }
@@ -90,7 +90,7 @@ function getSynonym(id: number): Promise<string[] | number> {
     return queryDatabase(`
         SELECT name
         FROM synonym
-        WHERE id_molecule = $1`,
+        WHERE id_mol = $1`,
         [id])
     .then((result) => result.rows.map(
         (row: { name: string; }) => row.name))
@@ -103,6 +103,7 @@ function getSynonym(id: number): Promise<string[] | number> {
  * @returns number 0 if the operation is successful, 1 otherwise
  */
 function addMolecule(mol: tMolecule): Promise<number> {
+    console.log(mol);
     
     // Insert a new molecule into the database
     return queryDatabase(`
@@ -121,7 +122,11 @@ function addMolecule(mol: tMolecule): Promise<number> {
         return Promise.all(aPromises);
     })
     .then(() => 0)
-    .catch(() => 1);
+    .catch((error) => {
+        console.log(error);
+        
+        return 1;
+    });
 }
 
 /**
@@ -151,7 +156,7 @@ function addEquivalents(idMolecule: number, equivalents: number[]):
 function addSynonyms(idMolecule: number, synonyms: string[], user: boolean): Promise<void> {
     const promises = synonyms.map((synonym) => {
         return queryDatabase(`
-            INSERT INTO synonym (id_molecule, name, user) 
+            INSERT INTO synonym (id_mol, name, is_user) 
             VALUES ($1, $2, $3)`,
             [idMolecule, synonym, user]);
     });
@@ -199,7 +204,7 @@ function updateMolecule(mol: tMolecule): Promise<any> {
 function updateSynonyms(idMolecule: number, userSyn: string[]): Promise<void> {
     // Delete all user synonyms of the molecule from the database
     return queryDatabase(`
-        DELETE FROM synonym WHERE id_molecule = $1 AND user = $2`,
+        DELETE FROM synonym WHERE id_mol = $1 AND is_user = $2`,
         [idMolecule, true])
         // Insert all synonyms into the database
         .then(() => {

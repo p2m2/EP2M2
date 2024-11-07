@@ -29,6 +29,7 @@ function add(){
   <table-db-action 
     name-db-table="view_tab_molecule"
     :add="add"
+    :update="dialogView"
   />
   <v-dialog
     v-model="dialogView"
