@@ -114,7 +114,7 @@ async function getMolecule(id: number): Promise<any> {
 function getSearch(search: string): Promise<any> {
     // Get all molecules from the database
     return queryDatabase(`
-        SELECT molecule.id, molecule.name, molecule.formula, molecule.mass
+        SELECT DISTINCT molecule.id, molecule.name, molecule.formula, molecule.mass
         FROM molecule
         LEFT JOIN synonym s ON s.id_mol = molecule.id
         WHERE molecule.name ILIKE $1
