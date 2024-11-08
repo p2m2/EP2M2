@@ -32,12 +32,31 @@ const event = defineEmits(['close']);
 const panel = ref<string[]>([])
 const loading = ref<boolean>(false)
 
-// Variable to manage the form
-const validateForm = computed<boolean>(() => {
-  return true;
-});
-
 const molDisplay = ref<tChEBI>();
+
+//******* Show selected molecule
+if(props.action !== 'add'){
+  $fetch('/api/molecule/molecule?param=' + props.idMolecule)
+    .then((response) => {
+      if (typeof response === 'number') {
+        // TODO manage error
+        return;
+      }
+      molDisplay.value = response as tChEBI;
+
+      // get all equivalent molecule
+      for (const equi of molDisplay.value.equivalents) {
+        $fetch('/api/molecule/molecule?param=' + equi)
+          .then((response) => {
+            if (typeof response === 'number') {
+              // TODO manage error
+              return;
+            }
+            listEquivalents.value.push(response as tChEBI);
+          });
+      }
+    });
+}
 
 // ******Variables to manage the search of molecule
 // Number of items per page
@@ -171,9 +190,7 @@ function checkMolecule(){
   $fetch('/api/molecule/check', {
     method: 'GET'
   })
-  .then((response) => {
-    console.log(response);
-    
+  .then((response) => {    
     disabledEquivalents.value = !response;
   });
 }
@@ -284,7 +301,6 @@ function update() {
 
 <template>
   <v-form
-    v-model="validateForm"
     validate-on="blur"
     persistent
     :disabled="props.action === 'view'"
@@ -316,7 +332,7 @@ function update() {
         <br>
         {{ t('label.mass') }} : {{ molDisplay?.mass }}
         <br>
-        {{ molDisplay.id }}
+        <!-- {{ molDisplay.id }} -->
       </v-card-text>
 
 
@@ -361,6 +377,7 @@ function update() {
               @submit.prevent="addSynonym"
             >
               <v-text-field
+                v-if="props.action != 'view'"
                 v-model="newSynonym"
                 label="t(label.synonym)"
                 required
@@ -385,6 +402,7 @@ function update() {
                 <v-list-item 
                   :title="item.syn"
                   :prepend-icon="item.icon"
+                  :disabled="props.action === 'view'"
                   @click="item.action(item)"
                 />
               </template>
@@ -399,6 +417,7 @@ function update() {
           <v-expansion-panel-text>
             <!-- field to indicate searched molecule -->
             <v-text-field
+              v-if="props.action != 'view'"
               v-model="searchEquivalents"
               label="t(label.search)"
               :loading="loading"
@@ -406,6 +425,7 @@ function update() {
             />
             <!-- Table to select equivalent enable in database -->
             <v-data-table-server
+              v-if="props.action != 'view'"
               v-model="itemEquivalentsSelected"
               v-model:items-per-page="equiItemsPerPage"
               v-model:page="equiPage"
@@ -428,6 +448,7 @@ function update() {
                 <v-list-item 
                   :title="item.name + ': ' + item.formula"
                   prepend-icon="mdi-delete"
+                  :disabled="props.action === 'view'"
                   @click="removeEquivalent(item)"
                 />
               </template>
@@ -446,7 +467,7 @@ function update() {
         v-else-if="props.action === 'modify'"
         color="primary"
         :text="t('button.modify')"
-        :disabled="!(validateForm === true)"
+        :disabled="!(molDisplay)"
         type="submit"
       />
       <v-btn
@@ -454,7 +475,7 @@ function update() {
         color="primary"
         :text="t('button.save')"
         type="submit"
-        :disabled="!(validateForm === true)"
+        :disabled="!(molDisplay)"
       />
     </v-card>
   </v-form>

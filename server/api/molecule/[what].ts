@@ -14,6 +14,7 @@ export default defineEventHandler(async (event: any) => {
     
     // map the method to the function
     const funcMap: { [key: string]: Function } = {
+        "get-molecule": mol.getMolecule,
         "get-check": mol.getCheck,
         "get-search": mol.getSearch,
         "get-equivalent": mol.getEquivalent,

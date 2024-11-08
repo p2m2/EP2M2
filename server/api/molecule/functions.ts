@@ -7,7 +7,8 @@
 import { compareArray } from '../function/compareArray';
 import { queryDatabase } from '../function/database';
 
-export {getCheck, getSearch, getEquivalent, getSynonym, addMolecule, updateMolecule, tMolecule };
+export {getCheck, getMolecule, getSearch, getEquivalent, getSynonym, 
+        addMolecule, updateMolecule, tMolecule };
 
 interface tMolecule {
     id: number|null | undefined,
@@ -39,6 +40,71 @@ const getCheck = () => {
     });
 }
 
+/**
+ * Get a molecule from the database
+ * @param id number the molecule id
+ * @returns molecule info or an error code
+ */
+async function getMolecule(id: number): Promise<any> {
+    const myMolecule:tMolecule  = {
+        id: id,
+        name: '',
+        formula: '',
+        mass: 0,
+        synonyms: [],
+        userSyns: [],
+        equivalents: []
+    };
+    // Get molecule from the database
+    const molecule = await queryDatabase(`
+        SELECT name, formula, mass
+        FROM molecule
+        WHERE id = $1`,
+        [id])
+    .then((result) => result.rows[0])
+    .catch((error) => {
+        console.log(error);
+        return 1
+    });
+    if (molecule === 1) {
+        return 1;
+    }
+    myMolecule.name = molecule.name;
+    myMolecule.formula = molecule.formula;
+    myMolecule.mass = molecule.mass;
+
+    // Get ChEBI synonyms of molecule 
+    const synonyms: string[]|[] = await queryDatabase(`
+        SELECT name
+        FROM synonym
+        WHERE id_mol = $1 AND is_user = $2`,
+        [id, false])
+    .then((result) => result.rows.map( (row: { name: string; }) => row.name))
+    .catch(() => []);
+    myMolecule.synonyms.push(...synonyms);
+
+    // Get user synonyms of molecule
+    const userSyns: string[]|[] = await queryDatabase(`
+        SELECT name
+        FROM synonym
+        WHERE id_mol = $1 AND is_user = $2`,
+        [id, true])
+    .then((result) => result.rows.map( (row: { name: string; }) => row.name))
+    .catch(() => []);
+    myMolecule.userSyns.push(...userSyns);
+
+    // Get equivalent of molecule
+    const equivalents = await queryDatabase(`
+                                SELECT func_equivalent_molecule($1) as id`,
+                                [id])
+                                .then((result) => result.rows)
+                                .catch(() => []);
+    if (equivalents.length>0) {
+        myMolecule.equivalents.push(...equivalents.map((row) => row.id));
+    }
+
+    return myMolecule;
+}
 
 /**
  * looking for molecules in the database
@@ -102,9 +168,7 @@ function getSynonym(id: number): Promise<string[] | number> {
  * @param mol tMolecule info about molecule 
  * @returns number 0 if the operation is successful, 1 otherwise
  */
-function addMolecule(mol: tMolecule): Promise<number> {
-    console.log(mol);
-    
+function addMolecule(mol: tMolecule): Promise<number> {   
     // Insert a new molecule into the database
     return queryDatabase(`
         INSERT INTO molecule (name, formula, mass) 

@@ -175,17 +175,17 @@ LEFT JOIN equivalent ON molecule.id = equivalent.id_mol_0
                       OR molecule.id = equivalent.id_mol_1
 GROUP BY molecule.id;
 
--- Function to get all names of equivalent molecules
+-- Function to get id equivalent molecules
 CREATE OR REPLACE FUNCTION func_equivalent_molecule(in_id_mol INTEGER)
-RETURNS TABLE(name VARCHAR(255)) AS $$
+RETURNS TABLE(id INTEGER) AS $$
 BEGIN
     RETURN QUERY
-    SELECT DISTINCT molecule.name AS name
+    SELECT  molecule.id AS id
     FROM molecule
-    JOIN equivalent ON molecule.id = equivalent.id_mol_0 
-      OR molecule.id = equivalent.id_mol_1
-    WHERE molecule.id = in_id_mol;
-
+    WHERE molecule.id IN 
+      (SELECT id_mol_0 FROM equivalent WHERE id_mol_1 = in_id_mol
+       UNION
+       SELECT id_mol_1 FROM equivalent WHERE id_mol_0 = in_id_mol);
 END;
 $$ LANGUAGE plpgsql;
 

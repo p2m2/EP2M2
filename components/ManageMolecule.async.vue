@@ -15,6 +15,9 @@ const dialogView = ref<boolean>(false);
 // to indicate state of the dialog box about asked action 
 const action = ref<string>('');
 
+// id molecule selected
+const idMolecule = ref<string>('');
+
 /**
  * Open the dialog box to add a molecule
  */
@@ -23,12 +26,22 @@ function add(){
   action.value = 'add';
 }
 
+/**
+ * Open the dialog box to view a molecule
+ */
+function view(item: any){
+  dialogView.value = true;
+  action.value = 'view';
+  // give the id of the molecule to the form
+  idMolecule.value = item.id;
+}
 </script>
 
 <template>
   <table-db-action 
     name-db-table="view_tab_molecule"
     :add="add"
+    :view="view"
     :update="dialogView"
   />
   <v-dialog
@@ -37,6 +50,7 @@ function add(){
   >
     <form-molecule
       :action="action"
+      :id-molecule="idMolecule"
       @close="dialogView = false"
     />
   </v-dialog>
