@@ -191,14 +191,19 @@ $$ LANGUAGE plpgsql;
 
 -- Function to get all synonyms and equivalents of a molecule
 CREATE OR REPLACE FUNCTION func_synonym_equivalent_molecule(in_id_mol INTEGER)
-RETURNS TABLE(synonyms VARCHAR[], equivalents INTEGER[]) AS $$
+RETURNS TABLE(synonym VARCHAR(255)[], equivalent INTEGER[]) AS $$
 BEGIN
     RETURN QUERY
-    SELECT array_agg(DISTINCT synonym.name) AS synonym , array_agg(DISTINCT(equivalent.id_mol_0, equivalent.id_mol_1)) AS equivalent
+    SELECT 
+        array_agg(DISTINCT synonym.name) AS synonym, 
+        array_agg(DISTINCT eq_id) AS equivalent
     FROM molecule
-    LEFT JOIN equivalent ON molecule.id = equivalent.id_mol_0 
-                          OR molecule.id = equivalent.id_mol_1
     LEFT JOIN synonym ON molecule.id = synonym.id_mol
+    LEFT JOIN (
+        SELECT id_mol_0 AS eq_id FROM equivalent WHERE id_mol_1 = in_id_mol
+        UNION
+        SELECT id_mol_1 AS eq_id FROM equivalent WHERE id_mol_0 = in_id_mol
+    ) AS equivalents ON true
     WHERE molecule.id = in_id_mol;
 END;
 $$ LANGUAGE plpgsql;

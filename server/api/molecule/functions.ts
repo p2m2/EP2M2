@@ -285,7 +285,7 @@ function updateSynonyms(idMolecule: number, userSyn: string[]): Promise<void> {
 function updateEquivalent(idMolecule: number, equivalents: number[]): Promise<void> {
     // Delete all equivalents of the molecule from the database
     return queryDatabase(`
-            DELETE FROM equivalent WHERE id_mol_1 = $1 OR id_mol_2 = $1`,
+            DELETE FROM equivalent WHERE id_mol_0 = $1 OR id_mol_1 = $1`,
         [idMolecule])
         // Insert all equivalents into the database
         .then(() => addEquivalents(idMolecule, equivalents));

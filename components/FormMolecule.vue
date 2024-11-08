@@ -265,6 +265,20 @@ watch(itemEquivalentsSelected, (value) => {
 function removeEquivalent(item: any) {
   listEquivalents.value = listEquivalents.value.filter((val) => val.id !== item.id);
 }
+
+/**
+ * submit form: select function to call
+ */
+function submitForm() {
+  if (props.action === 'add') {
+    add();
+  } else if (props.action === 'modify') {
+    modify();
+  }
+
+  event('close');
+}
+
 /**
  * Add molecule
  */
@@ -292,9 +306,33 @@ function add() {
 /**
  * Update molecule
  */
-function update() {
-  // TODO
-  event('close');
+function modify() {
+  // update molecule in database
+  $fetch('/api/molecule/molecule', {
+    method: 'PUT',
+    body: JSON.stringify({
+      id: molDisplay.value.id,
+      name: molDisplay.value.name,
+      formula: molDisplay.value.formula,
+      mass: molDisplay.value.mass,
+      synonyms: (molDisplay.value?.synonyms || []),
+      userSyns: (molDisplay.value?.userSyns || []),
+      equivalents: listEquivalents.value.map((val) => val.id)
+    })
+  })
+  .then((response) => {
+    // manage error
+    if (typeof response === 'number') {
+      // request error
+      return;
+    }
+    event('close');
+  })
+  .catch((error) => {
+    // server error
+    console.log(error);
+    
+  });
 }
 
 </script>
@@ -304,7 +342,7 @@ function update() {
     validate-on="blur"
     persistent
     :disabled="props.action === 'view'"
-    @submit.prevent="add"
+    @submit.prevent="submitForm"
   >
     <v-card>
       <!-- title of dialog box about action -->
@@ -461,7 +499,7 @@ function update() {
         v-if="props.action === 'view'"
         color="primary"
         :text="t('button.close')"
-        @click="event('close')"
+        type="submit"
       />
       <v-btn
         v-else-if="props.action === 'modify'"

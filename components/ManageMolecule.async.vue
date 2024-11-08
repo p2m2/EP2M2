@@ -35,6 +35,16 @@ function view(item: any){
   // give the id of the molecule to the form
   idMolecule.value = item.id;
 }
+
+/**
+ * Open the dialog box to modify a molecule
+ */
+function modify(item: any){
+  dialogView.value = true;
+  action.value = 'modify';
+  // give the id of the molecule to the form
+  idMolecule.value = item.id;
+}
 </script>
 
 <template>
@@ -42,6 +52,7 @@ function view(item: any){
     name-db-table="view_tab_molecule"
     :add="add"
     :view="view"
+    :modify="modify"
     :update="dialogView"
   />
   <v-dialog
