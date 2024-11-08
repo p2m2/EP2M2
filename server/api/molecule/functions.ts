@@ -63,7 +63,7 @@ async function getMolecule(id: number): Promise<any> {
         [id])
     .then((result) => result.rows[0])
     .catch((error) => {
-        console.log(error);
+        console.log("getMolecule: ", error);
         return 1
     });
     if (molecule === 1) {
@@ -124,7 +124,7 @@ function getSearch(search: string): Promise<any> {
         [`%${search}%`])
     .then((result) => result.rows)
     .catch((error) => {
-        console.log(error);
+        console.log("getSearch: ", error);
         return 1});
 }
 
@@ -187,7 +187,7 @@ function addMolecule(mol: tMolecule): Promise<number> {
     })
     .then(() => 0)
     .catch((error) => {
-        console.log(error);
+        console.log("addMolecule: ", error);
         
         return 1;
     });

@@ -156,6 +156,59 @@ CREATE TABLE equivalent
   id_mol_1 SERIAL REFERENCES molecule (id) ON DELETE CASCADE,
   PRIMARY KEY (id_mol_0, id_mol_1)
 );
+
+CREATE OR REPLACE FUNCTION maintain_equivalence_transitivity()
+RETURNS TRIGGER AS $$
+DECLARE
+    related_mol RECORD;
+BEGIN
+    -- Ajouter des équivalences transitives pour NEW.id_mol_0
+    FOR related_mol IN
+        SELECT id_mol_1 AS id_mol FROM equivalent WHERE id_mol_0 = NEW.id_mol_1
+        UNION
+        SELECT id_mol_0 AS id_mol FROM equivalent WHERE id_mol_1 = NEW.id_mol_1
+    LOOP
+        -- Vérifier si l'équivalence existe déjà entre NEW.id_mol_0 et related_mol.id_mol
+        IF NOT EXISTS (
+            SELECT 1 FROM equivalent
+            WHERE (id_mol_0 = NEW.id_mol_0 AND id_mol_1 = related_mol.id_mol)
+               OR (id_mol_0 = related_mol.id_mol AND id_mol_1 = NEW.id_mol_0)
+        ) THEN
+            -- Insérer la nouvelle équivalence
+            INSERT INTO equivalent (id_mol_0, id_mol_1)
+            VALUES (NEW.id_mol_0, related_mol.id_mol);
+        END IF;
+    END LOOP;
+
+    -- Ajouter des équivalences transitives pour NEW.id_mol_1
+    FOR related_mol IN
+        SELECT id_mol_1 AS id_mol FROM equivalent WHERE id_mol_0 = NEW.id_mol_0
+        UNION
+        SELECT id_mol_0 AS id_mol FROM equivalent WHERE id_mol_1 = NEW.id_mol_0
+    LOOP
+        IF NOT EXISTS (
+            SELECT 1 FROM equivalent
+            WHERE (id_mol_0 = NEW.id_mol_1 AND id_mol_1 = related_mol.id_mol)
+               OR (id_mol_0 = related_mol.id_mol AND id_mol_1 = NEW.id_mol_1)
+        ) THEN
+            INSERT INTO equivalent (id_mol_0, id_mol_1)
+            VALUES (NEW.id_mol_1, related_mol.id_mol);
+        END IF;
+    END LOOP;
+
+    -- Delete equilvalence between same molecule
+    DELETE FROM equivalent
+    WHERE id_mol_0 = id_mol_1;
+
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trigger_maintain_equivalence_transitivity
+AFTER INSERT ON equivalent
+FOR EACH ROW
+EXECUTE FUNCTION maintain_equivalence_transitivity();
 -- Synonyms is a table to store information of synonyms
 -- user is a boolean to know if the synonym is added by a user
 CREATE TABLE synonym
