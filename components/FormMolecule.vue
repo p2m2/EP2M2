@@ -224,7 +224,8 @@ const equiPage = ref<number>(1);
         // shom error message
         return;
       }
-      itemEquivalents.value = response;
+      itemEquivalents.value = response.filter((val) => 
+      val.name !== molDisplay.value.name);
       // back to first page
       equiPage.value = 1;
     });
