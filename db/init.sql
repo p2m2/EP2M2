@@ -152,9 +152,11 @@ CREATE TABLE molecule
 -- Equivalents is a table to store information of equivalents
 CREATE TABLE equivalent
 (
+  id SERIAL PRIMARY KEY,
   id_mol_0 SERIAL REFERENCES molecule (id) ON DELETE CASCADE,
   id_mol_1 SERIAL REFERENCES molecule (id) ON DELETE CASCADE,
-  PRIMARY KEY (id_mol_0, id_mol_1)
+  -- indicate if equivalent from relation
+  id_relation INT
 );
 
 CREATE OR REPLACE FUNCTION maintain_equivalence_transitivity()
@@ -164,9 +166,11 @@ DECLARE
 BEGIN
     -- Ajouter des équivalences transitives pour NEW.id_mol_0
     FOR related_mol IN
-        SELECT id_mol_1 AS id_mol FROM equivalent WHERE id_mol_0 = NEW.id_mol_1
+        SELECT id_mol_1 AS id_mol, id
+        FROM equivalent WHERE id_mol_0 = NEW.id_mol_1
         UNION
-        SELECT id_mol_0 AS id_mol FROM equivalent WHERE id_mol_1 = NEW.id_mol_1
+        SELECT id_mol_0 AS id_mol, id
+        FROM equivalent WHERE id_mol_1 = NEW.id_mol_1
     LOOP
         -- Vérifier si l'équivalence existe déjà entre NEW.id_mol_0 et related_mol.id_mol
         IF NOT EXISTS (
@@ -175,24 +179,26 @@ BEGIN
                OR (id_mol_0 = related_mol.id_mol AND id_mol_1 = NEW.id_mol_0)
         ) THEN
             -- Insérer la nouvelle équivalence
-            INSERT INTO equivalent (id_mol_0, id_mol_1)
-            VALUES (NEW.id_mol_0, related_mol.id_mol);
+            INSERT INTO equivalent (id_mol_0, id_mol_1, id_relation)
+            VALUES (NEW.id_mol_0, related_mol.id_mol, related_mol.id);
         END IF;
     END LOOP;
 
     -- Ajouter des équivalences transitives pour NEW.id_mol_1
     FOR related_mol IN
-        SELECT id_mol_1 AS id_mol FROM equivalent WHERE id_mol_0 = NEW.id_mol_0
+        SELECT id_mol_1 AS id_mol, id
+        FROM equivalent WHERE id_mol_0 = NEW.id_mol_0
         UNION
-        SELECT id_mol_0 AS id_mol FROM equivalent WHERE id_mol_1 = NEW.id_mol_0
+        SELECT id_mol_0 AS id_mol, id
+        FROM equivalent WHERE id_mol_1 = NEW.id_mol_0
     LOOP
         IF NOT EXISTS (
             SELECT 1 FROM equivalent
             WHERE (id_mol_0 = NEW.id_mol_1 AND id_mol_1 = related_mol.id_mol)
                OR (id_mol_0 = related_mol.id_mol AND id_mol_1 = NEW.id_mol_1)
         ) THEN
-            INSERT INTO equivalent (id_mol_0, id_mol_1)
-            VALUES (NEW.id_mol_1, related_mol.id_mol);
+            INSERT INTO equivalent (id_mol_0, id_mol_1, id_relation)
+            VALUES (NEW.id_mol_1, related_mol.id_mol, related_mol.id);
         END IF;
     END LOOP;
 
