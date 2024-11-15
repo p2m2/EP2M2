@@ -16,7 +16,7 @@ __0.2.1__
 
 ## Tests
 <!--GAMFC--></br>
-[![result](./badges/tests-result.svg) ![total](./badges/tests-total.svg) ![passed](./badges/tests-passed.svg) ![failed](./badges/tests-failed.svg) ![todo](./badges/tests-todo.svg)](https://github.com/p2m2/EP2M2/actions/runs/11858498771) </br>[![Branches](./badges/coverage-branches.svg) ![Functions](./badges/coverage-functions.svg) ![Lines](./badges/coverage-lines.svg)![Statements](./badges/coverage-statements.svg) ![Coverage total](./badges/coverage-total.svg)](https://github.com/p2m2/EP2M2/actions/runs/11858498771)<!--GAMFC-END-->
+[![result](./badges/tests-result.svg) ![total](./badges/tests-total.svg) ![passed](./badges/tests-passed.svg) ![failed](./badges/tests-failed.svg) ![todo](./badges/tests-todo.svg)](https://github.com/p2m2/EP2M2/actions/runs/11858577216) </br>[![Branches](./badges/coverage-branches.svg) ![Functions](./badges/coverage-functions.svg) ![Lines](./badges/coverage-lines.svg)![Statements](./badges/coverage-statements.svg) ![Coverage total](./badges/coverage-total.svg)](https://github.com/p2m2/EP2M2/actions/runs/11858577216)<!--GAMFC-END-->
 ## Features
 - Extraction of formats files of the metabolomics data acquisition devices of the P2M2 platform
   - gcms
