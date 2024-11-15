@@ -3,8 +3,6 @@
 //
 // SPDX-License-Identifier: MIT
 
-import { addMolecule } from "~/server/api/molecule/functions";
-
 export default {
     button:{
         addcompound: "Add reference",
