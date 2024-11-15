@@ -385,7 +385,7 @@ function modify() {
             <!-- field to indicate searched molecule -->
             <v-text-field
               v-model="searchMolecule"
-              label="t(label.search)"
+              :label="t('label.search')"
               :loading="loading"
               required
             />
@@ -418,7 +418,7 @@ function modify() {
               <v-text-field
                 v-if="props.action != 'view'"
                 v-model="newSynonym"
-                label="t(label.synonym)"
+                :label="t('label.synonym')"
                 required
                 :rules="synRules"
               >
@@ -458,7 +458,7 @@ function modify() {
             <v-text-field
               v-if="props.action != 'view'"
               v-model="searchEquivalents"
-              label="t(label.search)"
+              :label="t('label.search')"
               :loading="loading"
               required
             />

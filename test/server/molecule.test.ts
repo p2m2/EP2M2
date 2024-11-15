@@ -6,7 +6,6 @@ import * as mol from "~/server/api/molecule/functions";
 import { expect, test, describe, vi, type Mock } from 'vitest';
 import { config } from '@vue/test-utils';
 import { queryDatabase } from "~/server/api/function/database";
-import eslintConfig from "~/eslint.config.mjs";
 
 
 // Mock queryDatabase

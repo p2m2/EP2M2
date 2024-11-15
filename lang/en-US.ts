@@ -3,12 +3,15 @@
 //
 // SPDX-License-Identifier: MIT
 
+import { addMolecule } from "~/server/api/molecule/functions";
+
 export default {
     button:{
         addcompound: "Add reference",
         addfitting: "Add fitting",
         addmachine: "Add machine",
         addview_show_calib_curve: "Add calibration curve",
+        addview_tab_molecule: "Add molecule",
         archive: "Archive",
         cancel: "Cancel",
         close: "Close",
@@ -51,11 +54,14 @@ export default {
     header:{
         action: "Actions",
         area: "Area",
+        concentration: "Concentration",
         date_achieve: "Archived",
         date_create: "Created ",
         description: "Description",
-        concentration: "Concentration",
+        equivalent: "Equivalent",
+        formula: "Formula",
         lot: "Séries number",
+        mass: "Mass",
         metabolite: "Metabolite",
         m_type: "Type",
         name: "Name",
@@ -98,9 +104,11 @@ export default {
         daughterFile: "Add daughter solution",
         description: "description",
         email: "Email",
+        formula: "Formula",
         files: "Files",
         logout: "Logout",
         m_type: "type",
+        mass: "Mass",
         nameCalibCurve: "Calibration curve's name",
         nbFile: "File's number",
         noFile: "No file",
@@ -108,8 +116,10 @@ export default {
         password: "Password",
         profile: "Profile",
         project: "Project",
+        search: "Enter the molecule",
         selectCompound: "Select reference",
         selectMachine: "Select machine",
+        synonym: "Enter the synonym",
         tabFileName:"Name",
         tabSize:"Size (kB)",
         tabType:"Type",
@@ -170,13 +180,19 @@ export default {
     },
     title:{
         addCalibCurve: "Add a calibration curve",
+        addMolecule: "Add a molecule",
         compoundName:"Reference name",
         confirmBox: "Confirmation",
         daughter:"Daughter solution",
+        equivalent: "Equivalent",
         machine:"Machine",
         modifyCalibCurve: "Modify calibration curve",
+        modifyMolecule: "Modify molecule",
+        molecule: "Molecule",
         mother:"Mother solution",
         projectName: "Projet name",
+        synonyms: "Synonyms",
         viewCalibCurve: "View calibration curve",
+        viewMolecule: "View molecule",
     }
 };
