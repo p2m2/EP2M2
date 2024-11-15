@@ -6,6 +6,7 @@ import * as mol from "~/server/api/molecule/functions";
 import { expect, test, describe, vi, type Mock } from 'vitest';
 import { config } from '@vue/test-utils';
 import { queryDatabase } from "~/server/api/function/database";
+import eslintConfig from "~/eslint.config.mjs";
 
 
 // Mock queryDatabase
@@ -146,6 +147,8 @@ describe("molecule", async () => {
         // Give id of added molecule
         (queryDatabase as Mock).mockResolvedValueOnce({ rows: [{ id: 1 }] });
         // Response of addEquivalents
+        (queryDatabase as Mock).mockResolvedValueOnce({ rows: [{ id: 1 }] });
+        // Response of update equivalent to add id_relation
         (queryDatabase as Mock).mockResolvedValueOnce({ rows: [] });
         // Response of addSynonyms
         (queryDatabase as Mock).mockResolvedValueOnce({ rows: [] });
@@ -165,6 +168,9 @@ describe("molecule", async () => {
                 ["id_mol_0", "id_mol_1"].map((inc) => 
                     expect(query.includes(inc)).toBe(true)
                 );
+            }
+            else if (query.includes("UPDATE") && query.includes("equivalent")) {
+                values.map((val) => expect([1]).toContain(val));
             }
             // Check if request to add synonym is correct
             else if (query.includes("INSERT INTO") && query.includes("synonym")) {
@@ -276,17 +282,23 @@ describe("molecule", async () => {
                         synonym: ["vague"]
                     }]
                 });
+        (queryDatabase as Mock).mockResolvedValueOnce({ rows: [{id: [1]}] });
         (queryDatabase as Mock).mockResolvedValueOnce({ rows: [] });
+        (queryDatabase as Mock).mockResolvedValueOnce({ rows: [{id: [5]}] });
         (queryDatabase as Mock).mockResolvedValueOnce({ rows: [] });
         (queryDatabase as Mock).mockImplementation((query: string,
                                                     values: any[]) => {
             if (query.includes("SELECT")
                 && query.includes("func_synonym_equivalent_molecule($1)")) {
+                expect(values).toContain(1);
+            }
+            else if (query.includes("DELETE FROM") && query.includes("equivalent") && query.includes("RETURNING")) {
                 expect(values).toContain([1]);
+                expect(query.includes("WHERE id_molecule = $1")).toBe(true)
             }
             else if (query.includes("DELETE FROM") && query.includes("equivalent")) {
                 expect(values).toContain([1]);
-                expect(query.includes("WHERE id_molecule = $1")).toBe(true)
+                expect(query.includes("WHERE id_relation")).toBe(true)
             }
             else if (query.includes("INSERT INTO") && query.includes("equivalent")) {
                 values.map((val) => expect([1, 2]).toContain(val));
@@ -317,6 +329,10 @@ describe("molecule", async () => {
                 synonym: ["vague"]
             }]
         });
+        (queryDatabase as Mock).mockResolvedValueOnce({ rows: [{
+            id_mol_0: [1], 
+            id_mol_1: []}] });
+        (queryDatabase as Mock).mockResolvedValueOnce({ rows: [{id: [1]}] });
         (queryDatabase as Mock).mockResolvedValueOnce({ rows: [] });
         (queryDatabase as Mock).mockImplementation((query: string,
                                                     values: any[]) => {
@@ -324,9 +340,13 @@ describe("molecule", async () => {
                 && query.includes("func_synonym_equivalent_molecule($1)")) {
                 expect(values).toContain([1]);
             }
-            else if (query.includes("DELETE FROM") && query.includes("equivalent")) {
+            else if (query.includes("DELETE FROM") && query.includes("equivalent") && query.includes("RETURNING") && query.includes("RETURNING")) {
                 expect(values).toContain([1]);
                 expect(query.includes("WHERE id_molecule = $1")).toBe(true)
+            }
+            else if (query.includes("DELETE FROM") && query.includes("equivalent")) {
+                expect(values).toContain([1]);
+                expect(query.includes("WHERE id_relation")).toBe(true)
             }
             else if (query.includes("INSERT INTO") && query.includes("equivalent")) {
                 values.map((val) => expect([1, 0]).toContain(val));
