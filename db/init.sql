@@ -159,6 +159,7 @@ CREATE TABLE equivalent
   id_relation INT
 );
 
+-- create transitivty of equivalent when A=B and B=C then A=C
 CREATE OR REPLACE FUNCTION maintain_equivalence_transitivity()
 RETURNS TRIGGER AS $$
 DECLARE
@@ -211,6 +212,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+-- launch equivalent transitivity when add equivalent
 CREATE TRIGGER trigger_maintain_equivalence_transitivity
 AFTER INSERT ON equivalent
 FOR EACH ROW
@@ -279,12 +281,12 @@ CREATE TABLE calib_curves
 
 CREATE TABLE daughter
 (
+  id SERIAL PRIMARY KEY,
   id_calib_curves SERIAL REFERENCES calib_curves (id) ON DELETE CASCADE,
   id_file SERIAL REFERENCES file (id) ON DELETE CASCADE,
   id_mol VARCHAR(52),
   area FLOAT NOT NULL,
-  concentration FLOAT NOT NULL,
-  PRIMARY KEY (id_calib_curves, id_file, id_mol)
+  concentration FLOAT NOT NULL
 );
 
 CREATE VIEW view_calib_curve AS
