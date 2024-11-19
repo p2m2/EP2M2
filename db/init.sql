@@ -281,12 +281,12 @@ CREATE TABLE calib_curves
 
 CREATE TABLE daughter
 (
-  id SERIAL PRIMARY KEY,
   id_calib_curves SERIAL REFERENCES calib_curves (id) ON DELETE CASCADE,
   id_file SERIAL REFERENCES file (id) ON DELETE CASCADE,
   id_mol VARCHAR(52),
   area FLOAT NOT NULL,
-  concentration FLOAT NOT NULL
+  concentration FLOAT NOT NULL,
+  PRIMARY KEY (id_calib_curves, id_file, id_mol, area)
 );
 
 CREATE VIEW view_calib_curve AS
