@@ -8,15 +8,16 @@ SPDX-License-Identifier: MIT
 # EP2M2 : Metabolomic Target Analyzes Manager.
 
 ## Version
-__0.3.0__
+__0.3.1__
 
 ## Reuse compliance
 <!--REUSE--></br>
-[![Reuse compliant](./badges/reuse_compliant.svg)](https://github.com/p2m2/EP2M2/actions/runs/11927197538)<!--REUSE-END-->  
+[![Reuse compliant](./badges/reuse_compliant.svg)](https://github.com/p2m2/EP2M2/actions/runs/11927786993)<!--REUSE-END-->  
 
 ## Tests
 <!--GAMFC--></br>
-[![result](./badges/tests-result.svg) ![total](./badges/tests-total.svg) ![passed](./badges/tests-passed.svg) ![failed](./badges/tests-failed.svg) ![todo](./badges/tests-todo.svg)](https://github.com/p2m2/EP2M2/actions/runs/11927197538) </br>[![Branches](./badges/coverage-branches.svg) ![Functions](./badges/coverage-functions.svg) ![Lines](./badges/coverage-lines.svg)![Statements](./badges/coverage-statements.svg) ![Coverage total](./badges/coverage-total.svg)](https://github.com/p2m2/EP2M2/actions/runs/11927197538)<!--GAMFC-END-->
+[![result](./badges/tests-result.svg) ![total](./badges/tests-total.svg) ![passed](./badges/tests-passed.svg) ![failed](./badges/tests-failed.svg) ![todo](./badges/tests-todo.svg)](https://github.com/p2m2/EP2M2/actions/runs/11927786993) </br>[![Branches](./badges/coverage-branches.svg) ![Functions](./badges/coverage-functions.svg) ![Lines](./badges/coverage-lines.svg)![Statements](./badges/coverage-statements.svg) ![Coverage total](./badges/coverage-total.svg)](https://github.com/p2m2/EP2M2/actions/runs/11927786993)<!--GAMFC-END-->
+
 ## Features
 - Extraction of formats files of the metabolomics data acquisition devices of the P2M2 platform
   - gcms
