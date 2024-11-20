@@ -140,6 +140,133 @@ SELECT *
 FROM machine
 WHERE date_achieve IS NULL;
 
+-- Molecule
+-- Molecule is a table to store information of molecules
+CREATE TABLE molecule
+(
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(255) UNIQUE,
+  formula VARCHAR(255),
+  mass FLOAT
+);
+-- Equivalents is a table to store information of equivalents
+CREATE TABLE equivalent
+(
+  id SERIAL PRIMARY KEY,
+  id_mol_0 SERIAL REFERENCES molecule (id) ON DELETE CASCADE,
+  id_mol_1 SERIAL REFERENCES molecule (id) ON DELETE CASCADE,
+  -- indicate if equivalent from relation
+  id_relation INT
+);
+
+CREATE OR REPLACE FUNCTION maintain_equivalence_transitivity()
+RETURNS TRIGGER AS $$
+DECLARE
+    related_mol RECORD;
+BEGIN
+    -- Ajouter des équivalences transitives pour NEW.id_mol_0
+    FOR related_mol IN
+        SELECT id_mol_1 AS id_mol, id
+        FROM equivalent WHERE id_mol_0 = NEW.id_mol_1
+        UNION
+        SELECT id_mol_0 AS id_mol, id
+        FROM equivalent WHERE id_mol_1 = NEW.id_mol_1
+    LOOP
+        -- Vérifier si l'équivalence existe déjà entre NEW.id_mol_0 et related_mol.id_mol
+        IF NOT EXISTS (
+            SELECT 1 FROM equivalent
+            WHERE (id_mol_0 = NEW.id_mol_0 AND id_mol_1 = related_mol.id_mol)
+               OR (id_mol_0 = related_mol.id_mol AND id_mol_1 = NEW.id_mol_0)
+        ) THEN
+            -- Insérer la nouvelle équivalence
+            INSERT INTO equivalent (id_mol_0, id_mol_1, id_relation)
+            VALUES (NEW.id_mol_0, related_mol.id_mol, related_mol.id);
+        END IF;
+    END LOOP;
+
+    -- Ajouter des équivalences transitives pour NEW.id_mol_1
+    FOR related_mol IN
+        SELECT id_mol_1 AS id_mol, id
+        FROM equivalent WHERE id_mol_0 = NEW.id_mol_0
+        UNION
+        SELECT id_mol_0 AS id_mol, id
+        FROM equivalent WHERE id_mol_1 = NEW.id_mol_0
+    LOOP
+        IF NOT EXISTS (
+            SELECT 1 FROM equivalent
+            WHERE (id_mol_0 = NEW.id_mol_1 AND id_mol_1 = related_mol.id_mol)
+               OR (id_mol_0 = related_mol.id_mol AND id_mol_1 = NEW.id_mol_1)
+        ) THEN
+            INSERT INTO equivalent (id_mol_0, id_mol_1, id_relation)
+            VALUES (NEW.id_mol_1, related_mol.id_mol, related_mol.id);
+        END IF;
+    END LOOP;
+
+    -- Delete equilvalence between same molecule
+    DELETE FROM equivalent
+    WHERE id_mol_0 = id_mol_1;
+
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trigger_maintain_equivalence_transitivity
+AFTER INSERT ON equivalent
+FOR EACH ROW
+EXECUTE FUNCTION maintain_equivalence_transitivity();
+-- Synonyms is a table to store information of synonyms
+-- user is a boolean to know if the synonym is added by a user
+CREATE TABLE synonym
+(
+  id_mol SERIAL REFERENCES molecule (id) ON DELETE CASCADE,
+  name VARCHAR(255),
+  is_user BOOLEAN DEFAULT FALSE,
+  PRIMARY KEY (id_mol, name)
+);
+
+-- view to show information of molecule in tab
+CREATE VIEW view_tab_molecule AS
+SELECT molecule.id AS id, molecule.name AS name, formula, mass,
+       COUNT(equivalent.id_mol_0) AS equivalent
+FROM molecule
+LEFT JOIN equivalent ON molecule.id = equivalent.id_mol_0 
+                      OR molecule.id = equivalent.id_mol_1
+GROUP BY molecule.id;
+
+-- Function to get id equivalent molecules
+CREATE OR REPLACE FUNCTION func_equivalent_molecule(in_id_mol INTEGER)
+RETURNS TABLE(id INTEGER) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT  molecule.id AS id
+    FROM molecule
+    WHERE molecule.id IN 
+      (SELECT id_mol_0 FROM equivalent WHERE id_mol_1 = in_id_mol
+       UNION
+       SELECT id_mol_1 FROM equivalent WHERE id_mol_0 = in_id_mol);
+END;
+$$ LANGUAGE plpgsql;
+
+-- Function to get all synonyms and equivalents of a molecule
+CREATE OR REPLACE FUNCTION func_synonym_equivalent_molecule(in_id_mol INTEGER)
+RETURNS TABLE(synonym VARCHAR(255)[], equivalent INTEGER[]) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT 
+        array_agg(DISTINCT synonym.name) AS synonym, 
+        array_agg(DISTINCT eq_id) AS equivalent
+    FROM molecule
+    LEFT JOIN synonym ON molecule.id = synonym.id_mol
+    LEFT JOIN (
+        SELECT id_mol_0 AS eq_id FROM equivalent WHERE id_mol_1 = in_id_mol
+        UNION
+        SELECT id_mol_1 AS eq_id FROM equivalent WHERE id_mol_0 = in_id_mol
+    ) AS equivalents ON true
+    WHERE molecule.id = in_id_mol;
+END;
+$$ LANGUAGE plpgsql;
+
 CREATE TABLE calib_curves
 (
   id SERIAL PRIMARY KEY,

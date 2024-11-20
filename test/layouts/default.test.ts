@@ -28,8 +28,8 @@ describe('default layout: default render',() => {
       }
     });
     //  check if image is here
-    expect(wrapper.find('.bannerImage').exists()).toBeTruthy();
-    const partImg = wrapper.find('.bannerImage');
+    expect(wrapper.find('#bannerImage').exists()).toBeTruthy();
+    const partImg = wrapper.find('#bannerImage');
     // Check alt message
     expect(partImg.html()).toContain("icône P2M2");
     expect(partImg.html()).toContain("Accueil");    

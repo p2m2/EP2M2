@@ -6,7 +6,7 @@
 import { config } from "@vue/test-utils";
 import { createI18n,  } from "vue-i18n";
 import en from "@/lang/en-US";
-import fr from "@/lang/fr-FR";
+import fr from "~/lang/fr-FR";
 
 const i18n = createI18n({
     legacy: false,

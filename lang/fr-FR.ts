@@ -9,6 +9,7 @@ export default {
         addfitting: "Ajout d'un ajustement",
         addmachine: "Ajout d'une machine",
         addview_show_calib_curve: "Ajouter une gamme",
+        addview_tab_molecule: "Ajouter une molécule",
         archive: "Archiver",
         cancel: "Annuler",
         close: "Fermer",
@@ -40,6 +41,7 @@ export default {
     },
     empty:{
         bug:"anomalie",
+        data:"Le système ne contient pas encore de données de ce type",
         email:"mailto:p2m2-it{'@'}inrae.fr?subject=Erreur de tableau",
         headline:"OUPS",
         or:"ou",
@@ -50,11 +52,14 @@ export default {
     header:{
         action: "Actions",
         area: "Aire",
+        concentration: "Concentration",
         date_achieve: "Archivé le",
         date_create: "Créé le ",
         description: "Description",
-        concentration: "Concentration",
+        equivalent: "Équivalence",
+        formula: "Formule",
         lot: "N° lot",
+        mass: "Masse",
         metabolite: "Métabolite",
         name: "Nom",
         name_compound: "Témoin",
@@ -67,8 +72,24 @@ export default {
     },
     image: {
         banner: {
-            alt: "icône P2M2",
-            src: "/logoP2M2_fr.png",
+            alt: {
+                P2M2:"icône P2M2",
+                BIA: "icône BIA",
+                INRAE: "icône INRAE",
+                IGEPP: "icône IGEPP",
+                IFPC: "icône IFPC",
+                MTH: "icône MTH",
+                REPFR: "icône République Française",
+            },
+            src:{
+                P2M2: "/logoP2M2_fr.png",
+                BIA: "/BIA.png",
+                INRAE: "/INRAE.png",
+                IGEPP: "/IGEPP.png",
+                IFPC: "/IFPC.png",
+                MTH: "/MTH.png",
+                REPFR: "/REPFR.png",
+            }, 
             title: "Accueil",
         }
     },
@@ -80,8 +101,10 @@ export default {
         description: "description",
         email: "E-mail",
         files: "Fichiers",
+        formula: "Formule",
         logout: "Déconnexion",
         m_type: "type",
+        mass: "Masse",
         nameCalibCurve: "Nom de la gamme",
         nbFile: "Nb de fichiers",
         noFile: "Pas de fichier",
@@ -89,8 +112,10 @@ export default {
         password: "Mot de passe",
         profile: "Profile",
         project: "Projet",
+        search: "Entrer la molécule",
         selectCompound: "Selectionner le témoin",
         selectMachine: "Selectionner la machine",
+        synonym: "Entrer le synonyme",
         tabFileName: "Nom",
         tabSize: "Taille (kO)",
         tabType: "Type",
@@ -99,7 +124,7 @@ export default {
         url_provider: "URL fournisseur"
     },
     message: {
-        addIssue: "Un problème dit le",
+        addIssue: "Reportez un problème",
         badProjectName: "Le nom de project doit contenir au moins 3 caractère (hors les espaces)",
         confDelProject: "La suppresion d'un projet est irréversible!",
         confirm:{
@@ -151,14 +176,20 @@ export default {
     },
     title: {
         addCalibCurve: "Ajout d'une gamme",
+        addMolecule: "Ajout d'une molécule",
         compoundName:"Nom du témoin",
         confirmBox: "Confirmation",
         daughter:"Solution fille",
+        equivalent: "Équivalences",
         machine:"Machine",
         modifyCalibCurve: "Modifier la gamme",
+        modifyMolecule: "Modifier la molécule",
+        molecule: "Molécule",
         mother:"Solution mère",
         projectName: "Nom du projet",
-        viewCalibCurve: "Détails de la gamme"
+        synonyms: "Synonymes",
+        viewCalibCurve: "Détails de la gamme",
+        viewMolecule: "Détails de la molécule",
     }
 
 };
