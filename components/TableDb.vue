@@ -198,6 +198,7 @@ watch(
     :items-length="gtotalItems"
     :items-per-page="rfItemsPerPage"
     :loading="rfLoading"
+    :no-data-text="t('empty.data')"
     @update:options="actualize"
   >
     <!-- Give access to top of table -->

@@ -11,26 +11,41 @@ SPDX-License-Identifier: MIT
  -->
 <script setup lang="ts">
 const {t} = useI18n();
+const runtimeConfig = useRuntimeConfig()
+const lPartner = runtimeConfig.public.lPartner;
 </script>
 
 <template>
   <!-- mandatory tag to use vuetify in nuxt3 -->
   <v-app>
-    <div>
+    <div id="bannerImage">
       <v-container class="mb-4">
-        <v-row justify="space-between">
-          <!-- cliquable image of p2m2  -->
-          <v-col class="bannerImage">
-            <v-img
-              aspect-ratio="16/9"
-              :src="t('image.banner.src')"
-              :alt="t('image.banner.alt')"
-              :title="t('image.banner.title')"
-              style="cursor: pointer;"
-              @click="navigateTo('/')"
-            />
+        <v-row
+          justify="space-between"
+          class="pb-12"
+        >
+          <v-col
+            justify="space-between"
+            align-self="center"
+          >
+            <v-row justify="space-between">
+              <!-- cliquable image of p2m2  -->
+              <v-col
+                v-for="partner in lPartner.split(',')"
+                :key="partner"
+                class="d-flex child-flex"
+              >
+                <v-img
+                  :src="t('image.banner.src.' + partner)"
+                  :alt="t('image.banner.alt.' + partner)"
+                  :title="t('image.banner.title')"
+                  style="cursor: pointer;"
+                  @click="navigateTo('/')"
+                />
+              </v-col>
+            </v-row>
           </v-col>
-          <v-spacer />
+          <!-- <v-spacer /> -->
 
           <!-- part to global buttons  -->
           <v-col
@@ -39,7 +54,7 @@ const {t} = useI18n();
           >
             <v-row
               justify="end"
-              class="ma-2 pa-8"
+              class="ma-2 pa-2"
             >
               <lang-button />
               <help-button />
@@ -47,7 +62,11 @@ const {t} = useI18n();
             </v-row>
           </v-col>
         </v-row>
-        <v-row>
+        <v-row
+          align="center"
+          justify="center"
+          no-gutters
+        >
           <slot />
         </v-row>
       </v-container>
