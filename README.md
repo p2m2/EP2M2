@@ -8,7 +8,7 @@ SPDX-License-Identifier: MIT
 # EP2M2 : Metabolomic Target Analyzes Manager.
 
 ## Version
-__0.2.1__
+__0.3.0__
 
 ## Reuse compliance
 <!--REUSE--></br>
