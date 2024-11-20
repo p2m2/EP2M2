@@ -26,9 +26,8 @@ export default defineEventHandler(async (event) => {
                           (${idFile}, '${daughter.nameMeta}',
                            ${body.idCalibCurve}, ${daughter.area},
                            ${daughter.concentration})
-                        ON CONFLICT (id_file, id_mol, id_calib_curves) 
-                        DO UPDATE SET concentration = ${daughter.concentration},
-                                      area = ${daughter.area}`
+                        ON CONFLICT (id_file, id_mol, id_calib_curves, area) 
+                        DO UPDATE SET concentration = ${daughter.concentration}`
                     ));
                 }
             }
