@@ -12,7 +12,7 @@ __0.3.1__
 
 ## Reuse compliance
 <!--REUSE--></br>
-[![Reuse compliant](./badges/reuse_compliant.svg)](https://github.com/p2m2/EP2M2/actions/runs/11927786993)<!--REUSE-END-->  
+[![Reuse compliant](./badges/reuse_compliant.svg)](https://github.com/p2m2/EP2M2/actions/runs/11967874749)<!--REUSE-END-->  
 
 ## Tests
 <!--GAMFC--></br>
