@@ -23,13 +23,6 @@ logs
 .fleet
 .idea
 
-# Local env files
-.env
-.env.*
-!.env.example
-!.env.dev
-
 # sample file
 sample/*
-.vscode/settings.json
-secrets/*
+.vscode/*
