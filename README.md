@@ -9,7 +9,7 @@ SPDX-License-Identifier: MIT
 
 ## Version
 
-0.3.1
+0.3.2
 
 ## Reuse compliance
 
