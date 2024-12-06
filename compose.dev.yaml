@@ -6,7 +6,7 @@
 services:
 
   api:
-    image: inraep2m2/service-p2m2tools-api:latest
+    image: ghcr.io/p2m2/service-p2m2tools-api:latest
     container_name: p2m2ToolsApi
     ports:
       - "8080:8080"
@@ -14,18 +14,19 @@ services:
       - ./shareFile:/shareFile
 
   db:
-    image: postgres:latest
+    image: quay.io/fedora/postgresql-16:latest
     container_name: db
     ports:
       - "5432:5432"
     volumes:
-      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./db:/usr/share/container-scripts/postgresql/start
     environment:
-      POSTGRES_PASSWORD: ${PGPASSWORD}
-      POSTGRES_USER: ${PGUSER}
-      POSTGRES_PORT: ${PGPORT}
-      POSTGRES_HOST: ${PGHOST}
-      POSTGRES_DB: ${PGDATABASE}
+      POSTGRESQL_PASSWORD: ${PGPASSWORD}
+      POSTGRESQL_USER: ${PGUSER}
+      POSTGRESQL_PORT: ${PGPORT}
+      POSTGRESQL_HOST: ${PGHOST}
+      POSTGRESQL_DATABASE: ep2m2db
+      POSTGRESQL_ADMIN_PASSWORD: ${PGPASSWORD}
 
 volumes:
   shareFile:
