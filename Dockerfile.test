@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2024 Marcellino Palerme <marcellino.palerme@inrae.fr>
 #
 # SPDX-License-Identifier: MIT
-FROM node:latest
+FROM quay.io/fedora/nodejs-22-minimal:latest
 WORKDIR /EP2M2
 COPY . .
 EXPOSE 3000

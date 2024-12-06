@@ -5,19 +5,19 @@
 
 services:      
   api:
-    image: inraep2m2/service-p2m2tools-api:latest
+    image: ghcr.io/p2m2/service-p2m2tools-api:latest
     container_name: p2m2ToolsApi
     volumes:
       - shareFile:/shareFile
 
   db:
-    image: postgres:latest
+    image: quay.io/fedora/postgresql-16:latest
     container_name: db
     volumes:
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
-    environment:
-      POSTGRES_PASSWORD: ep2m2
-      POSTGRES_USER: ep2m2
+    env_file:
+      - ./secrets/global.env
+      - ./environment/pg.env
 
 volumes:
   shareFile:
