@@ -3,8 +3,6 @@
 //
 // SPDX-License-Identifier: MIT
 
-import { title } from "valibot";
-
 export default {
     button:{
         addcompound: "Add reference",
