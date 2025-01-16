@@ -3,6 +3,8 @@
 //
 // SPDX-License-Identifier: MIT
 
+import { title } from "valibot";
+
 export default {
     button:{
         addcompound: "Add reference",
@@ -13,6 +15,7 @@ export default {
         archive: "Archive",
         cancel: "Cancel",
         close: "Close",
+        contextual: "Contextual help",
         control: "Manage control samples",
         create: "Create",
         delete: "Delete",
@@ -21,6 +24,7 @@ export default {
         deleteMachine: "Delete/Archive",
         deleteProject: "Delete",
         deleteRow: "Delete",
+        documentation: "Documentation",
         exportProject: "Export",
         help: "Help",
         home: "Home",
@@ -38,6 +42,14 @@ export default {
         viewMachine: "Modify",
         viewProject: "View/Modify",
         yes: "Yes"
+    },
+    context:{
+        title:{
+            equivalent: "Equivalent",
+        },
+        text:{
+            equivalent: "The molecul of row can be expressed in equivalent of the molecul of column",
+        },
     },
     empty:{
         bug:"report",

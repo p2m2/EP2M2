@@ -8,7 +8,8 @@ SPDX-License-Identifier: MIT
 
 const { t } = useI18n();
 const {error, success} = useMessage();
-
+// manage display of contextual help
+const contextualHelp =useState<boolean>("contextual",()=> false);
 // Variable to manage the dialog box
 // to open or close the dialog box
 const dialogView = ref<boolean>(false);
@@ -17,6 +18,7 @@ const action = ref<string>('');
 
 // id molecule selected
 const idMolecule = ref<string>('');
+
 
 /**
  * Open the dialog box to add a molecule
@@ -55,6 +57,18 @@ function modify(item: any){
     :modify="modify"
     :update="dialogView"
   />
+  <!-- Contestual Help Dialog Box -->
+  <v-dialog
+    v-model="contextualHelp"
+    max-width="50%"
+  >
+    <v-card>
+      <v-card-title>{{ t('context.title.equivalent') }}</v-card-title>
+      <v-card-text>
+        {{ t('context.text.equivalent') }}
+      </v-card-text>
+    </v-card>
+  </v-dialog>
   <v-dialog
     v-model="dialogView"
     max-width="600"

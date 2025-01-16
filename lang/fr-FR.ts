@@ -13,6 +13,7 @@ export default {
         archive: "Archiver",
         cancel: "Annuler",
         close: "Fermer",
+        contextual: "Aide contextuelle",
         control: "Gestion témoins",
         create: "Créer",
         delete: "Supprimer",
@@ -21,6 +22,7 @@ export default {
         deleteMachine: "Supprimer/Archiver",
         deleteProject: "Supprimer",
         deleteRow: "Supprimer",
+        documentation: "Documentation",
         exportProject: "Export",
         help: "Aide",
         home: "Accueil",
@@ -38,6 +40,14 @@ export default {
         viewMachine: "Modifier",
         viewProject: "Détails",
         yes: "Oui"
+    },
+    context:{
+        title: {
+            equivalent: "Équivalences",
+        },
+        text: {
+            equivalent: "La molécule de la ligne peut s'exprimer en équivalence de la molécule de la colonne"
+        }
     },
     empty:{
         bug:"anomalie",
