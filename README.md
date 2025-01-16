@@ -14,7 +14,7 @@ SPDX-License-Identifier: MIT
 ## Reuse compliance
 
 <!--REUSE--></br>
-[![Reuse compliant](./badges/reuse_compliant.svg)](https://github.com/p2m2/EP2M2/actions/runs/12813076813)<!--REUSE-END-->  
+[![Reuse compliant](./badges/reuse_compliant.svg)](https://github.com/p2m2/EP2M2/actions/runs/12813095163)<!--REUSE-END-->  
 
 ## Tests
 
