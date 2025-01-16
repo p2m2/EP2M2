@@ -59,7 +59,7 @@ export default {
         equivalent: "Equivalent",
         formula: "Formula",
         lot: "Séries number",
-        mass: "Mass",
+        mass: "Average Mass (g/mol)",
         metabolite: "Metabolite",
         m_type: "Type",
         name: "Name",
@@ -106,7 +106,7 @@ export default {
         files: "Files",
         logout: "Logout",
         m_type: "type",
-        mass: "Mass",
+        mass: "Average Mass (g/mol)",
         nameCalibCurve: "Calibration curve's name",
         nbFile: "File's number",
         noFile: "No file",
@@ -174,7 +174,7 @@ export default {
         molecule: "Molecules",
         mother: "Mother solutions",
         reference: "Reference",
-        calibCurve: "Gammes"
+        calibCurve: "Calibration Curve"
     },
     title:{
         addCalibCurve: "Add a calibration curve",
