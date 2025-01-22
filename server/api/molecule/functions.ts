@@ -163,12 +163,13 @@ function addMolecule(mol: tMolecule): Promise<number> {
     // define request about equivalent molecule
     let request = `INSERT INTO molecule (name, formula, mass, id_equivalent)
                    VALUES ($1, $2, $3, $4) RETURNING id`;   
+    let args = [mol.name, mol.formula, mol.mass, mol.equivalent];
     if (typeof(mol.equivalent) !== 'number') {
         request = `INSERT INTO molecule (name, formula, mass)
                    VALUES ($1, $2, $3) RETURNING id`;
+        args = [mol.name, mol.formula, mol.mass];
     }
-    return queryDatabase(request,
-                         [mol.name, mol.formula, mol.mass, mol.equivalent])
+    return queryDatabase(request, args)
     .then((result) => {        
         const aPromises = [];
         if (mol.synonyms && mol.synonyms.length>0) {

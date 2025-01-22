@@ -46,20 +46,16 @@ if(props.action !== 'add'){
         return;
       }
       molDisplay.value = response as tMolecule;
-      console.log(molDisplay.value);
       
       // get equivalent molecule
       if (molDisplay.value.equivalent){
         $fetch('/api/molecule/molecule?param=' + molDisplay.value.equivalent)
           .then((response) => {
-            console.log(response);
             if (typeof response === 'number') {
               // TODO manage error
               return;
             }
-            
-            
-            listEquivalents.value.push(response as tMolecule);
+            molEquivalent.value = response;
           });
       }
     });
@@ -252,25 +248,21 @@ watch(searchEquivalents, (value) => {
 });
 
 // Variable to get selected equivalent molecule
-const itemEquivalentsSelected = ref<{ id: string,name: string, formula: string }[]>();
+const itemEquivalentsSelected = ref<tMolecule[]>([]);
 // variable to display equivalent molecule
-const listEquivalents = ref<{ id: string,name: string, formula: string }[]>([]);
+const molEquivalent = ref<tMolecule>();
 // Add molecule in list of equivalent
 watch(itemEquivalentsSelected, (value) => {
   // check value is not empty
   if( !value || value.length == 0){
     return;
   }
-  // check if the molecule is already in the list  
-  if(listEquivalents.value.filter((val) => val.id == value[0].id).length > 0){
-    return;
-  }
-  // add molecule in list
-  listEquivalents.value.push(...value);
+  // Change equivalent molecule
+  molEquivalent.value = value[0] as tMolecule;
 });
 // Remove molecule from list of equivalent
 function removeEquivalent(item: any) {
-  listEquivalents.value = listEquivalents.value.filter((val) => val.id !== item.id);
+  molEquivalent.value = undefined;
 }
 
 /**
@@ -300,7 +292,7 @@ function add() {
       mass: molDisplay.value.mass,
       synonyms: (molDisplay.value?.synonyms || []),
       userSyns: (molDisplay.value?.userSyns || []),
-      equivalent: listEquivalents.value.map((val) => val.id)[0]
+      equivalent: molEquivalent?.value?.id || ''
     })
   })
   .then(() => {
@@ -324,7 +316,7 @@ function modify() {
       mass: molDisplay.value.mass,
       synonyms: (molDisplay.value?.synonyms || []),
       userSyns: (molDisplay.value?.userSyns || []),
-      equivalent: listEquivalents.value.map((val) => val.id)[0]
+      equivalent: molEquivalent?.value?.id || ''
     })
   })
   .then((response) => {
@@ -484,20 +476,18 @@ function modify() {
               select-strategy="single"
             />
             <!-- Table show equivalents -->
-            <v-virtual-scroll 
-              height="200"
-              :items="listEquivalents"
-              :item-height="5"
+            <v-card 
+              v-if="molEquivalent"
+              variant="plain"
             >
-              <template #default="{ item }">
-                <v-list-item 
-                  :title="item.name + ': ' + item.formula"
-                  prepend-icon="mdi-delete"
-                  :disabled="props.action === 'view'"
-                  @click="removeEquivalent(item)"
-                />
-              </template>
-            </v-virtual-scroll>
+              <v-btn
+                v-if="props.action !== 'view'"
+                icon="mdi-delete"
+                variant="plain"
+                @click="removeEquivalent(molEquivalent)"
+              />
+              {{ molEquivalent.name }} : {{ molEquivalent.formula }}
+            </v-card>
           </v-expansion-panel-text>
         </v-expansion-panel>
       </v-expansion-panels>
