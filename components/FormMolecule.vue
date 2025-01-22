@@ -7,6 +7,9 @@ SPDX-License-Identifier: MIT
 The file profile form molecule composant
 -->
 <script setup lang="ts">
+import { log } from 'node:console';
+import type { tMolecule } from '~/server/api/molecule/functions';
+
 const { t } = useI18n();
 
 const props = defineProps({
@@ -32,7 +35,7 @@ const event = defineEmits(['close']);
 const panel = ref<string[]>([])
 const loading = ref<boolean>(false)
 
-const molDisplay = ref<tChEBI>();
+const molDisplay = ref<tMolecule>();
 
 //******* Show selected molecule
 if(props.action !== 'add'){
@@ -42,22 +45,25 @@ if(props.action !== 'add'){
         // TODO manage error
         return;
       }
-      molDisplay.value = response as tChEBI;
-
-      // get all equivalent molecule
-      for (const equi of molDisplay.value.equivalents) {
-        $fetch('/api/molecule/molecule?param=' + equi)
+      molDisplay.value = response as tMolecule;
+      console.log(molDisplay.value);
+      
+      // get equivalent molecule
+      if (molDisplay.value.equivalent){
+        $fetch('/api/molecule/molecule?param=' + molDisplay.value.equivalent)
           .then((response) => {
+            console.log(response);
             if (typeof response === 'number') {
               // TODO manage error
               return;
             }
-            listEquivalents.value.push(response as tChEBI);
+            
+            
+            listEquivalents.value.push(response as tMolecule);
           });
       }
     });
 }
-
 // ******Variables to manage the search of molecule
 // Number of items per page
 const molItemsPerPage = ref<number>(5);
@@ -110,7 +116,7 @@ watch(itemMolSelected, (value) => {
         // TODO manage error
         return;
       }
-      molDisplay.value = response as tChEBI;
+      molDisplay.value = response as tMolecule;
       molDisplay.value.userSyns = [];
       // close molecule panel
       panel.value = [];
@@ -294,7 +300,7 @@ function add() {
       mass: molDisplay.value.mass,
       synonyms: (molDisplay.value?.synonyms || []),
       userSyns: (molDisplay.value?.userSyns || []),
-      equivalents: listEquivalents.value.map((val) => val.id)
+      equivalent: listEquivalents.value.map((val) => val.id)[0]
     })
   })
   .then(() => {
@@ -318,7 +324,7 @@ function modify() {
       mass: molDisplay.value.mass,
       synonyms: (molDisplay.value?.synonyms || []),
       userSyns: (molDisplay.value?.userSyns || []),
-      equivalents: listEquivalents.value.map((val) => val.id)
+      equivalent: listEquivalents.value.map((val) => val.id)[0]
     })
   })
   .then((response) => {
