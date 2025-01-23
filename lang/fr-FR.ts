@@ -43,7 +43,7 @@ export default {
     },
     context:{
         title: {
-            equivalent: "Équivalences",
+            equivalent: "Équivalence",
         },
         text: {
             equivalent: "La molécule de la ligne peut s'exprimer en équivalence de la molécule de la colonne"
@@ -190,7 +190,7 @@ export default {
         compoundName:"Nom du témoin",
         confirmBox: "Confirmation",
         daughter:"Solution fille",
-        equivalent: "Équivalences",
+        equivalent: "Équivalence",
         machine:"Machine",
         modifyCalibCurve: "Modifier la gamme",
         modifyMolecule: "Modifier la molécule",
