@@ -22,6 +22,8 @@ const nameLayout = ref<LayoutKey>('navigate-layout');
 
 const {t} = useI18n();
 const tab = ref("calibCurve");
+// indicate tab selected
+const contextualHelp =useState<boolean>("contextual",()=> false);
 // define list of tabs
 const listTab = ['machine', 'molecule', 'base', 'mother','mix','calibCurve'];
 // define list of components of tabs
@@ -33,6 +35,13 @@ const ListComp : {[key:string]: string | ConcreteComponent} = {
   mix:resolveComponent('lazy-ManageMixAsync'),
   calibCurve:resolveComponent('lazy-ManageCalibCurveAsync'),
 };
+
+// Block contextual help when tab is not molecule
+watch(contextualHelp, () => {
+  if (tab.value != 'molecule') {
+    contextualHelp.value = false;   
+  }
+});
 </script>
 
 <template>

@@ -17,7 +17,7 @@ interface tMolecule {
     mass: number,
     synonyms?: string [] | [] | undefined,
     userSyns?: string [] | [] | undefined,
-    equivalents?: number[] | [] | undefined
+    equivalent?: number  | undefined
 
 }
 
@@ -53,11 +53,11 @@ async function getMolecule(id: number): Promise<any> {
         mass: 0,
         synonyms: [],
         userSyns: [],
-        equivalents: []
+        equivalent: undefined
     };
     // Get molecule from the database
     const molecule = await queryDatabase(`
-        SELECT name, formula, mass
+        SELECT name, formula, mass, id_equivalent
         FROM molecule
         WHERE id = $1`,
         [id])
@@ -72,6 +72,8 @@ async function getMolecule(id: number): Promise<any> {
     myMolecule.name = molecule.name;
     myMolecule.formula = molecule.formula;
     myMolecule.mass = molecule.mass;
+    myMolecule.equivalent = molecule.id_equivalent;
+
 
     // Get ChEBI synonyms of molecule 
     const synonyms: string[]|[] = await queryDatabase(`
@@ -92,16 +94,6 @@ async function getMolecule(id: number): Promise<any> {
     .then((result) => result.rows.map( (row: { name: string; }) => row.name))
     .catch(() => []);
     myMolecule.userSyns.push(...userSyns);
-
-    // Get equivalent of molecule
-    const equivalents = await queryDatabase(`
-                                SELECT func_equivalent_molecule($1) as id`,
-                                [id])
-                                .then((result) => result.rows)
-                                .catch(() => []);
-    if (equivalents.length>0) {
-        myMolecule.equivalents.push(...equivalents.map((row) => row.id));
-    }
 
     return myMolecule;
 }
@@ -131,16 +123,14 @@ function getSearch(search: string): Promise<any> {
 /**
  * Get equivalent molecules from the database
  * @param id number the molecule id
- * @returns list of equivalent molecules or an error code
+ * @returns name of equivalent molecule or an error code
  */
-function getEquivalent(id: number): Promise<string[] | number> {
+function getEquivalent(id: number): Promise<string | number> {
      // Get unique name of equivalent molecules from the database
     return queryDatabase(`
-        SELECT array_agg(DISTINCT molecule.name) AS name
+        SELECT name
         FROM molecule
-        JOIN equivalent e ON e.id_mol_1 = molecule.id 
-                            OR e.id_mol_2 = molecule.id
-        WHERE e.id_mol_1 = $1' OR e.id_mol_2 = $1`,
+        WHERE id = $1`,
         [id])
     .then((result) => result.rows[0].name)
     .catch(() => 1);
@@ -170,16 +160,18 @@ function getSynonym(id: number): Promise<string[] | number> {
  */
 function addMolecule(mol: tMolecule): Promise<number> {   
     // Insert a new molecule into the database
-    return queryDatabase(`
-        INSERT INTO molecule (name, formula, mass) 
-        VALUES ($1, $2, $3) RETURNING id`,
-        [mol.name, mol.formula, mol.mass])
+    // define request about equivalent molecule
+    let request = `INSERT INTO molecule (name, formula, mass, id_equivalent)
+                   VALUES ($1, $2, $3, $4) RETURNING id`;   
+    let args = [mol.name, mol.formula, mol.mass, mol.equivalent];
+    if (typeof(mol.equivalent) !== 'number') {
+        request = `INSERT INTO molecule (name, formula, mass)
+                   VALUES ($1, $2, $3) RETURNING id`;
+        args = [mol.name, mol.formula, mol.mass];
+    }
+    return queryDatabase(request, args)
     .then((result) => {        
         const aPromises = [];
-        if (mol.equivalents && mol.equivalents.length>0) {
-            aPromises.push(addEquivalents(result.rows[0].id,
-                mol.equivalents));
-        }
         if (mol.synonyms && mol.synonyms.length>0) {
             aPromises.push(addSynonyms(result.rows[0].id, mol.synonyms, false));
         }
@@ -191,27 +183,6 @@ function addMolecule(mol: tMolecule): Promise<number> {
         
         return 1;
     });
-}
-
-/**
- * Add equivalents to a molecule in the database
- * @param idMolecule id of the molecule
- * @param equivalents array of equivalent molecule ids
- * @returns Promise<void>
- */
-function addEquivalents(idMolecule: number, equivalents: number[]):
-    Promise<void> {
-    const promises = equivalents.map((equivalent) => {
-        return queryDatabase(`
-            INSERT INTO equivalent (id_mol_0, id_mol_1) 
-            VALUES ($1, $2)
-            RETURNING id`,
-            [idMolecule, equivalent])
-            .then((id) => queryDatabase(`UPDATE equivalent
-                                         SET id_relation=$1
-                                         WHERE id=$1`, [id.rows[0].id]))
-    });
-    return Promise.all(promises).then(() => { });
 }
 
 /**
@@ -242,7 +213,7 @@ function updateMolecule(mol: tMolecule): Promise<any> {
         return new Promise((resolve)=> resolve(2));
     }
     // Get all synonyms and equivalents of the molecule from the database
-    return queryDatabase(`SELECT * FROM func_synonym_equivalent_molecule($1)`, [mol.id])
+    return queryDatabase(`SELECT * FROM func_synonym_molecule($1)`, [mol.id])
     .then((res) => {
         const lPromises = [];
         // Check if the molecule has synonyms to update
@@ -251,37 +222,9 @@ function updateMolecule(mol: tMolecule): Promise<any> {
                           [...(mol.synonyms || []), ...(mol.userSyns || [])])) {
             lPromises.push(updateSynonyms(mol.id, (mol.userSyns || [])));
         }
-        if(!mol.equivalents){
-            console.log("rien");
-            
-            return Promise.all(lPromises);
-        }
-        // Check if the molecule has equivalents to update
-        if (mol.equivalents && !compareArray(res.rows[0].equivalent,
-                                             (mol.equivalents || []))) {
-            // Get all equivalent add directly on molecule
-            const promEqui = queryDatabase(`
-                SELECT array_agg(id_mol_0) as id_mol_0,
-                       array_agg(id_mol_1) as id_mol_1
-                FROM equivalent
-                WHERE id_relation = id
-                AND (id_mol_0 = $1 
-                     OR id_mol_1 = $1)
-                `, [mol.id])
-                .then((response)=>{
-                    // Identify new equivalents
-                    const newEquival = mol.equivalents.filter((equiId)=>
-                        !res.rows[0].equivalent.includes(equiId));
-                    // Keep equivalent add directly on molecule
-                    const trueEquival = mol.equivalents.filter((equiId)=>
-                        [...(response.rows[0].id_mol_0||[]),
-                         ...(response.rows[0].id_mol_1||[])].includes(equiId))
-                    // Update equivalents                    
-                    return updateEquivalent(mol.id, [...trueEquival, 
-                                                     ...newEquival]);
-                })
-            lPromises.push(promEqui);
-        }
+        // Update equivalent of the molecule
+        lPromises.push(updateEquivalent(mol.id, (mol.equivalent || "")));
+        
         return Promise.all(lPromises);
     })
     .then(() => 0)
@@ -309,27 +252,19 @@ function updateSynonyms(idMolecule: number, userSyn: string[]): Promise<void> {
 /**
  * Update equivalents of a molecule in the database
  * @param idMolecule id of the molecule
- * @param equivalents array of equivalent molecule ids
+ * @param equivalents equivalent molecule ids
  * @returns Promise<void>
  */
-function updateEquivalent(idMolecule: number, equivalents: number[]): Promise<void> {
+function updateEquivalent(idMolecule: number, equivalent: any): Promise<void> {
     // Delete all equivalents of the molecule from the database
+    if (typeof(equivalent) !== 'number') {
+        return queryDatabase(`
+            UPDATE molecule
+            SET id_equivalent = NULL
+            WHERE id = $1`,[idMolecule]);
+    }
     return queryDatabase(`
-            DELETE FROM equivalent WHERE id_mol_0 = $1 OR id_mol_1 = $1
-            RETURNING id`,
-        [idMolecule])
-        .then((ids) => {
-            if(ids.rows.length === 0){
-                return;
-            }
-            // Get all ids of the relations to delete
-            const lIds = ids.rows.map((row)=>row.id).join(',');
-            
-            // Delete all relations of the molecule from the database
-            return queryDatabase(`
-            DELETE FROM equivalent
-            WHERE id_relation IN (${lIds})`,[])})
-        // Insert all equivalents into the database
-        .then(() => addEquivalents(idMolecule, equivalents))
-        .catch((error) => console.log(error) );
+            UPDATE molecule
+            SET id_equivalent = $1
+            WHERE id = $2`,[equivalent, idMolecule]);
 }

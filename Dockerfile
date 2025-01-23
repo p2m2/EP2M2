@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: MIT
 FROM quay.io/fedora/nodejs-22:latest
+USER root
 WORKDIR /EP2M2
 COPY . .
 RUN npm i

@@ -13,6 +13,7 @@ export default {
         archive: "Archive",
         cancel: "Cancel",
         close: "Close",
+        contextual: "Contextual help",
         control: "Manage control samples",
         create: "Create",
         delete: "Delete",
@@ -21,6 +22,7 @@ export default {
         deleteMachine: "Delete/Archive",
         deleteProject: "Delete",
         deleteRow: "Delete",
+        documentation: "Documentation",
         exportProject: "Export",
         help: "Help",
         home: "Home",
@@ -38,6 +40,14 @@ export default {
         viewMachine: "Modify",
         viewProject: "View/Modify",
         yes: "Yes"
+    },
+    context:{
+        title:{
+            equivalent: "Equivalent",
+        },
+        text:{
+            equivalent: "The molecul of row can be expressed in equivalent of the molecul of column",
+        },
     },
     empty:{
         bug:"report",
@@ -59,7 +69,7 @@ export default {
         equivalent: "Equivalent",
         formula: "Formula",
         lot: "Séries number",
-        mass: "Mass",
+        mass: "Average Mass (g/mol)",
         metabolite: "Metabolite",
         m_type: "Type",
         name: "Name",
@@ -106,7 +116,7 @@ export default {
         files: "Files",
         logout: "Logout",
         m_type: "type",
-        mass: "Mass",
+        mass: "Average Mass (g/mol)",
         nameCalibCurve: "Calibration curve's name",
         nbFile: "File's number",
         noFile: "No file",
@@ -174,7 +184,7 @@ export default {
         molecule: "Molecules",
         mother: "Mother solutions",
         reference: "Reference",
-        calibCurve: "Gammes"
+        calibCurve: "Calibration Curve"
     },
     title:{
         addCalibCurve: "Add a calibration curve",

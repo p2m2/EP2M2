@@ -1,20 +1,20 @@
-<svg width="224.1" height="20" viewBox="0 0 2241 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Coverage total: 54.239999999999995">
-  <title>Coverage total: 54.239999999999995</title>
+<svg width="140.1" height="20" viewBox="0 0 1401 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Coverage total: 53.425">
+  <title>Coverage total: 53.425</title>
   <linearGradient id="a" x2="0" y2="100%">
     <stop offset="0" stop-opacity=".1" stop-color="#EEE"/>
     <stop offset="1" stop-opacity=".1"/>
   </linearGradient>
-  <mask id="m"><rect width="2241" height="200" rx="30" fill="#FFF"/></mask>
+  <mask id="m"><rect width="1401" height="200" rx="30" fill="#FFF"/></mask>
   <g mask="url(#m)">
     <rect width="911" height="200" fill="#555"/>
-    <rect width="1330" height="200" fill="#DB1" x="911"/>
-    <rect width="2241" height="200" fill="url(#a)"/>
+    <rect width="490" height="200" fill="#DB1" x="911"/>
+    <rect width="1401" height="200" fill="url(#a)"/>
   </g>
   <g aria-hidden="true" fill="#fff" text-anchor="start" font-family="Verdana,DejaVu Sans,sans-serif" font-size="110">
     <text x="60" y="148" textLength="811" fill="#000" opacity="0.25">Coverage total</text>
     <text x="50" y="138" textLength="811">Coverage total</text>
-    <text x="966" y="148" textLength="1230" fill="#000" opacity="0.25">54.239999999999995</text>
-    <text x="956" y="138" textLength="1230">54.239999999999995</text>
+    <text x="966" y="148" textLength="390" fill="#000" opacity="0.25">53.425</text>
+    <text x="956" y="138" textLength="390">53.425</text>
   </g>
   
 </svg>

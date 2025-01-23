@@ -13,6 +13,7 @@ export default {
         archive: "Archiver",
         cancel: "Annuler",
         close: "Fermer",
+        contextual: "Aide contextuelle",
         control: "Gestion témoins",
         create: "Créer",
         delete: "Supprimer",
@@ -21,6 +22,7 @@ export default {
         deleteMachine: "Supprimer/Archiver",
         deleteProject: "Supprimer",
         deleteRow: "Supprimer",
+        documentation: "Documentation",
         exportProject: "Export",
         help: "Aide",
         home: "Accueil",
@@ -38,6 +40,14 @@ export default {
         viewMachine: "Modifier",
         viewProject: "Détails",
         yes: "Oui"
+    },
+    context:{
+        title: {
+            equivalent: "Équivalence",
+        },
+        text: {
+            equivalent: "La molécule de la ligne peut s'exprimer en équivalence de la molécule de la colonne"
+        }
     },
     empty:{
         bug:"anomalie",
@@ -59,7 +69,7 @@ export default {
         equivalent: "Équivalence",
         formula: "Formule",
         lot: "N° lot",
-        mass: "Masse",
+        mass: "Masse moyenne (g/mol)",
         metabolite: "Métabolite",
         name: "Nom",
         name_compound: "Témoin",
@@ -104,7 +114,7 @@ export default {
         formula: "Formule",
         logout: "Déconnexion",
         m_type: "type",
-        mass: "Masse",
+        mass: "Masse moyenne (g/mol)",
         nameCalibCurve: "Nom de la gamme",
         nbFile: "Nb de fichiers",
         noFile: "Pas de fichier",
@@ -168,7 +178,7 @@ export default {
         base: "Bases",
         fitting: "Ajustement",
         machine: "Machines (Configuration)",
-        mix:"Solutions mixes",
+        mix:"Mélanges",
         molecule: "Molécules",
         mother: "Solutions mères",
         reference: "Témoin",
@@ -180,7 +190,7 @@ export default {
         compoundName:"Nom du témoin",
         confirmBox: "Confirmation",
         daughter:"Solution fille",
-        equivalent: "Équivalences",
+        equivalent: "Équivalence",
         machine:"Machine",
         modifyCalibCurve: "Modifier la gamme",
         modifyMolecule: "Modifier la molécule",
