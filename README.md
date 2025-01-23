@@ -1,5 +1,5 @@
 <!--
-© 2024 INRAE
+© 2025 INRAE
 SPDX-FileContributor: Marcellino Palerme <marcellino.palerme@inrae.fr>
 
 SPDX-License-Identifier: MIT
@@ -9,7 +9,7 @@ SPDX-License-Identifier: MIT
 
 ## Version
 
-0.3.2
+0.3.3
 
 ## Reuse compliance
 
