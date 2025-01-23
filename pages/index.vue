@@ -24,7 +24,8 @@ const nameLayout = ref<LayoutKey>('navigate-layout');
 
 <template>
   <NuxtLayout :name="nameLayout">
-    <extract-info />
+    <!-- <extract-info /> -->
+    <manage-project />
   </NuxtLayout>
 </template>
 

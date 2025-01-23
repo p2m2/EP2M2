@@ -92,6 +92,7 @@ CREATE TABLE project
   id SERIAL PRIMARY KEY,
   name VARCHAR(80) UNIQUE,
   date_create TIMESTAMPTZ NOT NULL,
+  date_achieve TIMESTAMPTZ,
   team team
 );
 
@@ -113,6 +114,15 @@ CREATE TABLE proj_file
   id_file SERIAL REFERENCES file (id) ON DELETE CASCADE,
   PRIMARY KEY (id_project, id_file)
 );
+
+CREATE VIEW view_project AS
+SELECT project.id AS id, project.name AS name,
+       COUNT(proj_file.id_file) AS file_count,
+       project.date_create AS date_create,
+       project.date_achieve AS date_achieve
+FROM project
+LEFT JOIN proj_file ON project.id = proj_file.id_project
+GROUP BY project.id;
 
 CREATE VIEW view_proj_file AS
 SELECT file.id AS id, file.name AS name, file.date_create AS date_create, 
