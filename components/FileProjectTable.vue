@@ -30,9 +30,10 @@ const loading = ref<boolean>(false)
 const fileProject = ref<File[] | null>(null);
 const showFiles = ref<tFile[]>([]);
 const headers = [
-  { title: t('label.fileName'), value: 'name' },
-  { title: t('label.fileSize'), value: 'size' },
-  { title: t('label.fileType'), value: 'type' },
+  { title: t('header.name'), value: 'name' },
+  { title: t('header.size'), value: 'size' },
+  { title: t('header.type'), value: 'type' },
+  { title: t('header.action') },
 ];
 
 /**
@@ -106,6 +107,14 @@ async function infoFiles(): Promise<void> {
   loading.value = false;
 }
 
+/**
+ * delete a file from the list
+ * @function deleteFile
+ * @param item element to delete
+ */
+function deleteFile(item: tFile): void {
+  showFiles.value = showFiles.value.filter((file) => file.name !== item.name);
+}
 </script>
 
 <template>
@@ -129,12 +138,22 @@ async function infoFiles(): Promise<void> {
     :headers="headers"
     :items="showFiles"
     :items-per-page="5"
+    :no-data-text="t('message.noProjectFile')"
   >
     <template #item="{ item }">
       <tr :class="{'text-decoration-line-through': item.type === 'unknown' || item.size === 0}">
         <td>{{ item.name }}</td>
         <td>{{ item.size }}</td>
         <td>{{ item.type }}</td>
+        <td>
+          <v-btn
+            icon
+            variant="plain"
+            @click="deleteFile(item)"
+          >
+            <v-icon>mdi-delete</v-icon>
+          </v-btn>
+        </td>
       </tr>
     </template>
   </v-data-table>
