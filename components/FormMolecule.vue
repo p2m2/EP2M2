@@ -7,7 +7,6 @@ SPDX-License-Identifier: MIT
 The file profile form molecule composant
 -->
 <script setup lang="ts">
-import { log } from 'node:console';
 import type { tMolecule } from '~/server/api/molecule/functions';
 
 const { t } = useI18n();

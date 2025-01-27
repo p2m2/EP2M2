@@ -16,6 +16,10 @@ SPDX-License-Identifier: MIT
 const { t } = useI18n();
 // variable to manage the dialog box
 const dialogView = ref<boolean>(false);
+// Indicate the action to do on the project
+const action = ref<string>('');
+// id project selected
+const idProject = ref<string>('');
 
 /**
  * Open the dialog box to add a project
@@ -24,8 +28,8 @@ const dialogView = ref<boolean>(false);
  * @returns {void}
  */
 function add(){
-  console.log('add project');
-  
+  action.value = 'add';
+  dialogView.value = true;  
 }
 
 /**
@@ -36,7 +40,9 @@ function add(){
  * @returns {void}
  */
 function view(item: any){
-  console.log('view project');
+  action.value = 'view';
+  idProject.value = item.id;
+  dialogView.value = true;
 }
 
 /**
@@ -47,9 +53,32 @@ function view(item: any){
  * @returns {void}
  */
 function modify(item: any){
-  console.log('modify project');
+  action.value = 'modify';
+  idProject.value = item.id;
+  dialogView.value = true;
 }
 
+/**
+ * Delete a project
+ * @function deleteProject
+ * @memberof ManageProject
+ * @param {any} item - The project to delete
+ * @returns {void}
+ */
+function deleteProject(item: any){
+  console.log('delete project');
+}
+
+/**
+ * Archive a project
+ * @function archive
+ * @memberof ManageProject
+ * @param {any} item - The project to archive
+ * @returns {void}
+ */
+function archive(item: any){
+  console.log('archive project');
+}
 </script>
 
 <template>
@@ -59,6 +88,19 @@ function modify(item: any){
     :add="add"
     :view="view"
     :modify="modify"
+    :delete="deleteProject"
+    :archive="archive"
     :update="dialogView"
   />
+  <!-- Dialog Box display managed project  -->
+  <v-dialog
+    v-model="dialogView"
+    max-width="600"
+  >
+    <form-project
+      :action="action"
+      :id-project="idProject"
+      @close="dialogView = false"
+    />
+  </v-dialog>
 </template>
