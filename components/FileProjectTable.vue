@@ -113,8 +113,21 @@ async function infoFiles(): Promise<void> {
  * @param item element to delete
  */
 function deleteFile(item: tFile): void {
-  showFiles.value = showFiles.value.filter((file) => file.name !== item.name);
+  showFiles.value = showFiles.value.filter((file) => file.id !== item.id);
 }
+
+/**
+ * Provide the list of files to the parent component
+ */
+watch(showFiles, () => {
+  console.log("in watch");
+  
+  // keep only valid files
+  model.value = showFiles.value.filter(
+                       (file) => file.type !== 'unknown' && file.size !== 0);
+},
+// can watch all modifications of showFiles
+{ deep: 1 });
 </script>
 
 <template>
