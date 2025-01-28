@@ -119,9 +119,7 @@ function deleteFile(item: tFile): void {
 /**
  * Provide the list of files to the parent component
  */
-watch(showFiles, () => {
-  console.log("in watch");
-  
+watch(showFiles, () => {  
   // keep only valid files
   model.value = showFiles.value.filter(
                        (file) => file.type !== 'unknown' && file.size !== 0);

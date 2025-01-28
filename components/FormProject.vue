@@ -147,7 +147,9 @@ function onBeforeUnmount(){
         <v-expansion-panel
           :title="t('label.files')"
         >
-          <v-expansion-panel-text>
+          <v-expansion-panel-text
+            eager
+          >
             <file-project-table
               v-model="proDisplay.files"
               :tmp-folder="tmpFolder"
@@ -158,7 +160,9 @@ function onBeforeUnmount(){
         <v-expansion-panel
           :title="t('label.calibCurves')"
         >
-          <v-expansion-panel-text>
+          <v-expansion-panel-text
+            eager
+          >
             coucou
           </v-expansion-panel-text>
         </v-expansion-panel>  
